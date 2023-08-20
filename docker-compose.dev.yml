@@ -1,0 +1,17 @@
+version: "3"
+services:
+  mdb:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
+    volumes:
+      - ./db/:/data/db
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "5672:5672"
