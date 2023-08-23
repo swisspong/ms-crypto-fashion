@@ -1,0 +1,35 @@
+version: "3"
+services:
+  auth:
+    container_name: auth-service
+    restart: always
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    command: npm run start:dev auth
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./apps/auth/.env
+    depends_on:
+      - mdb
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+  mdb:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
+    volumes:
+      - ./db/:/data/db
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "5672:5672"
