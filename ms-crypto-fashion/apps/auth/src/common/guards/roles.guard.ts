@@ -1,24 +1,24 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RoleFormat, User } from 'src/users/schemas/user.schema';
+import { RoleFormat, User } from '../../users/schema/user.schema';
 // import { RoleFormat, User } from 'src/users/entities/user.entity';
 
 @Injectable()
-export class DutiesGuard implements CanActivate {
+export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {
-    const duties = this.reflector.get<string[]>('duties', context.getHandler());
-    if (!duties) {
+    const roles = this.reflector.get<string[]>('roles', context.getHandler());
+    if (!roles) {
       return true;
     }
     const request = context.switchToHttp().getRequest();
     const user = request.user as User;
-    return this.isIncludeRole(duties, user.role)
-    //matchRoles(duties, user.role);
+    return this.isIncludeRole(roles, user.role)
+    //matchRoles(roles, user.role);
   }
 
-  isIncludeRole(duties: string[], role: string) {
-    return duties.includes(role)
+  isIncludeRole(roles: string[], role: string) {
+    return roles.includes(role)
   }
 }

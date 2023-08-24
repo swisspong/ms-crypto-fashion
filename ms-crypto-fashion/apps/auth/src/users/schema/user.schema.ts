@@ -31,12 +31,13 @@ export class User extends AbstractDocument {
     @Prop([String])
     permission?: string[]
 
-
+    
     @Prop({ type: String })
     merchant?: string
 
-    // @Prop({ type: String })
-    // cart?: string
+    @Prop({ type: String})
+    cart?: string
+
 
 }
 
