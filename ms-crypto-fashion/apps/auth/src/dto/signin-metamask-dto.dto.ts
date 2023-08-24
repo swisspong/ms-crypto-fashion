@@ -15,6 +15,7 @@ export class SigninMetamaskDto {
     @IsString()
     @IsNotEmpty()
     @Length(3)
+    
     message: string;
 
     @ApiProperty()
