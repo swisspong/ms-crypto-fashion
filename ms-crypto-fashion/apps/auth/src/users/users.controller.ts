@@ -1,34 +1,61 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateAdminDto } from './dto/create-user-admin.dto';
+import { UpdateUserAdvancedDto } from './dto/update-user-advanced.dto';
+import { GetUserId } from '../common/decorators/get-user-id.decorator'; 
+import { Roles } from '../common/decorators/roles.decorator'; 
+import { RoleFormat } from './schema/user.schema'; 
+import { Permission } from '../common/decorators/permission.decorator'; 
+import { PermissionFormat } from '../common/enums/permission.enum'; 
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  // ! Admin
+
+  @Roles(RoleFormat.ADMIN)
+  @Get('admins')
+  getAdmins(@Query('per_page') perPage: number, @Query('page') page: number) {
+    return this.usersService.findAllAdmin(perPage, page);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Roles(RoleFormat.ADMIN)
+  @Get('admin/:id')
+  getAdminById(@Param('id') id: string) {
+    return this.usersService.findAdminById(id)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Roles(RoleFormat.ADMIN)
+  @Permission(PermissionFormat.UPDATE_ADMIN)
+  @Patch('admin/:id')
+  updateAdvanced(@Param('id') id: string, @Body() updateUserDto: UpdateUserAdvancedDto) {
+    return this.usersService.updateAdvanced(id, updateUserDto)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
+  @Roles(RoleFormat.ADMIN)
+  @Permission(PermissionFormat.DELETE_ADMIN)
+  @Delete('admin/:id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.removeAdvanced(id);
   }
+
+  @Roles(RoleFormat.ADMIN)
+  @Permission(PermissionFormat.CREATE_ADMIN)
+  @Post('admin')
+  createAdmin(@Body() createAdmin: CreateAdminDto) {
+    console.log(createAdmin)
+    return this.usersService.createAdmin(createAdmin)
+  }
+
+  // ! Public 
+
+  @Get("/me")
+  me(@GetUserId() userId: string) {
+    return this.usersService.me(userId);
+  }
+
+
+
+  
 }

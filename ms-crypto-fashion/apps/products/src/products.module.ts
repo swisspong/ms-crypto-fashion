@@ -4,7 +4,9 @@ import { ProductsService } from './products.service';
 import { RmqModule } from '@app/common/rmq/rmq.module';
 import { PRODUCTS_SERVICE } from './constants/services';
 import { ConfigModule } from '@nestjs/config';
+import { MerchantsModule } from './merchants/merchants.module';
 import * as Joi from 'joi';
+import { DatabaseModule } from '@app/common/database/database.module';
 
 @Module({
   imports: [
@@ -16,7 +18,10 @@ import * as Joi from 'joi';
         // PORT: Joi.number().required(),
       })
     }),
-    RmqModule.register({ name: PRODUCTS_SERVICE })
+    DatabaseModule,
+    RmqModule.register({ name: PRODUCTS_SERVICE }),
+    MerchantsModule
+
   ],
 
   controllers: [ProductsController],

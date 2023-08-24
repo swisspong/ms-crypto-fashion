@@ -6,6 +6,13 @@ import * as Joi from "joi"
 import { DatabaseModule } from '@app/common/database/database.module';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './strategy';
+import { APP_GUARD } from '@nestjs/core';
+import { DutiesGuard } from './common/guards/duties.guard';
+import { PermissionsGuard } from './common/guards/permission.guards';
+import { RolesGuard } from './common/guards/roles.guard';
+import { JwtGuard } from './common/guards';
+import { JwtUtilsModule } from '@app/common/jwt/jwt-utils.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -18,9 +25,29 @@ import { JwtModule } from '@nestjs/jwt';
   }),
     DatabaseModule,
     UsersModule,
-    JwtModule.register({})
+    // JwtModule.register({}) 
+    JwtUtilsModule
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionsGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: DutiesGuard
+    },
+    AuthService,
+    JwtStrategy
+  ],
 })
 export class AuthModule { }
