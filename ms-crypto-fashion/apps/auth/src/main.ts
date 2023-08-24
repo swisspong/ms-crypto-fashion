@@ -1,9 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { AuthModule } from './auth.module'; 
+import { AuthModule } from './auth.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AuthModule);
@@ -24,8 +25,8 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
-
-  await app.listen(3000);
+  const configService = app.get<ConfigService>(ConfigService)
+  await app.listen(configService.get<string>('PORT'));
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

@@ -1,7 +1,8 @@
+import { PermissionFormat } from "@app/common/enums";
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
 import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Length, ValidateNested } from "class-validator";
-import { PermissionFormat } from "../../common/enums/permission.enum";
+// import { PermissionFormat } from "../../common/enums/permission.enum";
 
 class PermissionDto {
     @ApiProperty()

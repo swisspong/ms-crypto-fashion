@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RoleFormat, User } from '../../users/schema/user.schema';
+import { UserJwtPayload } from '../interfaces/jwt.interface';
 // import { RoleFormat, User } from 'src/users/entities/user.entity';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class DutiesGuard implements CanActivate {
       return true;
     }
     const request = context.switchToHttp().getRequest();
-    const user = request.user as User;
+    const user = request.user as UserJwtPayload;
     return this.isIncludeRole(duties, user.role)
     //matchRoles(duties, user.role);
   }

@@ -1,6 +1,6 @@
-export interface JwtPayload {
+export interface UserJwtPayload {
     sub: string
-    merchant?:string
+    merchant?: string
     role: string
     permission: string[]
 }

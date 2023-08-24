@@ -1,17 +1,15 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { JwtService } from "@nestjs/jwt"
-import { ConfigService } from '@nestjs/config';
 import * as crypto from "crypto"
 import { UsersRepository } from './users/users.repository';
 import { SigninMetamaskDto } from './dto/signin-metamask-dto.dto';
 import { ethers } from 'ethers';
 import ShortUniqueId from 'short-unique-id';
 import { SigninLocalDto } from './dto/signin-local-dto.dto';
-import { comparePassword, hashPassword } from './shared/operation.util';
 import { SignupLocalDto } from './dto/signup-local-dto.dto';
-import { RoleFormat } from './users/schema/user.schema';
+// import { RoleFormat } from './users/schema/user.schema';
 import { JwtUtilsService } from '@app/common/jwt/jwt-utils.service';
+import { HashService } from '@app/common';
+import { RoleFormat } from '@app/common/enums';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +17,7 @@ export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly jwtUtilsService: JwtUtilsService,
+    private readonly hashSerive: HashService
   ) { }
 
   getHello(): string {
@@ -47,15 +46,6 @@ export class AuthService {
 
   }
 
-
-  // async signToken(jwtPayload: JwtPayload) {
-  //   return this.jwtService.signAsync(jwtPayload, {
-  //     secret: this.configService.get('JWT_SECRET', { infer: true }),
-  //     expiresIn: '15h',
-  //   })
-  // }
-
-
   genNonce() {
     const nonce = crypto.randomBytes(32).toString('hex');
     return { nonce }
@@ -67,7 +57,7 @@ export class AuthService {
 
       if (!user) throw new NotFoundException('Account not found.');
 
-      if (!await comparePassword(signinLocalDto.password, user.password))
+      if (!await this.hashSerive.comparePassword(signinLocalDto.password, user.password))
         throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
 
       const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.merchant?.toString(), permission: user.permission })
@@ -84,7 +74,7 @@ export class AuthService {
 
       if (user) throw new HttpException('Email is already exist.', HttpStatus.BAD_REQUEST);
 
-      const hash = await hashPassword(signupLocalDto.password)
+      const hash = await this.hashSerive.hashPassword(signupLocalDto.password)
 
       const newUser = await this.usersRepository.create({ ...signupLocalDto, user_id: `user_${this.uid.stamp(15)}`, password: hash })
 
@@ -98,8 +88,6 @@ export class AuthService {
     }
   }
 
-  // TODO: sigin admin
-
   async signinAdmin(signinLocalDto: SigninLocalDto, res: any) {
     try {
       const user = await this.usersRepository.findOne({ email: signinLocalDto.email })
@@ -107,7 +95,7 @@ export class AuthService {
       if (!user) throw new NotFoundException('Account not found.');
 
       if (user.role === RoleFormat.ADMIN) {
-        if (!await comparePassword(signinLocalDto.password, user.password))
+        if (!await this.hashSerive.comparePassword(signinLocalDto.password, user.password))
           throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
 
         const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.merchant?.toString(), permission: user.permission })

@@ -2,11 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { UsersService } from './users.service';
 import { CreateAdminDto } from './dto/create-user-admin.dto';
 import { UpdateUserAdvancedDto } from './dto/update-user-advanced.dto';
-import { GetUserId } from '../common/decorators/get-user-id.decorator'; 
-import { Roles } from '../common/decorators/roles.decorator'; 
-import { RoleFormat } from './schema/user.schema'; 
-import { Permission } from '../common/decorators/permission.decorator'; 
-import { PermissionFormat } from '../common/enums/permission.enum'; 
+import { PermissionFormat, RoleFormat } from '@app/common/enums';
+import { GetUserId, Permission, Roles } from '@app/common/decorators';
 
 @Controller('users')
 export class UsersController {

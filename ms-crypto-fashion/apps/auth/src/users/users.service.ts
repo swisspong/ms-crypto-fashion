@@ -1,15 +1,17 @@
 import { Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import { PermissionDto, UpdateUserAdvancedDto } from './dto/update-user-advanced.dto';
-import { hashPassword } from '../shared/operation.util'; 
 import { CreateAdminDto } from './dto/create-user-admin.dto';
-import { UsersRepository } from './users.repository'; 
+import { UsersRepository } from './users.repository';
 import ShortUniqueId from 'short-unique-id';
-import { RoleFormat } from './schema/user.schema'; 
+// import { RoleFormat } from './schema/user.schema';
+import { HashService } from '@app/common';
+import { RoleFormat } from '@app/common/enums';
 @Injectable()
 export class UsersService {
   private readonly uid = new ShortUniqueId();
   constructor(
-    private readonly userRepository: UsersRepository
+    private readonly userRepository: UsersRepository,
+    private readonly hashService: HashService
   ) { }
 
   // Admin
@@ -62,7 +64,7 @@ export class UsersService {
       let hash: string = undefined;
 
       if (password !== undefined) {
-        hash = await hashPassword(password)
+        hash = await this.hashService.hashPassword(password)
       }
 
       const user = await this.userRepository.findOneAndUpdate({ user_id: id }, { username, email, permission: permission, password: hash, role, google_id })
@@ -81,7 +83,7 @@ export class UsersService {
       if (user) throw new HttpException('Email is already exise.', HttpStatus.BAD_REQUEST);
 
       const permission = await this.formatPermission(permissions)
-      const hash = await hashPassword(password)
+      const hash = await this.hashService.hashPassword(password)
 
       const newAdmin = await this.userRepository.create({ ...createAdmin, user_id: `user_${this.uid.stamp(15)}`, password: hash, role: RoleFormat.ADMIN, permission })
 

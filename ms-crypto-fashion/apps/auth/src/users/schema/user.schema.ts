@@ -1,10 +1,7 @@
 import { AbstractDocument } from '@app/common/database/abstract.schema';
+import { RoleFormat } from '@app/common/enums';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-export enum RoleFormat {
-    USER = "user",
-    MERCHANT = "merchant",
-    ADMIN = "admin"
-}
+
 
 @Schema({ versionKey: false })
 export class User extends AbstractDocument {

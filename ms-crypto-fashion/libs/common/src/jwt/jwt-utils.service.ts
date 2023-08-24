@@ -2,12 +2,8 @@
 import { Injectable } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-interface UserJwtPayload {
-    sub: string
-    merchant?: string
-    role: string
-    permission: string[]
-}
+import { UserJwtPayload } from "../interfaces/jwt.interface";
+
 
 @Injectable()
 export class JwtUtilsService {

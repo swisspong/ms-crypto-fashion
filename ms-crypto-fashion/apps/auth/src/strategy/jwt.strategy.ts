@@ -3,12 +3,12 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { ConfigService } from "@nestjs/config"
 import { Request as RequestType } from 'express';
-import { EnvironmentVariables } from "../interfaces"; 
-import { JwtPayload } from "../interfaces/jwt-payload.interface";
+import { UserJwtPayload } from "@app/common/interfaces/jwt.interface";
+// import { JwtPayload } from "../interfaces/jwt-payload.interface";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
-    constructor(configService: ConfigService<EnvironmentVariables>) {
+    constructor(configService: ConfigService) {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 JwtStrategy.extractJWT,
@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
         }
         return null;
     }
-    async validate(payload: JwtPayload) {
+    async validate(payload: UserJwtPayload) {
         return { ...payload };
     }
 }

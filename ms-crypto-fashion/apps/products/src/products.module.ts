@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MerchantsModule } from './merchants/merchants.module';
 import * as Joi from 'joi';
 import { DatabaseModule } from '@app/common/database/database.module';
+import { authProviders } from '@app/common';
 
 @Module({
   imports: [
@@ -23,8 +24,7 @@ import { DatabaseModule } from '@app/common/database/database.module';
     MerchantsModule
 
   ],
-
   controllers: [ProductsController],
-  providers: [ProductsService],
+  providers: [...authProviders, ProductsService],
 })
 export class ProductsModule { }
