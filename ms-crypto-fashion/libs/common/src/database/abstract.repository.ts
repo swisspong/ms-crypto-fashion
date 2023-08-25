@@ -6,6 +6,7 @@ import {
     UpdateQuery,
     SaveOptions,
     Connection,
+    PipelineStage,
 } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 
@@ -40,7 +41,9 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
         return document;
     }
-
+    async aggregate(pipeline?: PipelineStage[]) {
+        return this.model.aggregate(pipeline)
+    }
     async findOneAndUpdate(
         filterQuery: FilterQuery<TDocument>,
         update: UpdateQuery<TDocument>,
@@ -85,7 +88,9 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     async find(filterQuery: FilterQuery<TDocument>) {
         return this.model.find(filterQuery, {}, { lean: true });
     }
-
+    async findCount(filterQuery: FilterQuery<TDocument>): Promise<number> {
+        return this.model.find(filterQuery).countDocuments({})
+    }
     async startTransaction() {
         const session = await this.connection.startSession();
         session.startTransaction();

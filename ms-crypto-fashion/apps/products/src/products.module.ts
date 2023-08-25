@@ -11,6 +11,7 @@ import { AUTH_SERVICE } from '@app/common/constants';
 
 import { AuthModule } from 'apps/auth/src/auth.module';
 import { JwtStrategy } from '@app/common/strategy';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { JwtStrategy } from '@app/common/strategy';
       })
     }),
     DatabaseModule,
-
+    CategoriesModule,
     MerchantsModule,
     JwtUtilsModule,
   ],
