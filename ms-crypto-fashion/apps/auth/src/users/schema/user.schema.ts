@@ -30,7 +30,7 @@ export class User extends AbstractDocument {
 
     
     @Prop({ type: String })
-    merchant?: string
+    mcht_id?: string
 
     @Prop({ type: String})
     cart?: string

@@ -37,7 +37,7 @@ export class AuthService {
         user = await this.usersRepository.create({ user_id: `user_${this.uid.stamp(15)}`, address })
       }
 
-      const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user.merchant, permission: user.permission })
+      const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user.mcht_id, permission: user.permission })
       res.cookie("token", accessToken)
       return { accessToken }
     } catch (error) {
@@ -60,7 +60,7 @@ export class AuthService {
       if (!await this.hashSerive.comparePassword(signinLocalDto.password, user.password))
         throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
 
-      const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.merchant?.toString(), permission: user.permission })
+      const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
       res.cookie("token", accessToken)
       return { accessToken }
     } catch (error) {
@@ -98,7 +98,7 @@ export class AuthService {
         if (!await this.hashSerive.comparePassword(signinLocalDto.password, user.password))
           throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
 
-        const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.merchant?.toString(), permission: user.permission })
+        const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
         res.cookie("token", accessToken)
         return { accessToken }
       } else {

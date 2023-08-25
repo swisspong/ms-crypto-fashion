@@ -1,14 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Logger } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateAdminDto } from './dto/create-user-admin.dto';
 import { UpdateUserAdvancedDto } from './dto/update-user-advanced.dto';
 import { PermissionFormat, RoleFormat } from '@app/common/enums';
 import { GetUserId, Permission, Roles } from '@app/common/decorators';
 import { ApiTags } from '@nestjs/swagger';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
+import { CREATE_MERCHANT_EVENT } from '@app/common/constants';
+import { RmqService } from '@app/common';
+import { CreateMerchantData } from '@app/common/interfaces';
 @ApiTags('User')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly rmqService: RmqService,
+  ) { }
 
   // ! Admin
 
@@ -54,6 +62,10 @@ export class UsersController {
   }
 
 
+  @EventPattern(CREATE_MERCHANT_EVENT)
+  async handleOrderCreated(@Payload() data : CreateMerchantData, @Ctx() context: RmqContext) {
+    await this.usersService.putMerchantIdToUser(data)
+    this.rmqService.ack(context);
+  }
 
-  
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { PermissionDto, UpdateUserAdvancedDto } from './dto/update-user-advanced.dto';
 import { CreateAdminDto } from './dto/create-user-admin.dto';
 import { UsersRepository } from './users.repository';
@@ -6,8 +6,10 @@ import ShortUniqueId from 'short-unique-id';
 // import { RoleFormat } from './schema/user.schema';
 import { HashService } from '@app/common';
 import { RoleFormat } from '@app/common/enums';
+import { CreateMerchantData } from '@app/common/interfaces';
 @Injectable()
 export class UsersService {
+  protected readonly logger = new Logger(UsersService.name);
   private readonly uid = new ShortUniqueId();
   constructor(
     private readonly userRepository: UsersRepository,
@@ -34,7 +36,7 @@ export class UsersService {
   }
 
   async me(userId: string) {
-    const user = await this.userRepository.findOnePopulate({ user_id: userId })
+    const user = await this.userRepository.findOne({ user_id: userId })
     if (!user) throw new NotFoundException("User not found.")
     return user
   }
@@ -109,5 +111,17 @@ export class UsersService {
     } else {
       return undefined
     }
+  }
+
+  async putMerchantIdToUser(data: CreateMerchantData) {
+    try {
+
+      this.logger.warn("create_merchant =>", data)
+      const updated = await this.userRepository.findOneAndUpdate({ user_id: data.user_id }, { $set: { mcht_id: data.mcht_id, role: RoleFormat.MERCHANT } })
+      this.logger.warn("updated to merchant =>", updated)
+    } catch (error) {
+      this.logger.error(error)
+    }
+
   }
 }

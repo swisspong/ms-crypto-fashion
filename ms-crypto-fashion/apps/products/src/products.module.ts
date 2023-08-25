@@ -8,7 +8,9 @@ import * as Joi from 'joi';
 import { DatabaseModule } from '@app/common/database/database.module';
 import { JwtUtilsModule, authProviders } from '@app/common';
 import { AUTH_SERVICE } from '@app/common/constants';
-import { JwtStrategy } from 'apps/auth/src/strategy';
+
+import { AuthModule } from 'apps/auth/src/auth.module';
+import { JwtStrategy } from '@app/common/strategy';
 
 @Module({
   imports: [
@@ -17,15 +19,20 @@ import { JwtStrategy } from 'apps/auth/src/strategy';
       validationSchema: Joi.object({
         MONGODB_URI: Joi.string().required(),
         PORT: Joi.number().required(),
-     
+
       })
     }),
     DatabaseModule,
-    RmqModule.register({ name: AUTH_SERVICE }),
+
     MerchantsModule,
     JwtUtilsModule,
   ],
   controllers: [ProductsController],
-  providers: [...authProviders, ProductsService, JwtStrategy],
+  providers: [
+    ...authProviders,
+    ProductsService,
+    JwtStrategy
+  ],
+
 })
 export class ProductsModule { }

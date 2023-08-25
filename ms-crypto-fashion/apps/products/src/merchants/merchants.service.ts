@@ -11,10 +11,10 @@ import { CreateMerchantData } from '@app/common/interfaces';
 @Injectable()
 export class MerchantsService {
     constructor(
-        // @Inject(AUTH_SERVICE) private authClient: ClientProxy,
-         private readonly jwtUtilsService: JwtUtilsService,
-          private readonly merchantsRepository: MerchantsRepository
-        ) { }
+        @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
+        private readonly jwtUtilsService: JwtUtilsService,
+        private readonly merchantsRepository: MerchantsRepository
+    ) { }
     private readonly uid = new ShortUniqueId()
     async createStarterMerchant(userId: string, role: string, merchant: string | undefined, permission: string[], createMerchantDto: CreateMerchantDto, res: any) {
         const session = await this.merchantsRepository.startTransaction()
@@ -30,11 +30,11 @@ export class MerchantsService {
                     user_id: userId,
                     role: RoleFormat.MERCHANT
                 }
-                // await lastValueFrom(
-                //     this.authClient.emit(CREATE_MERCHANT_EVENT, {
-                //         data
-                //     })
-                // )
+                await lastValueFrom(
+                    this.authClient.emit(CREATE_MERCHANT_EVENT, {
+                        ...data
+                    })
+                )
                 const accessToken = await this.jwtUtilsService.signToken({ sub: data.user_id, role: data.role, merchant: data.mcht_id, permission: permission })
                 res.cookie("token", accessToken)
 
