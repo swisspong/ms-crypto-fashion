@@ -1,5 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get,Post,Res,Body } from '@nestjs/common';
 import { ProductsService } from './products.service';
+import { GetUserId, Roles } from '@app/common/decorators';
+import { RoleFormat } from '@app/common/enums';
+import { CreateMerchantDto } from './merchants/dto/create-merchant.dto';
 
 @Controller()
 export class ProductsController {
@@ -9,4 +12,5 @@ export class ProductsController {
   getHello(): string {
     return this.productsService.getHello();
   }
+
 }

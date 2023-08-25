@@ -4,7 +4,8 @@ import { SigninLocalDto } from './dto/signin-local-dto.dto';
 import { SigninMetamaskDto } from './dto/signin-metamask-dto.dto';
 import { SignupLocalDto } from './dto/signup-local-dto.dto';
 import { Public } from '@app/common/decorators';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags("Auth")
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

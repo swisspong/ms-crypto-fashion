@@ -7,23 +7,32 @@ import { DatabaseModule } from '@app/common/database/database.module';
 import { UsersModule } from './users/users.module';
 import { JwtStrategy } from './strategy';
 import { JwtUtilsModule } from '@app/common/jwt/jwt-utils.module';
-import { HashModule, authProviders } from '@app/common';
+import { HashModule, RmqModule, authProviders } from '@app/common';
 import { LoggerMiddleware } from '@app/common/middlewares';
+import { AUTH_SERVICE } from '@app/common/constants';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    isGlobal: true,
-    validationSchema: Joi.object({
-      MONGODB_URI: Joi.string().required(),
-      PORT: Joi.number().required(),
-      JWT_SECRET: Joi.string().required()
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: Joi.object({
+        MONGODB_URI: Joi.string().required(),
+        PORT: Joi.number().required(),
+        JWT_SECRET: Joi.string().required(),
+        RABBIT_MQ_URL: Joi.string().required(),
+      }),
+      envFilePath: './apps/auth/.env',
     }),
-    envFilePath: './apps/auth/.env',
-  }),
     DatabaseModule,
     UsersModule,
     HashModule,
-    JwtUtilsModule
+    JwtUtilsModule,
+    RmqModule
+      .register(
+        {
+          name: AUTH_SERVICE
+        }
+      ),
   ],
   controllers: [AuthController],
   providers: [

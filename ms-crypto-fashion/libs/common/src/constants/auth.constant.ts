@@ -1,0 +1,2 @@
+export const AUTH_SERVICE = 'AUTH'
+export const CREATE_MERCHANT_EVENT = 'CREATE_MERCHANT'

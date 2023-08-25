@@ -13,23 +13,105 @@ services:
     env_file:
       - ./apps/auth/.env
     depends_on:
-      - mdb
+      - mongo1
+      - mongo2
+      - mongo3
       - rabbitmq
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-  mdb:
-    image: mongo
+  products:
+    container_name: products-service
     restart: always
+    build:
+      context: .
+      dockerfile: ./apps/products/Dockerfile
+      target: development
+    command: npm run start:dev products
     ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-      MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
+      - '3001:3001'
+    env_file:
+      - ./apps/products/.env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - rabbitmq
     volumes:
-      - ./db/:/data/db
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+  # mdb:
+  #   image: mongo
+  #   restart: always
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: root
+  #     MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
+  #   volumes:
+  #     - ./db/:/data/db
+
+
   rabbitmq:
     image: rabbitmq
     ports:
       - "5672:5672"
+  mongo1:
+    image: mongo:5
+    container_name: mongo1
+    command:
+      [
+        "--replSet",
+        "my-replica-set",
+        "--bind_ip_all",
+        "--port",
+        "30001"
+      ]
+    environment:
+      MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
+    volumes:
+      - ./data/mongo-1:/data/db
+    ports:
+      - 30001:30001
+
+    healthcheck:
+      test: test $$(echo "rs.initiate({_id:'my-replica-set',members:[{_id:0,host:\"mongo1:30001\"},{_id:1,host:\"mongo2:30002\"},{_id:2,host:\"mongo3:30003\"}]}).ok || rs.status().ok" | mongo --port 30001 --quiet) -eq 1
+      interval: 10s
+      start_period: 30s
+
+  mongo2:
+    image: mongo:5
+    container_name: mongo2
+    command:
+      [
+        "--replSet",
+        "my-replica-set",
+        "--bind_ip_all",
+        "--port",
+        "30002"
+      ]
+    environment:
+      MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
+    volumes:
+      - ./data/mongo-2:/data/db
+    ports:
+      - 30002:30002
+
+  mongo3:
+    image: mongo:5
+    container_name: mongo3
+    command:
+      [
+        "--replSet",
+        "my-replica-set",
+        "--bind_ip_all",
+        "--port",
+        "30003"
+      ]
+    environment:
+      MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
+    volumes:
+      - ./data/mongo-3:/data/db
+    ports:
+      - 30003:30003

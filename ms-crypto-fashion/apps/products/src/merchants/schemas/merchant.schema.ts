@@ -12,6 +12,8 @@ export enum MerchantStatus {
 export class Merchant extends AbstractDocument {
     @Prop({ required: true, unique: true })
     mcht_id: string;
+    @Prop({ required: true, unique: true })
+    user_id: string;
     @Prop({ type: String, unique: true })
     name: string;
     @Prop({ enum: MerchantStatus, default: MerchantStatus.CLOSED })
