@@ -15,6 +15,10 @@ export class MerchantsController {
   }
   @Get()
   getHello() {
+
+
+
+    
     return "hello"
   }
 }

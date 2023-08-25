@@ -1,14 +1,23 @@
 FROM node:alpine As development
-
+# RUN mkdir -p /usr/src/app && chown -R node:node /usr/src/app
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+# COPY --chown=node:node package*.json ./
+RUN npm install -g @nestjs/cli
 
+
+# USER node
 RUN npm install
+# RUN npm ci
 
 COPY . .
+# COPY --chown=node:node . .
 
-RUN npm run build auth
+# COPY --chown=node:node . .
+# add new
+
+RUN npm run build products
 
 FROM node:alpine as production
 

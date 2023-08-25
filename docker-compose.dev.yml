@@ -4,41 +4,41 @@ services:
     container_name: auth-service
     restart: always
     build:
-      context: .
+      context: ./ms-crypto-fashion
       dockerfile: ./apps/auth/Dockerfile
       target: development
     command: npm run start:dev auth
     ports:
       - '3000:3000'
     env_file:
-      - ./apps/auth/.env
+      - ./ms-crypto-fashion/apps/auth/.env
     depends_on:
       - mongo1
       - mongo2
       - mongo3
       - rabbitmq
     volumes:
-      - .:/usr/src/app
+      - ./ms-crypto-fashion:/usr/src/app
       - /usr/src/app/node_modules
   products:
     container_name: products-service
     restart: always
     build:
-      context: .
+      context: ./ms-crypto-fashion
       dockerfile: ./apps/products/Dockerfile
       target: development
     command: npm run start:dev products
     ports:
       - '3001:3001'
     env_file:
-      - ./apps/products/.env
+      - ./ms-crypto-fashion/apps/products/.env
     depends_on:
       - mongo1
       - mongo2
       - mongo3
       - rabbitmq
     volumes:
-      - .:/usr/src/app
+      - ./ms-crypto-fashion:/usr/src/app
       - /usr/src/app/node_modules
   # mdb:
   #   image: mongo
