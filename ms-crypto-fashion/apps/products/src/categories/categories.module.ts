@@ -21,13 +21,9 @@ import { CategoryWebRepository } from './category-web.repository';
     CategoriesRepository,
     CategoryWebRepository
   ],
-<<<<<<< HEAD
-  exports:[CategoriesRepository,CategoryWebRepository]
-=======
   exports: [
     CategoryWebRepository,
     CategoriesRepository
   ]
->>>>>>> 50827f0dff08dd5fe7ae06ec80587f662f85582d
 })
 export class CategoriesModule { }

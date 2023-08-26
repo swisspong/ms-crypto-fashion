@@ -40,6 +40,26 @@ services:
     volumes:
       - ./ms-crypto-fashion:/usr/src/app
       - /usr/src/app/node_modules
+  carts:
+    container_name: carts-service
+    restart: always
+    build:
+      context: ./ms-crypto-fashion
+      dockerfile: ./apps/carts/Dockerfile
+      target: development
+    command: npm run start:dev carts
+    ports:
+      - '3002:3002'
+    env_file:
+      - ./ms-crypto-fashion/apps/carts/.env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - rabbitmq
+    volumes:
+      - ./ms-crypto-fashion:/usr/src/app
+      - /usr/src/app/node_modules
   # mdb:
   #   image: mongo
   #   restart: always
