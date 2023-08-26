@@ -3,13 +3,13 @@ import { CreateMerchantDto } from './dto/create-merchant.dto';
 import ShortUniqueId from 'short-unique-id';
 import { ClientProxy } from '@nestjs/microservices';
 import { AUTH_SERVICE, CREATE_MERCHANT_EVENT } from '@app/common/constants';
-import { RoleFormat } from '@app/common/enums';
+import { MerchantStatus, RoleFormat } from '@app/common/enums';
 import { JwtUtilsService } from '@app/common';
 import { MerchantsRepository } from './merchants.repository';
 import { lastValueFrom } from 'rxjs';
 import { CreateMerchantData } from '@app/common/interfaces';
 import { CredentialMerchantDto } from './dto/credential-merchant.dto';
-import { MerchantStatus } from './schemas/merchant.schema';
+// import { MerchantStatus } from './schemas/merchant.schema';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 interface StatusTotal {

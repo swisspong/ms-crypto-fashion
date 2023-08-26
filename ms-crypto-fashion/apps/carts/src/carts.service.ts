@@ -21,7 +21,7 @@ export class CartsService {
     let cart = await this.cartsRepository.findOne({ user_id: userId })
     cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
     if (!cart) throw new NotFoundException("Cart not found.")
-    const test = lastValueFrom(this.productsClient.send({ cmd: 'get_product' }, {}));
+    const product = await lastValueFrom(this.productsClient.send({ cmd: 'get_product' }, { prod_id: productId }));
     this.logger.log("res from product =>", test)
     // const product = await this.productsRepository.findOne({ prod_id: productId }, ["merchant"])
     // if (!product) throw new NotFoundException("Product not found.")

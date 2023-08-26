@@ -1,12 +1,7 @@
 import { AbstractDocument } from '@app/common/database/abstract.schema';
+import { MerchantStatus } from '@app/common/enums';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-export enum MerchantStatus {
-    CLOSED = "closed",
-    IN_PROGRESS = "in progress",
-    DISAPPROVAL = "disapproval",
-    APPROVED = "approved",
-    OPENED = "opened"
-}
+
 
 @Schema({ versionKey: false })
 export class Merchant extends AbstractDocument {

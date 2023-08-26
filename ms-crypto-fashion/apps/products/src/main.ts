@@ -4,13 +4,13 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
-import { Transport } from '@nestjs/microservices';
+import { TcpOptions, Transport } from '@nestjs/microservices';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 
 async function bootstrap() {
 
-  const app = await NestFactory.create<NestExpressApplication>(ProductsModule);
+  const app = await NestFactory.create(ProductsModule);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -30,9 +30,11 @@ async function bootstrap() {
   app.connectMicroservice({
     transport: Transport.TCP,
     options: {
-      port: configService.get<string>('PORT'),
-    },
-  });
+      host:'products-service',
+      port: Number(configService.get<number>('MICROSERVICE_PORT'))
+    }
+  } as TcpOptions);
+  await app.startAllMicroservices();
   await app.listen(configService.get<number>('PORT'));
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

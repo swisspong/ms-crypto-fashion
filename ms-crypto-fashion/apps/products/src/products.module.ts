@@ -21,6 +21,7 @@ import { Product, ProductSchema } from './schemas/product.schema';
       validationSchema: Joi.object({
         MONGODB_URI: Joi.string().required(),
         PORT: Joi.number().required(),
+        MICROSERVICE_PORT: Joi.number().required(),
 
       }),
       envFilePath: './apps/products/.env',
