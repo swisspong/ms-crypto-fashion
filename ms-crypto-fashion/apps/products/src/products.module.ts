@@ -13,6 +13,8 @@ import { ProductsRepository } from './products.repository';
 import { LoggerMiddleware } from '@app/common/middlewares';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from './schemas/product.schema';
+import { VariantGroupsModule } from './variant_groups/variant_groups.module';
+import { VariantsModule } from './variants/variants.module';
 
 @Module({
   imports: [
@@ -30,7 +32,9 @@ import { Product, ProductSchema } from './schemas/product.schema';
     DatabaseModule,
     CategoriesModule,
     MerchantsModule,
-    JwtUtilsModule
+    JwtUtilsModule,
+    VariantGroupsModule,
+    VariantsModule
   ],
   controllers: [ProductsController],
   providers: [
@@ -42,7 +46,6 @@ import { Product, ProductSchema } from './schemas/product.schema';
   exports: [
     ProductsRepository
   ]
-
 })
 export class ProductsModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

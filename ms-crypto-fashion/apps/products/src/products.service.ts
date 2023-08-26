@@ -48,8 +48,8 @@ export class ProductsService {
       prod_id: `prod_${this.uid.stamp(15)}`, ...createProductDto, merchant: merchant, image_urls: createProductDto.image_urls.map(image => image.url),
       categories: categories.map(cat => cat._id),
       categories_web: categoriesWeb.map(cat => cat._id),
-      // groups: [],
-      // variants: [],
+      groups: [],
+      variants: [],
     })
     return newProduct;
   }
@@ -622,7 +622,7 @@ export class ProductsService {
         }
       },
     ])
-    if (product.length <= 0) throw new NotFoundException()
+    // if (product.length <= 0) throw new NotFoundException()
     return product[0]
     // return `This action returns a #${id} product`;
   }

@@ -4,6 +4,8 @@ import { HydratedDocument, Types } from 'mongoose';
 import { Category } from '../categories/schemas/category.schema';
 import { CategoryWeb } from '../categories/schemas/category-web.schema';
 import { Merchant } from '../merchants/schemas/merchant.schema';
+import { VariantGroup } from '../variant_groups/schemas/variant-group.schema';
+import { Variant } from '../variants/schemas/variant.schema';
 // import { Category, CategoryWeb } from 'src/categories/schemas/category.schema';
 // import { Merchant } from 'src/merchants/schemas/merchant.schema';
 // import { VariantGroup } from 'src/variant_groups/schemas/variant-group.schema';
@@ -47,10 +49,10 @@ export class Product extends AbstractDocument {
     // merchant: Types.ObjectId | Merchant
 
    
-    // @Prop([{ type: VariantGroup }])
-    // groups: VariantGroup[]
-    // @Prop([{ type: Variant }])
-    // variants: Variant[]
+    @Prop([{ type: VariantGroup }])
+    groups: VariantGroup[]
+    @Prop([{ type: Variant }])
+    variants: Variant[]
 
 
     @Prop([String])

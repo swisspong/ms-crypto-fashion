@@ -61,6 +61,26 @@ services:
     volumes:
       - ./ms-crypto-fashion:/usr/src/app
       - /usr/src/app/node_modules
+  orders:
+    container_name: orders-service
+    restart: always
+    build:
+      context: ./ms-crypto-fashion
+      dockerfile: ./apps/orders/Dockerfile
+      target: development
+    command: npm run start:dev orders
+    ports:
+      - '3003:3003'
+    env_file:
+      - ./ms-crypto-fashion/apps/orders/.env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - rabbitmq
+    volumes:
+      - ./ms-crypto-fashion:/usr/src/app
+      - /usr/src/app/node_modules
   # mdb:
   #   image: mongo
   #   restart: always

@@ -92,9 +92,10 @@ export class ProductsController {
 
 
   @MessagePattern({ cmd: 'get_product' })
-  getProduct(@Payload() data: { prod_id: string }) {
-    // return this.productsService.
-    return { test: "test" }
+  async getProduct(@Payload() data: { prod_id: string }) {
+    const product = await this.productsService.findOne(data.prod_id)
+    this.logger.warn("result=>", product)
+    return { data: product}
   }
 
 }
