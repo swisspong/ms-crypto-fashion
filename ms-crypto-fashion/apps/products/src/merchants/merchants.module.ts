@@ -7,12 +7,13 @@ import { Merchant, MerchantSchema } from './schemas/merchant.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from 'apps/auth/src/auth.module';
 import { AUTH_SERVICE } from '@app/common/constants';
+import { ProductsModule } from '../products.module';
 
 @Module({
   imports: [
     JwtUtilsModule,
     RmqModule.register({ name: AUTH_SERVICE }),
-    MongooseModule.forFeature([{ name: Merchant.name, schema: MerchantSchema }])
+    MongooseModule.forFeature([{ name: Merchant.name, schema: MerchantSchema }]),
   ],
   controllers: [MerchantsController],
   providers: [

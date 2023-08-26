@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
 import { RmqModule } from '@app/common/rmq/rmq.module';
@@ -10,8 +10,9 @@ import { JwtUtilsModule, authProviders } from '@app/common';
 import { JwtStrategy } from '@app/common/strategy';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsRepository } from './products.repository';
-import { Product, ProductSchema } from './schemas/product.schema';
+import { LoggerMiddleware } from '@app/common/middlewares';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Product, ProductSchema } from './schemas/product.schema';
 
 @Module({
   imports: [
@@ -21,21 +22,32 @@ import { MongooseModule } from '@nestjs/mongoose';
         MONGODB_URI: Joi.string().required(),
         PORT: Joi.number().required(),
 
-      })
+      }),
+      envFilePath: './apps/products/.env',
     }),
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
     DatabaseModule,
     CategoriesModule,
     MerchantsModule,
-    JwtUtilsModule,
+    JwtUtilsModule
   ],
   controllers: [ProductsController],
   providers: [
     ...authProviders,
     ProductsService,
-    JwtStrategy,
-    ProductsRepository
+    ProductsRepository,
+    JwtStrategy
   ],
+  exports: [
+    ProductsRepository
+  ]
 
 })
-export class ProductsModule { }
+export class ProductsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*');
+  }
+}
+

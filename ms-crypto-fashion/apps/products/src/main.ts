@@ -5,11 +5,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import { Transport } from '@nestjs/microservices';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 
 async function bootstrap() {
 
-  const app = await NestFactory.create(ProductsModule);
+  const app = await NestFactory.create<NestExpressApplication>(ProductsModule);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

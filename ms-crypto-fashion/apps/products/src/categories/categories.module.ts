@@ -13,7 +13,7 @@ import { CategoryWebRepository } from './category-web.repository';
   imports: [
     RmqModule.register({ name: AUTH_SERVICE }),
     MongooseModule.forFeature([{ name: Category.name, schema: CategorySchema }]),
-    MongooseModule.forFeature([{ name: CategoryWeb.name, schema: CategoryWebSchema }]),
+    MongooseModule.forFeature([{ name: CategoryWeb.name, schema: CategoryWebSchema }]), 
   ],
   controllers: [CategoriesController],
   providers: [
@@ -21,6 +21,13 @@ import { CategoryWebRepository } from './category-web.repository';
     CategoriesRepository,
     CategoryWebRepository
   ],
+<<<<<<< HEAD
   exports:[CategoriesRepository,CategoryWebRepository]
+=======
+  exports: [
+    CategoryWebRepository,
+    CategoriesRepository
+  ]
+>>>>>>> 50827f0dff08dd5fe7ae06ec80587f662f85582d
 })
 export class CategoriesModule { }
