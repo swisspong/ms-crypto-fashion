@@ -51,14 +51,14 @@ export class CategoriesController {
     return this.categoriesService.createByAdmin(userId, createCategory)
   } 
 
-  // @Roles(RoleFormat.ADMIN)
+  @Roles(RoleFormat.ADMIN)
   @Get('web')
   findAllCategories(@Query('per_page') perPage: number, @Query('page') page: number){
     return this.categoriesService.findAllCategories(perPage, page)
   }
   
   @Roles(RoleFormat.ADMIN)
-  @Put('web/:id')
+  @Patch('web/:id')
   updateCategoryWeb(@Param('id') id: string, @GetUserId() userId: string,  @Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoriesService.updateCategoryWeb(id, userId, updateCategoryDto);
   }
