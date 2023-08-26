@@ -19,5 +19,6 @@ import { AUTH_SERVICE } from '@app/common/constants';
     MerchantsService,
     MerchantsRepository,
   ],
+  exports: [MerchantsRepository]
 })
 export class MerchantsModule { }

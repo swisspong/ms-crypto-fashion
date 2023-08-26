@@ -28,6 +28,6 @@
   },
   "watchOptions": {
     "watchFile": "dynamicPriorityPolling",
-    "watchDirectory": "dynamicPriorityPolling",
+    "watchDirectory": "dynamicPriorityPolling"
   }
 }

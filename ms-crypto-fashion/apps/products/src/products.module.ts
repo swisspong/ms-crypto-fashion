@@ -7,11 +7,11 @@ import { MerchantsModule } from './merchants/merchants.module';
 import * as Joi from 'joi';
 import { DatabaseModule } from '@app/common/database/database.module';
 import { JwtUtilsModule, authProviders } from '@app/common';
-import { AUTH_SERVICE } from '@app/common/constants';
-
-import { AuthModule } from 'apps/auth/src/auth.module';
 import { JwtStrategy } from '@app/common/strategy';
 import { CategoriesModule } from './categories/categories.module';
+import { ProductsRepository } from './products.repository';
+import { Product, ProductSchema } from './schemas/product.schema';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -23,6 +23,7 @@ import { CategoriesModule } from './categories/categories.module';
 
       })
     }),
+    MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
     DatabaseModule,
     CategoriesModule,
     MerchantsModule,
@@ -32,7 +33,8 @@ import { CategoriesModule } from './categories/categories.module';
   providers: [
     ...authProviders,
     ProductsService,
-    JwtStrategy
+    JwtStrategy,
+    ProductsRepository
   ],
 
 })

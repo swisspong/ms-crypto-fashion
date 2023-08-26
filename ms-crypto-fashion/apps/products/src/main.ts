@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
+import { Transport } from '@nestjs/microservices';
 
 
 async function bootstrap() {
@@ -25,6 +26,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('', app, document);
   const configService = app.get<ConfigService>(ConfigService)
+  app.connectMicroservice({
+    transport: Transport.TCP,
+    options: {
+      port: configService.get<string>('PORT'),
+    },
+  });
   await app.listen(configService.get<number>('PORT'));
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

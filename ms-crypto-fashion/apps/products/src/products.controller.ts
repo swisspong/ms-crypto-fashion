@@ -6,6 +6,7 @@ import { CreateMerchantDto } from './merchants/dto/create-merchant.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateProductDto } from './dto/create-product.dto';
 import { GetProductDto } from './dto/get-product.dto';
+import { MessagePattern } from '@nestjs/microservices';
 
 @ApiTags("Products")
 @Controller('products')
@@ -30,4 +31,9 @@ export class ProductsController {
     return this.productsService.findAllMerchantType(productFilter);
     // return productFilter
   }
+  @MessagePattern({ cmd: 'get_product' })
+  getProduct(){
+    return "test"
+  }
+
 }
