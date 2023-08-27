@@ -15,6 +15,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from './schemas/product.schema';
 import { VariantGroupsModule } from './variant_groups/variant_groups.module';
 import { VariantsModule } from './variants/variants.module';
+import { ComplaintsModule } from './complaints/complaints.module';
 
 @Module({
   imports: [
@@ -34,7 +35,8 @@ import { VariantsModule } from './variants/variants.module';
     MerchantsModule,
     JwtUtilsModule,
     VariantGroupsModule,
-    VariantsModule
+    VariantsModule,
+    ComplaintsModule
   ],
   controllers: [ProductsController],
   providers: [

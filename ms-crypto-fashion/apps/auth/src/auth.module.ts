@@ -11,6 +11,7 @@ import { HashModule, RmqModule, authProviders } from '@app/common';
 import { LoggerMiddleware } from '@app/common/middlewares';
 import { AUTH_SERVICE } from '@app/common/constants';
 import { JwtStrategy } from '@app/common/strategy';
+import { PermissionModule } from './permission/permission.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { JwtStrategy } from '@app/common/strategy';
     UsersModule,
     HashModule,
     JwtUtilsModule,
+    PermissionModule
     // RmqModule
   ],
   controllers: [AuthController],
