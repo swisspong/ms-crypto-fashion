@@ -5,9 +5,10 @@ import ShortUniqueId from 'short-unique-id';
 import { CommentsRepository } from './comments.repository';
 import { ProductsRepository } from '../products.repository';
 import { ClientProxy } from '@nestjs/microservices';
-import { FINDONE_ORDER_EVENT, ORDER_SERVICE } from '@app/common/constants/order.constant';
+import { FINDONE_ORDER_EVENT, ORDER_SERVICE, UPDATEREVIEW_ORDER_EVENT } from '@app/common/constants/order.constant';
 import { lastValueFrom } from 'rxjs';
 import { ReviewFormat } from 'apps/orders/src/schemas/order.schema';
+import { UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
 interface comment {
   comment_id: string
   user_id: string
@@ -32,7 +33,7 @@ export class CommentsService {
 
       // return data from order service
       const order = await lastValueFrom(
-        this.orderClient.send(FINDONE_ORDER_EVENT, {order_id})
+        this.orderClient.send(FINDONE_ORDER_EVENT, { order_id })
       )
       // const order = await this.orderRepository.findOne({ order_id })
       if (!order) throw new BadRequestException("order is empty.")
@@ -49,12 +50,20 @@ export class CommentsService {
       })
 
       // insert comment many
-      // const result = await this.commentRepository.createMany(undefined, ...newComments)
-      const result = undefined ;
+      const result = await this.commentRepository.createMany(newComments)
+
 
       // if create success requry update review status order
       if (result) {
-        // await this.orderRepository.findOneAndUpdate({ order_id }, { $set: { reviewStatus: ReviewFormat.REVIEWED } })
+        const data: UpdateStatusOrder = {
+          order_id,
+          review: ReviewFormat.REVIEWED
+        }
+        await lastValueFrom(
+          this.orderClient.emit(UPDATEREVIEW_ORDER_EVENT, {
+            ...data
+          })
+        )
       }
 
       return result
@@ -125,7 +134,7 @@ export class CommentsService {
             user: {
               $arrayElemAt: ["$user", 0]
             },
-            product: { $arrayElemAt: ["$product", 0]},
+            product: { $arrayElemAt: ["$product", 0] },
             text: 1,
             rating: 1,
             comment_id: 1,
@@ -139,9 +148,9 @@ export class CommentsService {
           $limit: limit
         },
       ])
-      
-      const total: {totalCount: number}[] = await this.commentRepository.aggregate([
-        
+
+      const total: { totalCount: number }[] = await this.commentRepository.aggregate([
+
         {
           $count: 'totalCount'
         }
@@ -150,7 +159,7 @@ export class CommentsService {
       return {
         page: Number(page),
         per_page: Number(per_page),
-        total: total[0].totalCount ,
+        total: total[0].totalCount,
         total_page: Math.ceil(total[0].totalCount / Number(per_page)),
         data: comments,
       };
@@ -178,7 +187,7 @@ export class CommentsService {
 
   async remove(id: string) {
     try {
-      const result = await this.commentRepository.findOneAndDelete({comment_id: id})
+      const result = await this.commentRepository.findOneAndDelete({ comment_id: id })
       return result
     } catch (error) {
       console.log(error)

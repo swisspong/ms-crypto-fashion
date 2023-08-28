@@ -16,6 +16,7 @@ import { Product, ProductSchema } from './schemas/product.schema';
 import { VariantGroupsModule } from './variant_groups/variant_groups.module';
 import { VariantsModule } from './variants/variants.module';
 import { ComplaintsModule } from './complaints/complaints.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -36,7 +37,8 @@ import { ComplaintsModule } from './complaints/complaints.module';
     JwtUtilsModule,
     VariantGroupsModule,
     VariantsModule,
-    ComplaintsModule
+    ComplaintsModule,
+    CommentsModule
   ],
   controllers: [ProductsController],
   providers: [

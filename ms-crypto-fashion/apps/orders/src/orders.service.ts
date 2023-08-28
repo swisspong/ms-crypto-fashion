@@ -1,13 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { OrdersRepository } from './orders.repository';
 import axios from 'axios';
+import { RmqContext } from '@nestjs/microservices';
+import { RmqService } from '@app/common';
+import { FindOrderById, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly ordersRepository:OrdersRepository){}
+  constructor(
+    private readonly ordersRepository: OrdersRepository,
+    private readonly rmqService: RmqService,
+  ) { }
   getHello(): string {
     return 'Hello World!';
   }
+
+  // Event
+
+  async findoneOrderById(data: FindOrderById, context: RmqContext) {
+    try {
+      const {order_id} = data
+      const order = await this.ordersRepository.findOne({ order_id })
+      this.rmqService.ack(context);
+      return order
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateReviewStatus(data: UpdateStatusOrder, context: RmqContext) {
+    try{
+      const {order_id, review} = data
+      const status = await this.ordersRepository.findOneAndUpdate({order_id}, {$set: {reviewStatus: review}})
+
+      this.rmqService.ack(context)
+
+      return status
+    } catch (error) {
+      console.error(error)
+      throw error;
+    }
+  }
+
+
   // async getWei(priceTHB: number) {
   //   const data: { THB: number } = await (await axios.get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=THB")).data
   //   const rateInTHB = data.THB

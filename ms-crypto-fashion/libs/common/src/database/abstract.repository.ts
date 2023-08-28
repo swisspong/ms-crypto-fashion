@@ -31,6 +31,24 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
         ).toJSON() as unknown as TDocument;
     }
 
+    async createMany(
+        documents: Array<Omit<TDocument, '_id'>>,
+        options?: SaveOptions
+    ): Promise<Array<TDocument>> {
+        const createdDocuments: Array<TDocument> = [];
+    
+        for (const document of documents) {
+            const createdDocument = new this.model({
+                ...document,
+                _id: new Types.ObjectId(),
+            });
+    
+            createdDocuments.push(await createdDocument.save(options));
+        }
+    
+        return createdDocuments;
+    }
+
     async findOne(filterQuery: FilterQuery<TDocument>) {
         const document = await this.model.findOne(filterQuery, {}, { lean: true });
 

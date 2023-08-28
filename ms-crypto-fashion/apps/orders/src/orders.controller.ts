@@ -2,14 +2,31 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { GetUser, GetUserId, Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
-
+import { ApiTags } from '@nestjs/swagger';
+import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
+import { FINDONE_ORDER_EVENT, UPDATEREVIEW_ORDER_EVENT } from '@app/common/constants/order.constant';
+import { RmqService } from '@app/common';
+import { FindOrderById, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
+ApiTags('Order')
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+  ) {  }
 
   @Get()
   getHello(): string {
     return this.ordersService.getHello();
+  }
+
+  @MessagePattern(FINDONE_ORDER_EVENT)
+  async handlerOrderFindone(@Payload() data: FindOrderById, @Ctx() context: RmqContext, ) {
+    return this.ordersService.findoneOrderById(data, context)
+  }
+
+  @MessagePattern(UPDATEREVIEW_ORDER_EVENT)
+  async handlerOrder(@Payload() data: UpdateStatusOrder, context: RmqContext) {
+    return this.ordersService.updateReviewStatus(data, context)
   }
   // @Post()
   // create(@GetUserId() userId: string, @Body() createOrderDto: CreateOrderDto) {
@@ -21,7 +38,7 @@ export class OrdersController {
   //   const { order_id } = cancelOrderDto
   //   return this.ordersService.cancelOrderByMerchant(mchtId, order_id);
   // }
-  
+
   // @Post('cancel')
   // customerCancel(@GetUserId() userId: string, @Body() cancelOrderDto: CancelOrderDto) {
   //   const { order_id } = cancelOrderDto
