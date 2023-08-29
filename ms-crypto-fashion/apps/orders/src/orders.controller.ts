@@ -12,6 +12,7 @@ ApiTags('Order')
 export class OrdersController {
   constructor(
     private readonly ordersService: OrdersService,
+    private readonly rmqService: RmqService,
   ) {  }
 
   @Get()
@@ -21,12 +22,15 @@ export class OrdersController {
 
   @MessagePattern(FINDONE_ORDER_EVENT)
   async handlerOrderFindone(@Payload() data: FindOrderById, @Ctx() context: RmqContext, ) {
-    return this.ordersService.findoneOrderById(data, context)
+    const order = this.ordersService.findoneOrderById(data)
+    this.rmqService.ack(context);
+    return order;
   }
 
   @MessagePattern(UPDATEREVIEW_ORDER_EVENT)
   async handlerOrder(@Payload() data: UpdateStatusOrder, context: RmqContext) {
-    return this.ordersService.updateReviewStatus(data, context)
+    await this.ordersService.updateReviewStatus(data)
+    this.rmqService.ack(context);
   }
   // @Post()
   // create(@GetUserId() userId: string, @Body() createOrderDto: CreateOrderDto) {
@@ -54,19 +58,19 @@ export class OrdersController {
   //   return this.ordersService.allOrderByMerchant(merchantId, filter);
   // }
 
-  // // TODO: find data all overview of trading within
-  // @Roles(RoleFormat.ADMIN)
-  // @Get('dashboard/trade')
-  // allOrderTradeByMonth() {
-  //   return this.ordersService.getOrderTradeByMonth()
-  // }
+  // TODO: find data all overview of trading within
+  @Roles(RoleFormat.ADMIN)
+  @Get('dashboard/trade')
+  allOrderTradeByMonth() {
+    return this.ordersService.getOrderTradeByMonth()
+  }
 
-  // // TODO: recent sales from merchant
-  // @Roles(RoleFormat.ADMIN)
-  // @Get('dashboard/sales')
-  // allOrderReacentSaleByMerchant(@Query('per_page') perPage: number, @Query('page') page: number) {
-  //   return this.ordersService.getOrderRecentSaleByMerchant(perPage, page)
-  // }
+  // TODO: recent sales from merchant
+  @Roles(RoleFormat.ADMIN)
+  @Get('dashboard/sales')
+  allOrderReacentSaleByMerchant(@Query('per_page') perPage: number, @Query('page') page: number) {
+    return this.ordersService.getOrderRecentSaleByMerchant(perPage, page)
+  }
 
   // @Post(":orderId/fullfillment")
   // orderFullfillment(@Param("orderId") orderId: string, @GetUser('merchant') merchantId: string, @Body() dto: FullfillmentDto) {

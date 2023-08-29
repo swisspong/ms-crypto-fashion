@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { OrdersRepository } from './orders.repository';
 import axios from 'axios';
 import { RmqContext } from '@nestjs/microservices';
@@ -7,9 +7,9 @@ import { FindOrderById, UpdateStatusOrder } from '@app/common/interfaces/order-e
 
 @Injectable()
 export class OrdersService {
+  protected readonly logger = new Logger(OrdersService.name);
   constructor(
     private readonly ordersRepository: OrdersRepository,
-    private readonly rmqService: RmqService,
   ) { }
   getHello(): string {
     return 'Hello World!';
@@ -17,28 +17,158 @@ export class OrdersService {
 
   // Event
 
-  async findoneOrderById(data: FindOrderById, context: RmqContext) {
+  async findoneOrderById(data: FindOrderById) {
     try {
       const {order_id} = data
       const order = await this.ordersRepository.findOne({ order_id })
-      this.rmqService.ack(context);
+      this.logger.warn("find one to order =>", order)
       return order
     } catch (error) {
       throw error;
     }
   }
 
-  async updateReviewStatus(data: UpdateStatusOrder, context: RmqContext) {
+  async updateReviewStatus(data: UpdateStatusOrder) {
     try{
       const {order_id, review} = data
       const status = await this.ordersRepository.findOneAndUpdate({order_id}, {$set: {reviewStatus: review}})
-
-      this.rmqService.ack(context)
-
-      return status
+      this.logger.warn("updated review status to order =>", status)
     } catch (error) {
       console.error(error)
       throw error;
+    }
+  }
+
+  // TODO: แสดงยอดขายและจำนวนรายการสั่งซื้ออต่ละเดือนปีปัจจุบัน
+  async getOrderTradeByMonth() {
+    try {
+      const currentYear = new Date().getFullYear();
+
+      const amountOrderMonth = await this.ordersRepository.aggregate([
+        {
+          $match: {
+            createdAt: {
+              $gte: new Date(currentYear, 0, 1),
+              $lt: new Date(currentYear + 1, 0, 1)
+            }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              month: { $month: "$createdAt" }
+            },
+            totalSales: { $sum: "$total" },
+            totalOrders: { $sum: 1 }
+          }
+        },
+        {
+          $sort: {
+            "_id.month": 1
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            month: "$_id.month",
+            totalSales: 1,
+            totalOrders: 1
+          }
+        }
+      ])
+
+
+      return amountOrderMonth
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  // TODO: แสดงยอดขายของแต่ละร้านค้า
+  async getOrderRecentSaleByMerchant(per_page: number, page: number) {
+    try {
+      const skip = (Number(page) - 1) * Number(per_page)
+      const limit = per_page
+      const countMerchantOrders = await this.ordersRepository.aggregate([
+        {
+          $group: {
+            _id: '$mcht_id',
+            totalCount: { $sum: 1 } // Summing up the count of orders
+          }
+        },
+        {
+          $lookup: {
+            from: 'merchants',
+            localField: '_id',
+            foreignField: 'mcht_id',
+            as: 'merchant'
+          }
+        },
+        {
+          $project: {
+            totalCount: 1,
+            _id: 0
+          }
+        },
+        {
+          $sort: {
+            "merchant": 1
+          }
+        }
+      ]);
+
+      const amountMerchant = await this.ordersRepository.aggregate([
+        {
+          $group: {
+            _id: '$mcht_id',
+            totalAmount: { $sum: '$total' }
+          }
+        },
+        {
+          $lookup: {
+            from: 'merchants', // แทนที่ 'orders' ด้วยชื่อคอลเล็คชันของรายการสั่งซื้อ
+            localField: '_id',
+            foreignField: 'mcht_id',
+            as: 'merchant'
+          }
+        },
+
+        {
+          $project: {
+            merchant: {
+              $arrayElemAt: ["$merchant", 0]
+            },
+            totalAmount: 1,
+            _id: 0
+          },
+
+        },
+        {
+          $sort: {
+            "merchant": 1
+          }
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: limit
+        }
+      ])
+
+
+      const total = countMerchantOrders.length
+
+      return {
+        page: Number(page),
+        per_page: Number(per_page),
+        total,
+        total_page: Math.ceil(total / Number(per_page)),
+        data: amountMerchant,
+      };
+
+    } catch (error) {
+      console.log(error)
     }
   }
 
