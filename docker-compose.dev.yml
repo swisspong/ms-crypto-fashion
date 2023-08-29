@@ -9,7 +9,7 @@ services:
       target: development
     command: npm run start:dev auth
     ports:
-      - '3000:3000'
+      - '8000:8000'
     env_file:
       - ./ms-crypto-fashion/apps/auth/.env
     depends_on:
@@ -29,7 +29,7 @@ services:
       target: development
     command: npm run start:dev products
     ports:
-      - '3001:3001'
+      - '8001:8001'
       - '4001:4001'
     env_file:
       - ./ms-crypto-fashion/apps/products/.env
@@ -50,7 +50,7 @@ services:
       target: development
     command: npm run start:dev carts
     ports:
-      - '3002:3002'
+      - '8002:8002'
     env_file:
       - ./ms-crypto-fashion/apps/carts/.env
     depends_on:
@@ -70,7 +70,7 @@ services:
       target: development
     command: npm run start:dev orders
     ports:
-      - '3003:3003'
+      - '8003:8003'
     env_file:
       - ./ms-crypto-fashion/apps/orders/.env
     depends_on:

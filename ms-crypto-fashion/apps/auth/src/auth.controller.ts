@@ -6,7 +6,7 @@ import { SignupLocalDto } from './dto/signup-local-dto.dto';
 import { Public } from '@app/common/decorators';
 import { ApiTags } from '@nestjs/swagger';
 @ApiTags("Auth")
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

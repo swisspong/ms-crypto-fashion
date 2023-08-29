@@ -35,6 +35,18 @@ async function bootstrap() {
     }
   } as TcpOptions);
   await app.startAllMicroservices();
+
+   // * set cors
+   const whitelist = ["http://localhost:3001", "http://localhost:3000", "http://localhost:3002"];
+
+   app.enableCors({
+     origin: (origin, callback) => {
+       const isWhitelisted = whitelist.includes(origin)
+       callback(null, isWhitelisted);
+     },
+     credentials: true,
+   })
+
   await app.listen(configService.get<number>('PORT'));
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
