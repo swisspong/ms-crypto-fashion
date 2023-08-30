@@ -3,7 +3,7 @@ import { RoleFormat } from '@app/common/enums';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 
-@Schema({ versionKey: false })
+@Schema({ versionKey: false, timestamps: true })
 export class User extends AbstractDocument {
     @Prop({ type: String, required: true, unique: true })
     user_id: string;
