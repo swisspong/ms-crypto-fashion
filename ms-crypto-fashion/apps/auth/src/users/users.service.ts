@@ -81,14 +81,15 @@ export class UsersService {
     try {
       const { email, password, permissions } = createAdmin
       const user = await this.userRepository.findOne({ email })
-
+      console.log(user)
       if (user) throw new HttpException('Email is already exise.', HttpStatus.BAD_REQUEST);
 
       const permission = await this.formatPermission(permissions)
       const hash = await this.hashService.hashPassword(password)
-
+      console.log("create admin")
       const newAdmin = await this.userRepository.create({ ...createAdmin, user_id: `user_${this.uid.stamp(15)}`, password: hash, role: RoleFormat.ADMIN, permission })
-
+      console.log(newAdmin);
+      
       return newAdmin
     } catch (error) {
       console.log(error)

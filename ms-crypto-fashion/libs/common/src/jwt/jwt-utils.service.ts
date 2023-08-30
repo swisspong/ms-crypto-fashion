@@ -13,7 +13,7 @@ export class JwtUtilsService {
     async signToken(jwtPayload: UserJwtPayload) {
         return this.jwtService.signAsync(jwtPayload, {
             secret: this.configService.get('JWT_SECRET', { infer: true }),
-            expiresIn: '15m',
+            expiresIn: '15h',
         })
     }
 }
