@@ -61,11 +61,15 @@ export class ComplaintsService {
                 }
 
             ])
+
+            let count = 0
+
+            if (total.length > 0) count = total[0].totalCount
             return {
                 page: Number(page),
                 per_page: Number(per_page),
-                total: total[0].totalCount,
-                total_page: Math.ceil(total[0].totalCount / Number(per_page)),
+                total: count,
+                total_page: Math.ceil(count / Number(per_page)),
                 data: complaints,
             };
         } catch (error) {

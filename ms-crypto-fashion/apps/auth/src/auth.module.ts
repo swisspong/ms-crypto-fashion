@@ -12,6 +12,7 @@ import { LoggerMiddleware } from '@app/common/middlewares';
 import { AUTH_SERVICE } from '@app/common/constants';
 import { JwtStrategy } from '@app/common/strategy';
 import { PermissionModule } from './permission/permission.module';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { PermissionModule } from './permission/permission.module';
     UsersModule,
     HashModule,
     JwtUtilsModule,
-    PermissionModule
+    PermissionModule,
+    AddressModule
     // RmqModule
   ],
   controllers: [AuthController],
