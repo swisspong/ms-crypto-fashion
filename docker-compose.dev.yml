@@ -81,17 +81,37 @@ services:
     volumes:
       - ./ms-crypto-fashion:/usr/src/app
       - /usr/src/app/node_modules
-  # mdb:
-  #   image: mongo
-  #   restart: always
-  #   ports:
-  #     - "27017:27017"
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: root
-  #     MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
-  #   volumes:
-  #     - ./db/:/data/db
+  merchant-client:
+    container_name: merchant-client
+    restart: always
+    build:
+      context: ./merchant-frontend
+      dockerfile: ./Dockerfile
+      target: deps
+    command: npm run dev
+    ports:
+      - '3002:3002'
+    env_file:
+      - ./merchant-frontend/.env
+    volumes:
+      - ./merchant-frontend:/usr/src/app
+      - /usr/src/app/node_modules
+  user-client:
+    container_name: user-client
+    restart: always
+    build:
+      context: ./customer-frontend
+      dockerfile: ./Dockerfile
+      target: deps
+    command: npm run dev
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./customer-frontend/.env
+    volumes:
+      - ./customer-frontend:/usr/src/app
+      - /usr/src/app/node_modules
+
 
 
   rabbitmq:
@@ -156,3 +176,16 @@ services:
       - ./data/mongo-3:/data/db
     ports:
       - 30003:30003
+
+  nginx-proxy:
+    build:
+      dockerfile: Dockerfile
+      context: ./proxy
+    depends_on:
+      - products
+      - auth
+      - carts
+      - orders
+      - merchant-client
+    ports:
+      - 80:80

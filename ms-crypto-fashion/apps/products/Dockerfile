@@ -1,4 +1,5 @@
-FROM node:alpine As development
+# FROM node:alpine As development
+FROM node:18-alpine  As development
 # RUN mkdir -p /usr/src/app && chown -R node:node /usr/src/app
 WORKDIR /usr/src/app
 
