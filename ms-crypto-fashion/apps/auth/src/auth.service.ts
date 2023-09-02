@@ -10,6 +10,7 @@ import { SignupLocalDto } from './dto/signup-local-dto.dto';
 import { JwtUtilsService } from '@app/common/jwt/jwt-utils.service';
 import { HashService } from '@app/common';
 import { RoleFormat } from '@app/common/enums';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -51,7 +52,7 @@ export class AuthService {
     return { nonce }
   }
 
-  async signinLocal(signinLocalDto: SigninLocalDto, res: any) {
+  async signinLocal(signinLocalDto: SigninLocalDto, res: Response) {
     try {
       const user = await this.usersRepository.findOne({ email: signinLocalDto.email })
 
@@ -61,7 +62,13 @@ export class AuthService {
         throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
 
       const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
-      res.cookie("token", accessToken)
+      res.cookie("token", accessToken, {
+        // secure: true, 
+        httpOnly: false, 
+        // sameSite: 'none',
+        domain: 'example.com'
+      })
+      console.log(res)
       return { accessToken }
     } catch (error) {
       throw error

@@ -41,7 +41,7 @@ export default function App({ Component, pageProps }: AppProps) {
               if (customError.response?.status === 401) {
                 router.push("/signin");
               } else {
-                console.log(customError);
+                // console.log(customError);
                 const data:
                   | { statusCode: string; message: string }
                   | undefined = customError.response?.data

@@ -1,7 +1,9 @@
-import { API, ssrApi } from "@/lib/utils";
-
+import { API, SERVICE_FORMAT, dynamicApi, ssrApi } from "@/lib/utils";
+const apiSsr = dynamicApi({ ssr: true, service: SERVICE_FORMAT.USER })
+const apiCsr = dynamicApi({ ssr: false, service: SERVICE_FORMAT.USER })
 export const getInfoSsr = async (cookie: string | undefined): Promise<IUserRes> => {
-    return ssrApi.get(`/users/me`, {
+    console.log('cookie', cookie)
+    return apiSsr.get(`/users/me`, {
         headers: { cookie },
         withCredentials: true,
     }).then(
@@ -9,8 +11,8 @@ export const getInfoSsr = async (cookie: string | undefined): Promise<IUserRes> 
     );
 };
 
-export const getInfoCsr= async (): Promise<IUserRes> => {
-    return await API.get(`/users/me`).then(
+export const getInfoCsr = async (): Promise<IUserRes> => {
+    return await apiCsr.get(`/users/me`).then(
         (response) => response.data
     );
 };

@@ -5,6 +5,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 # COPY --chown=node:node package*.json ./
+RUN npm install -g npm@10.0.0
 RUN npm install -g @nestjs/cli
 
 

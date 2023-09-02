@@ -1,8 +1,9 @@
-import { API} from "@/lib/utils";
+import { API, SERVICE_FORMAT, dynamicApi } from "@/lib/utils";
 
 
 export const signout = async (): Promise<void> => {
-    await API.post(`/auth/signout`).then(
+    const api = dynamicApi({ ssr: false, service: SERVICE_FORMAT.AUTH })
+    await api.post(`/auth/signout`).then(
         (response) => response.data
     );
 };

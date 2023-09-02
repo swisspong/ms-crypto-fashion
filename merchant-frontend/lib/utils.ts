@@ -22,7 +22,7 @@ export const ssrApi = axios.create({
   withCredentials: true
 });
 
-enum SERVICE_FORMAT {
+export enum SERVICE_FORMAT {
   AUTH = 'auth',
   USER = 'user',
   PRODUCT = 'product',
@@ -34,38 +34,30 @@ interface DynamicApiOptions {
   ssr: boolean,
   service: SERVICE_FORMAT
 }
-const url = (value: SERVICE_FORMAT) => {
-  const ssrString = 'http://api.exampl.com'
-  const csrString = 'http://localhost:'
+const urlFactory = (value: SERVICE_FORMAT) => {
+  const csrString = 'http://api.exampl.com'
+  const ssrString = 'http://'
   switch (value) {
     case SERVICE_FORMAT.AUTH:
-      return [ssrString.concat('/auth'), csrString.concat('8000/auth')]
+      return [csrString.concat(''), ssrString.concat('auth:8000')]
     case SERVICE_FORMAT.CART:
-      return [ssrString.concat('/cart'), csrString.concat('8000/cart')]
-
-      break;
+      return [csrString.concat('/carts'), ssrString.concat('carts:8002')]
     case SERVICE_FORMAT.MERCHANT:
-
-      break;
+      return [csrString.concat('/merchants'), ssrString.concat('products:8001')]
     case SERVICE_FORMAT.ORDER:
-
-      break;
+      return [csrString.concat('/orders'), ssrString.concat('orders:8003')]
     case SERVICE_FORMAT.PRODUCT:
-
-      break;
+      return [csrString.concat('/products'), ssrString.concat('products:8001')]
     case SERVICE_FORMAT.USER:
-      return [ssrString.concat('/users'), csrString.concat('8000/users')]
-
-
+      return [csrString.concat('/users'), ssrString.concat('auth:8000')]
     default:
-
-      break;
+      return [csrString.concat(''), ssrString.concat('auth:8000')]
   }
 }
-export const dynamicApi = ({ ssr = false, }: DynamicApiOptions) => {
-  axios.create({
-    baseURL: ssr ? "http://api.exampl.com" : "http://localhost:8000",
-    //baseURL: "http://localhost:8000/v1",
+export const dynamicApi = ({ ssr = false, service }: DynamicApiOptions) => {
+  const [csrString, ssrString] = urlFactory(service)
+  return axios.create({
+    baseURL: ssr ? ssrString : csrString,
     withCredentials: true
   })
 }

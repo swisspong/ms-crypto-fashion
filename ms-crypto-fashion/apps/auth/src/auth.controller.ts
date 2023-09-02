@@ -5,6 +5,7 @@ import { SigninMetamaskDto } from './dto/signin-metamask-dto.dto';
 import { SignupLocalDto } from './dto/signup-local-dto.dto';
 import { Public } from '@app/common/decorators';
 import { ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 @ApiTags("Auth")
 @Controller('auth')
 export class AuthController {
@@ -19,7 +20,7 @@ export class AuthController {
 
   @Public()
   @Post('signin')
-  signin(@Res({ passthrough: true }) res, @Body() signinDto: SigninLocalDto) {
+  signin(@Res({ passthrough: true }) res:Response, @Body() signinDto: SigninLocalDto) {
     return this.authService.signinLocal(signinDto, res);
   }
   

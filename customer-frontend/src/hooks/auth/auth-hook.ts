@@ -29,6 +29,7 @@ export const withUser = () => {
 export const withoutUser =()=>{
     const getServerSideProps: GetServerSideProps = async (context) => {
         const queryClient = new QueryClient();
+        console.log('context => ',context.req.headers)
         await queryClient.prefetchQuery(["me"], () =>
             getInfoSsr(context.req.headers.cookie)
         );
