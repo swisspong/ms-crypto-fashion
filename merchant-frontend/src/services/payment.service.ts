@@ -1,6 +1,6 @@
-import { API } from "@/lib/utils";
+import { API, SERVICE_FORMAT, dynamicApi } from "@/lib/utils";
 import axios from "axios";
-
+const api = dynamicApi({ ssr: false, service: SERVICE_FORMAT.PAYMENT })
 export const postOmiseToken = async (body: ICreateOmiseToken): Promise<ICreateOmiseTokenResponse> => {
     try {
         const response = await axios.post(`https://vault.omise.co/tokens`, body, {
@@ -18,7 +18,7 @@ export const postOmiseToken = async (body: ICreateOmiseToken): Promise<ICreateOm
 };
 
 export const postCreditCard = async (body: ICreateCreditCard): Promise<void> => {
-    return await API.post(`payments/credit`, body).then(
+    return await api.post(`payments/credit`, body).then(
         (response) => response.data
     );
 }

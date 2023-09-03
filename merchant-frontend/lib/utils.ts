@@ -28,30 +28,45 @@ export enum SERVICE_FORMAT {
   PRODUCT = 'product',
   CART = 'cart',
   MERCHANT = 'merchant',
-  ORDER = 'order'
+  ORDER = 'order',
+  CATEGORY = 'category',
+  ADDRESS = 'address',
+  CHECKOUT = 'checkout',
+  COMMENT = 'comment',
+  PAYMENT = 'payment',
 }
 interface DynamicApiOptions {
   ssr: boolean,
   service: SERVICE_FORMAT
 }
 const urlFactory = (value: SERVICE_FORMAT) => {
-  const csrString = 'http://api.exampl.com'
+  const csrString = 'http://api.example.com'
   const ssrString = 'http://'
   switch (value) {
     case SERVICE_FORMAT.AUTH:
-      return [csrString.concat(''), ssrString.concat('auth:8000')]
+      return [csrString, ssrString.concat('auth:8000')]
+    case SERVICE_FORMAT.ADDRESS:
+      return [csrString, ssrString.concat('auth:8000')]
     case SERVICE_FORMAT.CART:
-      return [csrString.concat('/carts'), ssrString.concat('carts:8002')]
+      return [csrString, ssrString.concat('carts:8002')]
     case SERVICE_FORMAT.MERCHANT:
-      return [csrString.concat('/merchants'), ssrString.concat('products:8001')]
+      return [csrString, ssrString.concat('products:8001')]
     case SERVICE_FORMAT.ORDER:
-      return [csrString.concat('/orders'), ssrString.concat('orders:8003')]
+      return [csrString, ssrString.concat('orders:8003')]
     case SERVICE_FORMAT.PRODUCT:
-      return [csrString.concat('/products'), ssrString.concat('products:8001')]
+      return [csrString, ssrString.concat('products:8001')]
+    case SERVICE_FORMAT.COMMENT:
+      return [csrString, ssrString.concat('products:8001')]
     case SERVICE_FORMAT.USER:
-      return [csrString.concat('/users'), ssrString.concat('auth:8000')]
+      return [csrString, ssrString.concat('auth:8000')]
+    case SERVICE_FORMAT.CATEGORY:
+      return [csrString, ssrString.concat('products:8001')]
+    case SERVICE_FORMAT.CHECKOUT:
+      return [csrString, ssrString.concat('orders:8003')]
+    case SERVICE_FORMAT.PAYMENT:
+      return [csrString, ssrString.concat('payment:8004')]
     default:
-      return [csrString.concat(''), ssrString.concat('auth:8000')]
+      return [csrString, ssrString.concat('auth:8000')]
   }
 }
 export const dynamicApi = ({ ssr = false, service }: DynamicApiOptions) => {

@@ -25,7 +25,7 @@ export class ProductsService {
     private readonly merchantsRepository: MerchantsRepository
   ) { }
   async create(userId: string, createProductDto: CreateProductDto) {
-    const merchant = await this.merchantsRepository.findOne({ user_id: userId })
+    const merchant = await this.merchantsRepository.findOne({ user_id:userId})
     if (!merchant) throw new ForbiddenException()
     const existProduct = await this.productsRepository.findOne({ merchant: merchant._id, name: createProductDto.name })
     if (existProduct) throw new BadRequestException("Product is exist.")
@@ -45,7 +45,7 @@ export class ProductsService {
     if (categories.length !== createProductDto.categories.length) throw new BadRequestException("Invalid Category")
     if (categoriesWeb.length !== createProductDto.categories_web.length) throw new BadRequestException("Invalid Category")
     const newProduct = await this.productsRepository.create({
-      prod_id: `prod_${this.uid.stamp(15)}`, ...createProductDto, merchant: merchant, image_urls: createProductDto.image_urls.map(image => image.url),
+      prod_id: `prod_${this.uid.stamp(15)}`, ...createProductDto, merchant: merchant._id, image_urls: createProductDto.image_urls.map(image => image.url),
       categories: categories.map(cat => cat._id),
       categories_web: categoriesWeb.map(cat => cat._id),
       groups: [],
@@ -445,7 +445,7 @@ export class ProductsService {
 
   async myMerchant(userId: string, merchantId: string, productFilter: GetProductStoreDto) {
     // const user = await this.usersRepository.findOne({ user_id: userId, merchant: new Types.ObjectId(merchantId) })
-
+    console.log(merchantId)
     let sort = {}
     if (productFilter.sort) {
       const sortArr = productFilter.sort.split(",")

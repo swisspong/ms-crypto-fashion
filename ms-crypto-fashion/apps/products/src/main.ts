@@ -6,11 +6,13 @@ import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import { TcpOptions, Transport } from '@nestjs/microservices';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 
 async function bootstrap() {
 
-  const app = await NestFactory.create(ProductsModule);
+  const app = await NestFactory.create<NestExpressApplication>(ProductsModule);
+  app.useStaticAssets(join(__dirname, '../../../../../../', 'public'));
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -37,7 +39,7 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
    // * set cors
-   const whitelist = ["http://example.com"];
+   const whitelist = ["http://example.com","http://merchant.example.com"];
 
    app.enableCors({
      origin: (origin, callback) => {

@@ -4,7 +4,7 @@ FROM node:18-alpine  As development
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-
+RUN npm install -g npm@10.0.0
 RUN npm install -g @nestjs/cli
 
 RUN npm install

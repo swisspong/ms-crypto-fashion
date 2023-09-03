@@ -113,7 +113,7 @@ const UserNav = () => {
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => router.push("http://localhost:3002/")}
+            onClick={() => router.push("http://merchant.example.com/")}
           >
             <Store className="mr-2 h-4 w-4" />
             <span>Store</span>

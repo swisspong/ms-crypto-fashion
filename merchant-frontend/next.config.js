@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images:{
-    domains:["localhost","cdn.shopify.com"]
+    domains:["localhost","cdn.shopify.com","api.example.com"]
   },
   // assetPrefix: "http://localhost:5000",
 }

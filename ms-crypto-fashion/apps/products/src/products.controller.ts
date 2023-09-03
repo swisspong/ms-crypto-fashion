@@ -21,6 +21,7 @@ export class ProductsController {
   @Roles(RoleFormat.MERCHANT)
   @Post()
   create(@GetUserId() userId: string, @Body() createProductDto: CreateProductDto) {
+
     return this.productsService.create(userId, createProductDto);
   }
 

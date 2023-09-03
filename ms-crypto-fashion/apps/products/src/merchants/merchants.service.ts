@@ -45,7 +45,12 @@ export class MerchantsService {
                     })
                 )
                 const accessToken = await this.jwtUtilsService.signToken({ sub: data.user_id, role: data.role, merchant: data.mcht_id, permission: permission })
-                res.cookie("token", accessToken)
+                res.cookie("token", accessToken, {
+                    // secure: true, 
+                    httpOnly: false, 
+                    // sameSite: 'none',
+                    domain: 'example.com'
+                  })
 
                 await session.commitTransaction();
                 return { message: 'success' }

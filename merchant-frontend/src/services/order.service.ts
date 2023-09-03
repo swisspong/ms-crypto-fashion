@@ -1,5 +1,5 @@
-import { API } from "@/lib/utils";
-
+import { API, SERVICE_FORMAT, dynamicApi } from "@/lib/utils";
+const api = dynamicApi({ ssr: false, service: SERVICE_FORMAT.ORDER })
 
 export const getAllOrderByMerchant = async (data: { page: number, per_page: number }): Promise<IOrders> => {
     return await API.get(`/orders/merchant?page=${data.page}&per_page=${data.per_page}`).then(

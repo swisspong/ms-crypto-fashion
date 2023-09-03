@@ -17,6 +17,7 @@ import { VariantGroupsModule } from './variant_groups/variant_groups.module';
 import { VariantsModule } from './variants/variants.module';
 import { ComplaintsModule } from './complaints/complaints.module';
 import { CommentsModule } from './comments/comments.module';
+import { AssetsModule } from './assets/assets.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { CommentsModule } from './comments/comments.module';
     VariantGroupsModule,
     VariantsModule,
     ComplaintsModule,
-    CommentsModule
+    CommentsModule,
+    AssetsModule
   ],
   controllers: [ProductsController],
   providers: [

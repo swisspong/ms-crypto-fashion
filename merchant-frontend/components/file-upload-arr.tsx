@@ -33,10 +33,10 @@ const FileUploadArr: FC<Props> = ({ image_url = [], onChange, remove }) => {
         {image_url.length > 0
           ? image_url.map(({ url }, index) => (
               <div className="aspect-square group rounded-xl bg-gray-100 relative">
-                <Image
+                <img
                   src={url}
                   alt=""
-                  fill
+                  // fill
                   className="aspect-square object-cover rounded-md"
                 />
                 <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
