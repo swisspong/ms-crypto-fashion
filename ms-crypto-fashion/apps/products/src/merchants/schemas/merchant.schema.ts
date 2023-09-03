@@ -30,6 +30,8 @@ export class Merchant extends AbstractDocument {
     end_date?: Date
 
 
+
 }
 
 export const MerchantSchema = SchemaFactory.createForClass(Merchant);
+

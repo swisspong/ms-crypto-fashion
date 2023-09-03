@@ -36,16 +36,16 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
         options?: SaveOptions
     ): Promise<Array<TDocument>> {
         const createdDocuments: Array<TDocument> = [];
-    
+
         for (const document of documents) {
             const createdDocument = new this.model({
                 ...document,
                 _id: new Types.ObjectId(),
             });
-    
+
             createdDocuments.push(await createdDocument.save(options));
         }
-    
+
         return createdDocuments;
     }
 

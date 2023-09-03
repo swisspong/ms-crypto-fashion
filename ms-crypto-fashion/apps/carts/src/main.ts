@@ -21,9 +21,19 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Carts')
     .build();
+
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('', app, document);
   const configSercie = app.get<ConfigService>(ConfigService)
+  const whitelist = ["http://example.com"];
+
+  app.enableCors({
+    origin: (origin, callback) => {
+      const isWhitelisted = whitelist.includes(origin)
+      callback(null, isWhitelisted);
+    },
+    credentials: true,
+  })
   await app.listen(configSercie.get<string>('PORT'));
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

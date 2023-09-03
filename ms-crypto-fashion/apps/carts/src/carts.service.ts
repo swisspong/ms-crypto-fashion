@@ -19,11 +19,21 @@ export class CartsService {
   getHello(): string {
     return 'Hello World!';
   }
+  async findCartByUserId(userId: string) {
+    let cart = await this.cartsRepository.findOne({ user_id: userId })
+    cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
+    if (cart.items.length <= 0) return cart.items
+    const { data: products } = await lastValueFrom(this.productsClient.send({ cmd: 'check_product_list' }, { items: cart.items.map(item => ({ prod_id: item.prod_id, quantity: item.quantity, vrnt_id: item.vrnt_id })) }));
+    return products.map(product => {
+      const item = cart.items.find(item => item.prod_id === product.prod_id)
+      return { ...item, product }
+    })
+  }
   async addToCart(userId: string, productId: string, addToCartDto: AddToCartDto) {
     let cart = await this.cartsRepository.findOne({ user_id: userId })
     cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
     if (!cart) throw new NotFoundException("Cart not found.")
-    const {data:product} = await lastValueFrom(this.productsClient.send({ cmd: 'get_product' }, { prod_id: productId }));
+    const { data: product } = await lastValueFrom(this.productsClient.send({ cmd: 'get_product' }, { prod_id: productId }));
     this.logger.log("res from product =>", product)
     if (!product) throw new NotFoundException("Product not found.")
     if (!product.available) throw new BadRequestException("Product not available.")
@@ -66,7 +76,7 @@ export class CartsService {
       })
       if (existIndex >= 0) {
         cart.items[existIndex].quantity = cart.items[existIndex].quantity + addToCartDto.quantity
-        if ( cart.items[existIndex].quantity > variant.stock) throw new BadRequestException("The product not enough.")
+        if (cart.items[existIndex].quantity > variant.stock) throw new BadRequestException("The product not enough.")
 
       } else {
         const newItem = new CartItem()

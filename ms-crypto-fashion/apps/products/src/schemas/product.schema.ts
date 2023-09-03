@@ -16,7 +16,7 @@ export enum PaymentMethodFormat {
     CREDIT = "credit",
     WALLET = "wallet",
 }
-@Schema({ versionKey:false,timestamps: true })
+@Schema({ versionKey: false, timestamps: true })
 export class Product extends AbstractDocument {
     @Prop({ required: true, unique: true })
     prod_id: string;
@@ -45,10 +45,10 @@ export class Product extends AbstractDocument {
     categories_web: (Types.ObjectId | CategoryWeb)[];
     // categories: { cat_id:string; }[];
     @Prop({ type: Types.ObjectId, required: true, ref: "Merchant" })
-    merchant: Merchant
+    merchant: Types.ObjectId | Merchant
     // merchant: Types.ObjectId | Merchant
 
-   
+
     @Prop([{ type: VariantGroup }])
     groups: VariantGroup[]
     @Prop([{ type: Variant }])

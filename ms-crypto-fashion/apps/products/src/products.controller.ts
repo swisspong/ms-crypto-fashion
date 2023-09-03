@@ -95,7 +95,19 @@ export class ProductsController {
   async getProduct(@Payload() data: { prod_id: string }) {
     const product = await this.productsService.findOne(data.prod_id)
     this.logger.warn("result=>", product)
-    return { data: product}
+    return { data: product }
+  }
+  @MessagePattern({ cmd: 'check_product_list' })
+  async getProductList(@Payload() data: {
+    items: {
+      quantity: number
+      vrnt_id?: string
+      prod_id: string
+    }[]
+  }) {
+    const products = await this.productsService.checkAllByIdList(data.items)
+    this.logger.warn("result=>", products)
+    return { data: products }
   }
 
 }

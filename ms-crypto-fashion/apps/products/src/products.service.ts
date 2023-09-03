@@ -655,6 +655,45 @@ export class ProductsService {
     return newProduct
 
   }
+  async checkAllByIdList(items: {
+    quantity: number
+    vrnt_id?: string
+    prod_id: string
+  }[]) {
+    const products = await this.productsRepository.find({ 'prod_id': { '$in': items.map(item => item.prod_id) } })
+    const checkProducts = await Promise.all(items.map(async item => {
+
+      const product = products.find(product => item.prod_id === product.prod_id)
+      if (!product) return { error: true }
+      if (!product.available) return { error: true }
+      const merchant = await this.merchantsRepository.findOne({ _id: product.merchant })
+      if (merchant.status !== MerchantStatus.OPENED) return { error: true }
+      if (item.vrnt_id) {
+        const variant = product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
+        if (!variant) return { error: true }
+        const isIncludeEveryGroupAndOption = variant.variant_selecteds.every(vrnts => {
+          const group = product.groups.find(group => group.vgrp_id === vrnts.vgrp_id)
+          if (!group) return false
+          const option = group.options.find(option => option.optn_id === vrnts.optn_id)
+          if (!option) return false
+          return true
+        })
+        if (!isIncludeEveryGroupAndOption) return { error: true }
+        if (item.quantity > variant.stock) return { error: true }
+
+      } else {
+        if (product.variants.length > 0 || product.groups.length > 0) return { error: true }
+        if (item.quantity > product.stock) return { error: true }
+      }
+      return product
+    }))
+    return checkProducts.filter(item => {
+      if (typeof item === 'object' && 'error' in item && typeof item.error === 'boolean') {
+        return false
+      }
+      return true
+    })
+  }
 
   async remove(catId: string, merchantId: string) {
     const product = await this.productsRepository.findOne({ prod_id: catId, merchant: new Types.ObjectId(merchantId) })

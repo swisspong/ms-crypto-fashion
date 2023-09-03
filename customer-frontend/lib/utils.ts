@@ -38,7 +38,9 @@ export enum SERVICE_FORMAT {
   MERCHANT = 'merchant',
   ORDER = 'order',
   CATEGORY = 'category',
-  ADDRESS = 'address'
+  ADDRESS = 'address',
+  CHECKOUT = 'checkout',
+  COMMENT = 'comment',
 }
 interface DynamicApiOptions {
   ssr: boolean,
@@ -53,17 +55,21 @@ const urlFactory = (value: SERVICE_FORMAT) => {
     case SERVICE_FORMAT.ADDRESS:
       return [csrString.concat(''), ssrString.concat('auth:8000')]
     case SERVICE_FORMAT.CART:
-      return [csrString.concat('/carts'), ssrString.concat('carts:8002')]
+      return [csrString.concat(''), ssrString.concat('carts:8002')]
     case SERVICE_FORMAT.MERCHANT:
-      return [csrString.concat('/merchants'), ssrString.concat('products:8001')]
+      return [csrString.concat(''), ssrString.concat('products:8001')]
     case SERVICE_FORMAT.ORDER:
       return [csrString.concat('/orders'), ssrString.concat('orders:8003')]
     case SERVICE_FORMAT.PRODUCT:
+      return [csrString.concat(''), ssrString.concat('products:8001')]
+    case SERVICE_FORMAT.COMMENT:
       return [csrString.concat(''), ssrString.concat('products:8001')]
     case SERVICE_FORMAT.USER:
       return [csrString.concat(''), ssrString.concat('auth:8000')]
     case SERVICE_FORMAT.CATEGORY:
       return [csrString.concat(''), ssrString.concat('products:8001')]
+    case SERVICE_FORMAT.CHECKOUT:
+      return [csrString.concat(''), ssrString.concat('orders:8003')]
     default:
       return [csrString.concat(''), ssrString.concat('auth:8000')]
   }
