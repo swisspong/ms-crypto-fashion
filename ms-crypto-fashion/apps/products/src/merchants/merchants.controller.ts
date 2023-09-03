@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Res,Get, Patch, Query, Param, Delete } from '@nestjs/common';
+import { Controller, Body, Post, Res, Get, Patch, Query, Param, Delete } from '@nestjs/common';
 import { MerchantsService } from './merchants.service';
 import { GetUser, GetUserId, Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
@@ -20,6 +20,11 @@ export class MerchantsController {
   @Post("/credential")
   createCredential(@GetUser("merchant") merchantId: string, @Body() dto: CredentialMerchantDto) {
     return this.merchantsService.createCredential(merchantId, dto);
+  }
+  @Roles(RoleFormat.MERCHANT)
+  @Get("/credential")
+  getMerchantCredential(@GetUser("merchant") merchantId: string) {
+    return this.merchantsService.getMerchantCredential(merchantId)
   }
 
   @Roles(RoleFormat.MERCHANT)
@@ -57,7 +62,7 @@ export class MerchantsController {
   deleteMerchant(@Param('id') id: string) {
     return this.merchantsService.deleteMerchantById(id)
   }
-  
+
   // * Merchant approves
 
   @Roles(RoleFormat.ADMIN)

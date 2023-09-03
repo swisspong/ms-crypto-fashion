@@ -25,7 +25,7 @@ export class ProductsService {
     private readonly merchantsRepository: MerchantsRepository
   ) { }
   async create(userId: string, createProductDto: CreateProductDto) {
-    const merchant = await this.merchantsRepository.findOne({ user_id:userId})
+    const merchant = await this.merchantsRepository.findOne({ user_id: userId })
     if (!merchant) throw new ForbiddenException()
     const existProduct = await this.productsRepository.findOne({ merchant: merchant._id, name: createProductDto.name })
     if (existProduct) throw new BadRequestException("Product is exist.")
@@ -553,37 +553,39 @@ export class ProductsService {
   }
 
   async findOneByOwner(id: string, merchantId: string, productFilter: StoreQueryDto) {
-    // const product = await this.productsRepository.findOne({ prod_id: id, merchant: new Types.ObjectId(merchantId), ...(productFilter.store_front ? { available: true } : undefined) }, ["categories","merchants"])
+    const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new ForbiddenException()
+    // const product = await this.productsRepository.findOne({ prod_id: id, merchant: new Types.ObjectId(merchantId), ...(productFilter.store_front ? { available: true } : undefined) }, ["categories", "merchants"])
     // return product
-    // let product = await this.productsRepository.findOnePopulateNew({ prod_id: id, merchant: new Types.ObjectId(merchantId), ...(productFilter.store_front ? { available: true } : undefined) },
-    //   [
-    //     {
-    //       model: "Merchant",
-    //       path: 'merchant',
-    //       // populate: {
-    //       //   model: 'Merchant',
-    //       //   path: 'merchant',
-    //       // }
-    //     },
-    //     {
-    //       model: "Category",
-    //       path: 'categories',
-    //       // populate: {
-    //       //   model: 'Merchant',
-    //       //   path: 'merchant',
-    //       // }
-    //     },
-    //     {
-    //       model: "CategoryWeb",
-    //       path: 'categories_web',
-    //       // populate: {
-    //       //   model: 'Merchant',
-    //       //   path: 'merchant',
-    //       // }
-    //     },
-    //   ]
-    // ) as Product
-    // return product
+    let product = await this.productsRepository.findOnePopulate({ prod_id: id, merchant: merchant._id, ...(productFilter.store_front ? { available: true } : undefined) },
+      [
+        {
+          model: "Merchant",
+          path: 'merchant',
+          // populate: {
+          //   model: 'Merchant',
+          //   path: 'merchant',
+          // }
+        },
+        {
+          model: "Category",
+          path: 'categories',
+          // populate: {
+          //   model: 'Merchant',
+          //   path: 'merchant',
+          // }
+        },
+        {
+          model: "CategoryWeb",
+          path: 'categories_web',
+          // populate: {
+          //   model: 'Merchant',
+          //   path: 'merchant',
+          // }
+        },
+      ]
+    ) as Product
+    return product
   }
   async findOne(prodId: string) {
     const product = await this.productsRepository.aggregate([
@@ -644,7 +646,7 @@ export class ProductsService {
     })
     if (categories.length !== updateProductDto.categories.length) throw new BadRequestException("Invalid Category")
     if (categoriesWeb.length !== updateProductDto.categories_web.length) throw new BadRequestException("Invalid Category")
-    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: product.prod_id, merchant: product.merchant }, {
+    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: product.prod_id, merchant: product.merchant._id }, {
       ...updateProductDto,
       image_urls: updateProductDto.image_urls.map(image => image.url),
       categories: categories.map(cat => cat._id),
@@ -696,9 +698,11 @@ export class ProductsService {
   }
 
   async remove(catId: string, merchantId: string) {
-    const product = await this.productsRepository.findOne({ prod_id: catId, merchant: new Types.ObjectId(merchantId) })
+    const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new ForbiddenException()
+    const product = await this.productsRepository.findOne({ prod_id: catId, merchant: merchant._id })
     if (!product) throw new NotFoundException("Category not found.")
-    return await this.productsRepository.findOneAndDelete({ prod_id: catId, merchant: new Types.ObjectId(merchantId) })
+    return await this.productsRepository.findOneAndDelete({ prod_id: catId, merchant: merchant._id })
   }
   async removeByAdmin(prod_id: string) {
     const product = await this.productsRepository.findOne({ prod_id })

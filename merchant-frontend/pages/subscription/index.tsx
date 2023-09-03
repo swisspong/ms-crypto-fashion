@@ -29,11 +29,13 @@ import OpenStoreDialog from "@/components/subscription/open-store-dialog";
 import { useUserInfo } from "@/src/hooks/user/queries";
 import { MerchantFormat } from "@/src/types/enums/merchant";
 import PaymentSubscriptionDialog from "@/components/subscription/payment-subsciption-dialog";
+import { useGetMerchantCredential } from "@/src/hooks/merchant/queries";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Subscription() {
-  const dataQuery = useUserInfo();
+  // const dataQuery = useUserInfo();
+  const dataQuery = useGetMerchantCredential()
   return (
     <Layout>
       <Separator className="my-4" />
@@ -45,8 +47,8 @@ export default function Subscription() {
         <CardContent className="grid gap-1">
           <div
             className={`-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all ${
-              dataQuery.data?.merchant.status === MerchantFormat.CLOSED ||
-              dataQuery.data?.merchant.status === MerchantFormat.DISAPPROVAL
+              dataQuery.data?.status === MerchantFormat.CLOSED ||
+              dataQuery.data?.status === MerchantFormat.DISAPPROVAL
                 ? "bg-accent"
                 : ""
             } hover:bg-accent hover:text-accent-foreground`}
@@ -59,9 +61,9 @@ export default function Subscription() {
                 First step: Manage your product
               </p>
             </div>
-            {dataQuery.data?.merchant.status === MerchantFormat.CLOSED ? (
+            {dataQuery.data?.status === MerchantFormat.CLOSED ? (
               <Badge>You are here</Badge>
-            ) : dataQuery.data?.merchant.status ===
+            ) : dataQuery.data?.status ===
               MerchantFormat.DISAPPROVAL ? (
               <Badge>Send Credential Again</Badge>
             ) : undefined}
@@ -77,7 +79,7 @@ export default function Subscription() {
           </div>
           <div
             className={`-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all ${
-              dataQuery.data?.merchant.status === MerchantFormat.IN_PROGRESS
+              dataQuery.data?.status === MerchantFormat.IN_PROGRESS
                 ? "bg-accent"
                 : ""
             } hover:bg-accent hover:text-accent-foreground`}
@@ -89,14 +91,14 @@ export default function Subscription() {
                 Third step: Wait for admin validate your store is fashion store.
               </p>
             </div>
-            {dataQuery.data?.merchant.status === MerchantFormat.IN_PROGRESS ? (
+            {dataQuery.data?.status === MerchantFormat.IN_PROGRESS ? (
               <Badge>In progress</Badge>
             ) : undefined}
           </div>
           <div
             className={`-mx-2 flex items-start space-x-4 rounded-md p-2 ${
-              dataQuery.data?.merchant.status === MerchantFormat.APPROVED ||
-              dataQuery.data?.merchant.status === MerchantFormat.OPENED
+              dataQuery.data?.status === MerchantFormat.APPROVED ||
+              dataQuery.data?.status === MerchantFormat.OPENED
                 ? "bg-accent"
                 : ""
             } transition-all hover:bg-accent hover:text-accent-foreground`}
@@ -109,17 +111,17 @@ export default function Subscription() {
                 you can click this button to pay for sale.
               </p>
             </div>
-            {dataQuery.data?.merchant.status === MerchantFormat.APPROVED ||
-            dataQuery.data?.merchant.status === MerchantFormat.OPENED ? (
+            {dataQuery.data?.status === MerchantFormat.APPROVED ||
+            dataQuery.data?.status === MerchantFormat.OPENED ? (
               <Badge>You are here</Badge>
             ) : undefined}
           </div>
         </CardContent>
         <CardFooter>
-          {dataQuery.data?.merchant.status === MerchantFormat.CLOSED ||
-          dataQuery.data?.merchant.status === MerchantFormat.DISAPPROVAL ? (
+          {dataQuery.data?.status === MerchantFormat.CLOSED ||
+          dataQuery.data?.status === MerchantFormat.DISAPPROVAL ? (
             <OpenStoreDialog />
-          ) : dataQuery.data?.merchant.status === MerchantFormat.APPROVED ? (
+          ) : dataQuery.data?.status === MerchantFormat.APPROVED ? (
             <PaymentSubscriptionDialog />
           ) : undefined}
         </CardFooter>

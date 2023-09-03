@@ -41,12 +41,17 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
       <div className="grid grid-cols-4 gap-2 w-full py-2">
         {image_url ? (
           <div className="aspect-square group rounded-xl bg-gray-100 relative">
-            <Image
+            <img
+              src={image_url as string}
+              alt=""
+              className="aspect-square object-cover rounded-md"
+            />
+            {/* <Image
               src={image_url as string}
               alt=""
               fill
               className="aspect-square object-cover rounded-md"
-            />
+            /> */}
             <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
               <div className="flex gap-x-6 justify-center">
                 <Button

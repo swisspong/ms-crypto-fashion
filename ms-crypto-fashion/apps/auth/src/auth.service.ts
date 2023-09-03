@@ -39,7 +39,13 @@ export class AuthService {
       }
 
       const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user.mcht_id, permission: user.permission })
-      res.cookie("token", accessToken)
+      // res.cookie("token", accessToken)
+      res.cookie("token", accessToken, {
+        // secure: true, 
+        httpOnly: false, 
+        // sameSite: 'none',
+        domain: 'example.com'
+      })
       return { accessToken }
     } catch (error) {
       throw error
@@ -87,7 +93,13 @@ export class AuthService {
 
       const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
 
-      res.cookie("token", accessToken)
+      // res.cookie("token", accessToken)
+      res.cookie("token", accessToken, {
+        // secure: true, 
+        httpOnly: false, 
+        // sameSite: 'none',
+        domain: 'example.com'
+      })
       return { accessToken }
 
     } catch (error) {
@@ -106,7 +118,13 @@ export class AuthService {
           throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
 
         const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
-        res.cookie("token", accessToken)
+        // res.cookie("token", accessToken)
+        res.cookie("token", accessToken, {
+          // secure: true, 
+          httpOnly: false, 
+          // sameSite: 'none',
+          domain: 'example.com'
+        })
         return { accessToken }
       } else {
         throw new HttpException('You are not admin.', HttpStatus.BAD_REQUEST);

@@ -32,12 +32,17 @@ const ProductCard: React.FC<ProductCard> = ({ data, className, pushUrl }) => {
     >
       {/* Image & actions */}
       <div className="aspect-square rounded-xl bg-gray-100 relative">
-        <Image
+        <img
+          src={data.image_urls?.[0]}
+          alt=""
+          className="aspect-square object-cover rounded-md"
+        />
+        {/* <Image
           src={data.image_urls?.[0]}
           alt=""
           fill
           className="aspect-square object-cover rounded-md"
-        />
+        /> */}
         {/* <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
           <div className="flex gap-x-6 justify-center">
             <IconButton icon={<Expand size={20} className="text-gray-600" />} />

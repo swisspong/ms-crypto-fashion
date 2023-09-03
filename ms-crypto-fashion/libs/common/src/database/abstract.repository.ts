@@ -7,6 +7,7 @@ import {
     SaveOptions,
     Connection,
     PipelineStage,
+    PopulateOptions,
 } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 
@@ -59,6 +60,13 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
         return document;
     }
+
+    async findOnePopulate(filterQuery: FilterQuery<TDocument>, populate: (string | PopulateOptions)[]): Promise<any> {
+        let query = await this.model.findOne(filterQuery).populate(populate)
+        // query.populate(populate.path)
+        return query
+    }
+
     async aggregate(pipeline?: PipelineStage[]) {
         return this.model.aggregate(pipeline)
     }

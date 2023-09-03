@@ -19,7 +19,7 @@ export interface IUserRes {
     cart: string
 }
 
-interface IMerchantRes {
+export interface IMerchantRes {
     _id: string
     mcht_id: string
     name: string

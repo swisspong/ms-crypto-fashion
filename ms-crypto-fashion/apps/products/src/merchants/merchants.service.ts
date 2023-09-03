@@ -47,10 +47,10 @@ export class MerchantsService {
                 const accessToken = await this.jwtUtilsService.signToken({ sub: data.user_id, role: data.role, merchant: data.mcht_id, permission: permission })
                 res.cookie("token", accessToken, {
                     // secure: true, 
-                    httpOnly: false, 
+                    httpOnly: false,
                     // sameSite: 'none',
                     domain: 'example.com'
-                  })
+                })
 
                 await session.commitTransaction();
                 return { message: 'success' }
@@ -60,6 +60,11 @@ export class MerchantsService {
             await session.abortTransaction();
             throw error
         }
+
+    }
+    async getMerchantCredential(mchtId: string) {
+        const merchant = await this.merchantsRepository.findOne({ mcht_id: mchtId })
+        return merchant
 
     }
 
@@ -190,60 +195,60 @@ export class MerchantsService {
     }
     async findAllApproves(per_page: number, page: number) {
         try {
-          const skip = (Number(page) - 1) * Number(per_page)
-          const limit = per_page
-    
-          const merchants = await this.merchantsRepository.aggregate([
-    
-            {
-              $match: {
-                status: MerchantStatus.IN_PROGRESS
-              },
-            },
-            {
-              $skip: skip,
-            },
-            {
-              $limit: limit
-            },
-          ])
-    
-          const total: { totalCount: number }[] = await this.merchantsRepository.aggregate([
-            {
-              $match: {
-                status: MerchantStatus.IN_PROGRESS
-              },
-            },
-            {
-              $count: 'totalCount'
-            }
-    
-          ])
-    
-          return {
-            page: Number(page),
-            per_page: Number(per_page),
-            total: (total[0]?.totalCount?? 0),
-            total_page: Math.ceil((total[0]?.totalCount?? 0) / Number(per_page)),
-            data: merchants,
-          };
-        } catch (error) {
-          console.log(error)
-        }
-      }
-      async findOne(id: string) {
-        return await this.merchantsRepository.findOne({ mcht_id: id })
-      }
+            const skip = (Number(page) - 1) * Number(per_page)
+            const limit = per_page
 
-      async updateApproves(id: string, updateMerchantDto: UpdateStatusDto) {
-        try {
-          const { status } = updateMerchantDto
-          const merchant = await this.merchantsRepository.findOne({ mcht_id: id })
-          console.log(merchant)
-          if (merchant.status !== MerchantStatus.IN_PROGRESS) throw new BadRequestException("Invalid credential.")
-          return await this.merchantsRepository.findOneAndUpdate({ mcht_id: id }, { $set: { status: status } })
+            const merchants = await this.merchantsRepository.aggregate([
+
+                {
+                    $match: {
+                        status: MerchantStatus.IN_PROGRESS
+                    },
+                },
+                {
+                    $skip: skip,
+                },
+                {
+                    $limit: limit
+                },
+            ])
+
+            const total: { totalCount: number }[] = await this.merchantsRepository.aggregate([
+                {
+                    $match: {
+                        status: MerchantStatus.IN_PROGRESS
+                    },
+                },
+                {
+                    $count: 'totalCount'
+                }
+
+            ])
+
+            return {
+                page: Number(page),
+                per_page: Number(per_page),
+                total: (total[0]?.totalCount ?? 0),
+                total_page: Math.ceil((total[0]?.totalCount ?? 0) / Number(per_page)),
+                data: merchants,
+            };
         } catch (error) {
-          console.log(error)
+            console.log(error)
         }
-      }
+    }
+    async findOne(id: string) {
+        return await this.merchantsRepository.findOne({ mcht_id: id })
+    }
+
+    async updateApproves(id: string, updateMerchantDto: UpdateStatusDto) {
+        try {
+            const { status } = updateMerchantDto
+            const merchant = await this.merchantsRepository.findOne({ mcht_id: id })
+            console.log(merchant)
+            if (merchant.status !== MerchantStatus.IN_PROGRESS) throw new BadRequestException("Invalid credential.")
+            return await this.merchantsRepository.findOneAndUpdate({ mcht_id: id }, { $set: { status: status } })
+        } catch (error) {
+            console.log(error)
+        }
+    }
 }
