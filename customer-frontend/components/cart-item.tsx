@@ -76,8 +76,7 @@ const CartItem: React.FC<CartItemProps> = ({
           ></label>
         </div>
         <div className="relative h-24 w-24 rounded-md overflow-hidden sm:h-48 sm:w-48">
-          <Image
-            fill
+          <img
             src={
               (data.vrnt_id
                 ? data.product.variants.find(
@@ -92,6 +91,22 @@ const CartItem: React.FC<CartItemProps> = ({
             alt=""
             className="object-cover object-center"
           />
+          {/* <Image
+            fill
+            src={
+              (data.vrnt_id
+                ? data.product.variants.find(
+                    (vrnt) => vrnt.vrnt_id === data.vrnt_id
+                  )?.image_url
+                  ? data.product.variants.find(
+                      (vrnt) => vrnt.vrnt_id === data.vrnt_id
+                    )?.image_url
+                  : data.product.image_urls[0]
+                : data.product.image_urls[0]) as string
+            }
+            alt=""
+            className="object-cover object-center"
+          /> */}
         </div>
         <div className="relative ml-4 flex flex-1 flex-col justify-between sm:ml-6">
           <div className="absolute z-10 right-0 top-0">

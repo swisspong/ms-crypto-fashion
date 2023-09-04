@@ -51,27 +51,27 @@ const urlFactory = (value: SERVICE_FORMAT) => {
   const ssrString = 'http://'
   switch (value) {
     case SERVICE_FORMAT.AUTH:
-      return [csrString.concat(''), ssrString.concat('auth:8000')]
+      return [csrString, ssrString.concat('auth:8000')]
     case SERVICE_FORMAT.ADDRESS:
-      return [csrString.concat(''), ssrString.concat('auth:8000')]
+      return [csrString, ssrString.concat('auth:8000')]
     case SERVICE_FORMAT.CART:
-      return [csrString.concat(''), ssrString.concat('carts:8002')]
+      return [csrString, ssrString.concat('carts:8002')]
     case SERVICE_FORMAT.MERCHANT:
-      return [csrString.concat(''), ssrString.concat('products:8001')]
+      return [csrString, ssrString.concat('products:8001')]
     case SERVICE_FORMAT.ORDER:
-      return [csrString.concat('/orders'), ssrString.concat('orders:8003')]
+      return [csrString, ssrString.concat('orders:8003')]
     case SERVICE_FORMAT.PRODUCT:
-      return [csrString.concat(''), ssrString.concat('products:8001')]
+      return [csrString, ssrString.concat('products:8001')]
     case SERVICE_FORMAT.COMMENT:
-      return [csrString.concat(''), ssrString.concat('products:8001')]
+      return [csrString, ssrString.concat('products:8001')]
     case SERVICE_FORMAT.USER:
-      return [csrString.concat(''), ssrString.concat('auth:8000')]
+      return [csrString, ssrString.concat('auth:8000')]
     case SERVICE_FORMAT.CATEGORY:
-      return [csrString.concat(''), ssrString.concat('products:8001')]
+      return [csrString, ssrString.concat('products:8001')]
     case SERVICE_FORMAT.CHECKOUT:
-      return [csrString.concat(''), ssrString.concat('orders:8003')]
+      return [csrString, ssrString.concat('orders:8003')]
     default:
-      return [csrString.concat(''), ssrString.concat('auth:8000')]
+      return [csrString, ssrString.concat('auth:8000')]
   }
 }
 export const dynamicApi = ({ ssr = false, service }: DynamicApiOptions) => {

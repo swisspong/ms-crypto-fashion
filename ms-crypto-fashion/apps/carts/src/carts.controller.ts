@@ -6,11 +6,11 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Carts')
 @Controller('carts')
 export class CartsController {
-  constructor(private readonly cartsService: CartsService) {}
+  constructor(private readonly cartsService: CartsService) { }
 
   @Get()
-  getHello(): string {
-    return this.cartsService.getHello();
+  getCart(@GetUserId() userId: string) {
+    return this.cartsService.findCartByUserId(userId);
   }
   @Post(":productId")
   create(@GetUserId() userId: string, @Param("productId") productId: string, @Body() addToCartDto: AddToCartDto) {

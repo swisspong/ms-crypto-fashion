@@ -16,9 +16,6 @@ export class CartsService {
     @Inject('PRODUCTS') private readonly productsClient: ClientProxy,
   ) { }
 
-  getHello(): string {
-    return 'Hello World!';
-  }
   async findCartByUserId(userId: string) {
     let cart = await this.cartsRepository.findOne({ user_id: userId })
     cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
@@ -38,6 +35,7 @@ export class CartsService {
     if (!product) throw new NotFoundException("Product not found.")
     if (!product.available) throw new BadRequestException("Product not available.")
     // if (product.stock <= 0) throw new BadRequestException("stock not enough.")
+    this.logger.warn(product.merchant)
     if (product.merchant.status !== MerchantStatus.OPENED) throw new BadRequestException("Merchant not available.")
     product.variants.map(variant => {
       if (variant.variant_selecteds.length <= 0) throw new BadRequestException("The option is invalid.")

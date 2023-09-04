@@ -9,6 +9,7 @@ import * as Joi from 'joi';
 import { JwtStrategy } from '@app/common/strategy';
 import { CartsRepository } from './carts.repository';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { CheckoutsModule } from './checkouts/checkouts.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       },
 
     ]),
+    CheckoutsModule,
   ],
   controllers: [CartsController],
   providers: [

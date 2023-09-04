@@ -6,6 +6,7 @@ import { OrdersRepository } from './orders.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from './schemas/order.schema';
 import { ConfigModule } from '@nestjs/config';
+// import { CheckoutsModule } from './checkouts/checkouts.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -20,7 +21,8 @@ import * as Joi from 'joi';
       })
     }),
     DatabaseModule,
-    MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }])
+    MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+    // CheckoutsModule
   ],
   controllers: [OrdersController],
   providers: [OrdersService, OrdersRepository],

@@ -613,6 +613,9 @@ export class ProductsService {
         },
       },
       {
+        $unwind:'$merchant'
+      },
+      {
         $project: {
           _id: 0,
           __v: 0,
@@ -687,7 +690,7 @@ export class ProductsService {
         if (product.variants.length > 0 || product.groups.length > 0) return { error: true }
         if (item.quantity > product.stock) return { error: true }
       }
-      return product
+      return {...product,merchant}
     }))
     return checkProducts.filter(item => {
       if (typeof item === 'object' && 'error' in item && typeof item.error === 'boolean') {
