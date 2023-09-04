@@ -5,6 +5,9 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TcpOptions, Transport } from '@nestjs/microservices';
+import { RmqService } from '@app/common';
+import { AUTH_SERVICE } from '@app/common/constants';
+import { CARTS_SERVICE } from '@app/common/constants/carts.constant';
 
 async function bootstrap() {
   const app = await NestFactory.create(CartsModule);
@@ -27,6 +30,9 @@ async function bootstrap() {
   const configSercie = app.get<ConfigService>(ConfigService)
   const whitelist = ["http://example.com"];
 
+  const rmqService = app.get<RmqService>(RmqService)
+  app.connectMicroservice(rmqService.getOptoins(CARTS_SERVICE))
+  await app.startAllMicroservices()
   app.enableCors({
     origin: (origin, callback) => {
       const isWhitelisted = whitelist.includes(origin)

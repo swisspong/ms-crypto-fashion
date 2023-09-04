@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import ShortUniqueId from 'short-unique-id';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductsRepository } from './products.repository';
@@ -14,6 +14,9 @@ import { Product } from './schemas/product.schema';
 import { StoreQueryDto } from './dto/store-query.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Types } from 'mongoose';
+import { CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants/carts.constant';
+import { ClientProxy } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class ProductsService {
@@ -22,7 +25,8 @@ export class ProductsService {
     private readonly productsRepository: ProductsRepository,
     private readonly categoriesRepository: CategoriesRepository,
     private readonly categoriesWebRepository: CategoryWebRepository,
-    private readonly merchantsRepository: MerchantsRepository
+    private readonly merchantsRepository: MerchantsRepository,
+    @Inject(CARTS_SERVICE) private readonly cartsClient: ClientProxy,
   ) { }
   async create(userId: string, createProductDto: CreateProductDto) {
     const merchant = await this.merchantsRepository.findOne({ user_id: userId })
@@ -588,56 +592,25 @@ export class ProductsService {
     return product
   }
   async findOne(prodId: string) {
-    const product = await this.productsRepository.aggregate([
-      {
-        $lookup: {
-          from: "merchants",
-          localField: "merchant",
-          foreignField: "_id",
-          as: "merchant"
-        },
-      },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "categories",
-          foreignField: "_id",
-          as: "categories"
-        },
-      },
-      {
-        $match: {
-          prod_id: prodId,
-          available: true,
-          "merchant.status": "opened",
-        },
-      },
-      {
-        $unwind:'$merchant'
-      },
-      {
-        $project: {
-          _id: 0,
-          __v: 0,
-          //  "merchant": 0,
-          "categories": 0,
-          // "categories.__v": 0,
-          // "categories._id": 0,
-          // "categories": 0
-        }
-      },
-    ])
+    //fix get product relate merchant
+    const product = await this.productsRepository.findOnePopulate({ prod_id: prodId }, ['merchant'])
     // if (product.length <= 0) throw new NotFoundException()
-    return product[0]
+    return product
     // return `This action returns a #${id} product`;
   }
   async update(prodId: string, merchantId: string, updateProductDto: UpdateProductDto) {
-    const product = await this.productsRepository.findOne({ prod_id: prodId, merchant: new Types.ObjectId(merchantId) })
+    const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new NotFoundException("Merchant not found.")
+    const product = await this.productsRepository.findOne({ prod_id: prodId, merchant: merchant._id })
     if (!product) throw new NotFoundException("Prodct not found.")
-    const existProduct = await this.productsRepository.findOne({ prod_id: { $not: { $eq: prodId } }, merchant: new Types.ObjectId(merchantId), name: updateProductDto.name })
+
+    const existProduct = await this.productsRepository.findOne({ prod_id: { $not: { $eq: prodId } }, name: updateProductDto.name, merchant: merchant._id })
+    // const existProduct = await this.productsRepository.findOnePopulate({ prod_id: { $not: { $eq: prodId } }, name: updateProductDto.name }, [{ path: "merchant", match: { mcht_id: merchantId } }])
+    // const existProduct = await this.productsRepository.findOne({ prod_id: { $not: { $eq: prodId } }, name: updateProductDto.name })
+
     if (existProduct) throw new BadRequestException("Product name is existing.")
     const categories = await this.categoriesRepository.find({
-      merchant: new Types.ObjectId(merchantId),
+      merchant: merchant._id,
       cat_id: {
         $in: updateProductDto.categories.map(item => item.cat_id)
       }
@@ -649,7 +622,7 @@ export class ProductsService {
     })
     if (categories.length !== updateProductDto.categories.length) throw new BadRequestException("Invalid Category")
     if (categoriesWeb.length !== updateProductDto.categories_web.length) throw new BadRequestException("Invalid Category")
-    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: product.prod_id, merchant: product.merchant._id }, {
+    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: product.prod_id, merchant: product.merchant }, {
       ...updateProductDto,
       image_urls: updateProductDto.image_urls.map(image => image.url),
       categories: categories.map(cat => cat._id),
@@ -657,6 +630,12 @@ export class ProductsService {
       categories_web: categoriesWeb.map(cat => cat._id),
 
     })
+
+    await lastValueFrom(
+      this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+        ...newProduct, merchant
+      })
+    )
     return newProduct
 
   }
@@ -690,7 +669,7 @@ export class ProductsService {
         if (product.variants.length > 0 || product.groups.length > 0) return { error: true }
         if (item.quantity > product.stock) return { error: true }
       }
-      return {...product,merchant}
+      return { ...product, merchant }
     }))
     return checkProducts.filter(item => {
       if (typeof item === 'object' && 'error' in item && typeof item.error === 'boolean') {

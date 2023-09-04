@@ -79,11 +79,11 @@ const formSchema = z.object({
     .array(z.object({ url: z.string().url() }))
     .min(1, { message: "Must have at least 1 image" }),
   categories: z
-    .array(z.object({ cat_id: z.string() }))
-    .min(1, { message: "Must have at least 1 category" }),
+    .array(z.object({ cat_id: z.string() })),
+    // .min(1, { message: "Must have at least 1 category" }),
   categories_web: z
-    .array(z.object({ cat_id: z.string() }))
-    .min(1, { message: "Must have at least 1 category" }),
+    .array(z.object({ cat_id: z.string() })),
+    // .min(1, { message: "Must have at least 1 category" }),
 
   available: z.boolean(),
   payment_methods: z

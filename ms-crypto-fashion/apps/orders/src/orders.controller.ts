@@ -4,7 +4,7 @@ import { GetUser, GetUserId, Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
 import { ApiTags } from '@nestjs/swagger';
 import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
-import { FINDONE_ORDER_EVENT, UPDATEREVIEW_ORDER_EVENT } from '@app/common/constants/order.constant';
+import { CHECKOUT_EVENT, FINDONE_ORDER_EVENT, UPDATEREVIEW_ORDER_EVENT } from '@app/common/constants/order.constant';
 import { RmqService } from '@app/common';
 import { FindOrderById, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
 ApiTags('Order')
@@ -32,6 +32,7 @@ export class OrdersController {
     await this.ordersService.updateReviewStatus(data)
     this.rmqService.ack(context);
   }
+ 
   // @Post()
   // create(@GetUserId() userId: string, @Body() createOrderDto: CreateOrderDto) {
   //   return this.ordersService.ordering(userId, createOrderDto);

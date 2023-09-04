@@ -8,6 +8,7 @@ import {
     Connection,
     PipelineStage,
     PopulateOptions,
+    UpdateWithAggregationPipeline,
 } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 
@@ -70,6 +71,15 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     async aggregate(pipeline?: PipelineStage[]) {
         return this.model.aggregate(pipeline)
     }
+    async findAndUpdate(filterQuery: FilterQuery<TDocument>, update: UpdateWithAggregationPipeline | UpdateQuery<TDocument>) {
+        const document = await this.model.updateMany(filterQuery, update, { lean: true, new: true })
+        if (!document) {
+            this.logger.warn(`Document not found with filterQuery:`, filterQuery);
+            throw new NotFoundException('Document not found.');
+        }
+
+        return document;
+    }
     async findOneAndUpdate(
         filterQuery: FilterQuery<TDocument>,
         update: UpdateQuery<TDocument>,
@@ -112,7 +122,10 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     }
 
     async find(filterQuery: FilterQuery<TDocument>) {
-        return this.model.find(filterQuery, {}, { lean: true });
+        return this.model.find(filterQuery, {}, { lean: true })
+    }
+    async findPopulate(filterQuery: FilterQuery<TDocument>,populate: (string | PopulateOptions)[]) {
+        return this.model.find(filterQuery, {}, { lean: true }).populate(populate)
     }
     async findCount(filterQuery: FilterQuery<TDocument>): Promise<number> {
         return this.model.find(filterQuery).countDocuments({})

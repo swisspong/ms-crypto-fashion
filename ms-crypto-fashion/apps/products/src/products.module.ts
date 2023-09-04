@@ -18,6 +18,7 @@ import { VariantsModule } from './variants/variants.module';
 import { ComplaintsModule } from './complaints/complaints.module';
 import { CommentsModule } from './comments/comments.module';
 import { AssetsModule } from './assets/assets.module';
+import { CARTS_SERVICE } from '@app/common/constants/carts.constant';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AssetsModule } from './assets/assets.module';
       }),
       envFilePath: './apps/products/.env',
     }),
+    RmqModule.register({ name: CARTS_SERVICE }),
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
     DatabaseModule,
     CategoriesModule,

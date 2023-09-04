@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CartsController } from './carts.controller';
 import { CartsService } from './carts.service';
-import { DatabaseModule, authProviders } from '@app/common';
+import { DatabaseModule, RmqModule, authProviders } from '@app/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Cart, CartSchema } from './schemas/cart.schema';
 import { ConfigModule } from '@nestjs/config';
@@ -21,6 +21,7 @@ import { CheckoutsModule } from './checkouts/checkouts.module';
         JWT_SECRET: Joi.string().required()
       })
     }),
+    RmqModule,
     DatabaseModule,
     MongooseModule.forFeature([{ name: Cart.name, schema: CartSchema }]),
     ClientsModule.register([
@@ -44,5 +45,6 @@ import { CheckoutsModule } from './checkouts/checkouts.module';
     CartsRepository,
     JwtStrategy
   ],
+  exports:[CartsService]
 })
 export class CartsModule { }

@@ -32,22 +32,23 @@ async function bootstrap() {
   app.connectMicroservice({
     transport: Transport.TCP,
     options: {
-      host:'products-service',
+      host: 'products-service',
       port: Number(configService.get<number>('MICROSERVICE_PORT'))
     }
   } as TcpOptions);
+  // app.connectMicroservice(rmqService.getOptoins(AUTH_SERVICE))
   await app.startAllMicroservices();
 
-   // * set cors
-   const whitelist = ["http://example.com","http://merchant.example.com"];
+  // * set cors
+  const whitelist = ["http://example.com", "http://merchant.example.com"];
 
-   app.enableCors({
-     origin: (origin, callback) => {
-       const isWhitelisted = whitelist.includes(origin)
-       callback(null, isWhitelisted);
-     },
-     credentials: true,
-   })
+  app.enableCors({
+    origin: (origin, callback) => {
+      const isWhitelisted = whitelist.includes(origin)
+      callback(null, isWhitelisted);
+    },
+    credentials: true,
+  })
 
   await app.listen(configService.get<number>('PORT'));
   console.log(`Application is running on: ${await app.getUrl()}`);
