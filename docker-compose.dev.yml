@@ -81,6 +81,26 @@ services:
     volumes:
       - ./ms-crypto-fashion:/usr/src/app
       - /usr/src/app/node_modules
+  payments:
+    container_name: payments-service
+    restart: always
+    build:
+      context: ./ms-crypto-fashion
+      dockerfile: ./apps/payments/Dockerfile
+      target: development
+    command: npm run start:dev payments
+    ports:
+      - '8004:8004'
+    env_file:
+      - ./ms-crypto-fashion/apps/payments/.env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - rabbitmq
+    volumes:
+      - ./ms-crypto-fashion:/usr/src/app
+      - /usr/src/app/node_modules
   merchant-client:
     container_name: merchant-client
     restart: always
