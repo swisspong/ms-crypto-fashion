@@ -3,15 +3,18 @@ import { CreateCheckoutItemsDto } from '../dto/create-checkout.dto';
 import { CartsRepository } from '../carts.repository';
 import { CartItem } from '../schemas/cart.schema';
 import { MerchantStatus } from '@app/common/enums';
+import { CheckoutsRepository } from './checkouts.repository';
+import ShortUniqueId from 'short-unique-id';
 
 @Injectable()
 export class CheckoutsService {
     constructor(
         private readonly cartsRepository: CartsRepository,
+        private readonly checkoutsRepository: CheckoutsRepository,
         // @Inject('PRODUCTS') private readonly productsClient: ClientProxy,
     ) { }
+    private readonly uid = new ShortUniqueId()
     async createCheckoutItems(userId: string, createCheckoutDto: CreateCheckoutItemsDto) {
-
         let cart = await this.cartsRepository.findOne({
             user_id: userId
         })
@@ -19,7 +22,15 @@ export class CheckoutsService {
         const itemsSelecteds = cart.items.filter(item => createCheckoutDto.items.some(itemDto => itemDto === item.item_id))
         if (itemsSelecteds.length !== createCheckoutDto.items.length) throw new NotFoundException("Invalid item in cart.")
         itemsSelecteds.map(item => this.checkItem(item))
-        
+        await this.checkoutsRepository.create({
+            user_id: userId,
+            chkt_id: `cart_${this.uid.stamp(15)}`,
+            items: cart.items,
+
+        })
+        return {
+            message:"success"
+        }
     }
 
     checkItem(item: CartItem) {

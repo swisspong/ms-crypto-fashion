@@ -147,8 +147,6 @@ services:
       - ./customer-frontend:/usr/src/app
       - /usr/src/app/node_modules
 
-
-
   rabbitmq:
     image: rabbitmq
     ports:
@@ -217,11 +215,16 @@ services:
       dockerfile: Dockerfile
       context: ./proxy
     depends_on:
+      - payments
       - products
       - auth
       - carts
       - orders
-      # - merchant-client
+      - merchant-client
       - user-client
+      - admin-client
     ports:
       - 80:80
+# networks:
+#   default:
+#     name: bridge

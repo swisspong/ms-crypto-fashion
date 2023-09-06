@@ -32,9 +32,7 @@ import { CheckoutsModule } from './checkouts/checkouts.module';
           host:'products-service',
           port: 4001
         },
-
       },
-
     ]),
     CheckoutsModule,
   ],
@@ -45,6 +43,6 @@ import { CheckoutsModule } from './checkouts/checkouts.module';
     CartsRepository,
     JwtStrategy
   ],
-  exports:[CartsService]
+  exports:[CartsRepository]
 })
 export class CartsModule { }
