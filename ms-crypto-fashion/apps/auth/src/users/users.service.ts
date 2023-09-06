@@ -6,7 +6,7 @@ import ShortUniqueId from 'short-unique-id';
 // import { RoleFormat } from './schema/user.schema';
 import { HashService } from '@app/common';
 import { RoleFormat } from '@app/common/enums';
-import { CreateMerchantData } from '@app/common/interfaces';
+import { CreateMerchantData, DeleteMerchantData } from '@app/common/interfaces';
 @Injectable()
 export class UsersService {
   protected readonly logger = new Logger(UsersService.name);
@@ -124,5 +124,15 @@ export class UsersService {
       this.logger.error(error)
     }
 
+  }
+
+  async deleteMerchantIdInUser(data: DeleteMerchantData) {
+    try {
+      this.logger.warn("delete_merchant", data)
+      const result = await this.userRepository.findAndUpdate({mcht_id: data.mcht_id}, {$set: {mcht_id: "", role: RoleFormat.USER}})
+      this.logger.warn("delete to merchant =>", result)
+    } catch (error) {
+      this.logger.error(error)
+    }
   }
 }
