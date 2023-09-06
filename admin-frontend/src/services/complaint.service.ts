@@ -1,5 +1,4 @@
-import { API_PRODUCT } from "@/lib/utils";
-
+import { dynamicApi, SERVICE_FORMAT } from "@/lib/utils";
 export const getAllComplaints = async (data: { pageIndex: number, pageSize: number }): Promise<IComplaintResponse> => {
     const result = await API_PRODUCT.get(`complaints?per_page=${data.pageSize}&page=${data.pageIndex + 1}`).then((response) => response.data);
     return result

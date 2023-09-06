@@ -11,6 +11,7 @@ export class PermissionController {
   @Roles(RoleFormat.ADMIN)
   @Get()
   findAll() {
+    console.log("test ing")
     return this.permissionService.findAll();
   }
 

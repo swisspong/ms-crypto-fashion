@@ -30,7 +30,7 @@ async function bootstrap() {
   await app.startAllMicroservices()
 
    // * set cors
-   const whitelist = ["http://example.com","http://merchant.example.com"];
+   const whitelist = ["http://example.com", "http://admin.example.com","http://merchant.example.com"];
 
    app.enableCors({
      origin: (origin, callback) => {

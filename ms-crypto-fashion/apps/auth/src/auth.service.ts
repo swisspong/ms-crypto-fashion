@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import * as crypto from "crypto"
 import { UsersRepository } from './users/users.repository';
 import { SigninMetamaskDto } from './dto/signin-metamask-dto.dto';
@@ -15,6 +15,7 @@ import { Response } from 'express';
 @Injectable()
 export class AuthService {
   private readonly uid = new ShortUniqueId();
+  protected readonly logger = new Logger(AuthService.name);
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly jwtUtilsService: JwtUtilsService,
@@ -204,7 +205,7 @@ export class AuthService {
   // }
 
   async signout(res: any) {
-    res.clearCookie("token")
+    res.clearCookie("token", { domain: 'example.com'})
   }
 
 
