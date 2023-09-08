@@ -6,3 +6,7 @@ export interface CreateMerchantData {
     mcht_id: string;
     role: RoleFormat;
 }
+
+export interface DeleteMerchantData {
+    mcht_id: string;
+}

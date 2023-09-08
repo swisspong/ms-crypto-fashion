@@ -6,9 +6,9 @@ import { PermissionFormat, RoleFormat } from '@app/common/enums';
 import { GetUserId, Permission, Roles } from '@app/common/decorators';
 import { ApiTags } from '@nestjs/swagger';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { CREATE_MERCHANT_EVENT } from '@app/common/constants';
+import { CREATE_MERCHANT_EVENT, DELETE_MERCHANT_EVENT } from '@app/common/constants';
 import { RmqService } from '@app/common';
-import { CreateMerchantData } from '@app/common/interfaces';
+import { CreateMerchantData, DeleteMerchantData } from '@app/common/interfaces';
 @ApiTags('User')
 @Controller('users')
 export class UsersController {
@@ -66,6 +66,12 @@ export class UsersController {
   async handleOrderCreated(@Payload() data : CreateMerchantData, @Ctx() context: RmqContext) {
     await this.usersService.putMerchantIdToUser(data)
     this.rmqService.ack(context);
+  }
+
+  @EventPattern(DELETE_MERCHANT_EVENT)
+  async handlerMerchantDelete(@Payload() data: DeleteMerchantData, @Ctx() context: RmqContext){
+    await this.usersService.deleteMerchantIdInUser(data)
+    this.rmqService.ack(context)
   }
 
 }
