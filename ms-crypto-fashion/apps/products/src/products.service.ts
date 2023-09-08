@@ -17,6 +17,7 @@ import { Types } from 'mongoose';
 import { CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants/carts.constant';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
+import { OrderingEventPayload } from '@app/common/interfaces/order-event.interface';
 
 @Injectable()
 export class ProductsService {
@@ -690,5 +691,32 @@ export class ProductsService {
     const product = await this.productsRepository.findOne({ prod_id })
     if (!product) throw new NotFoundException("Category not found.")
     return await this.productsRepository.findOneAndDelete({ prod_id })
+  }
+
+  async cutStock(data: OrderingEventPayload) {
+    await Promise.all(data.items.map(async (item) => {
+      const newStock = -item.quantity
+      const currentProduct = await this.productsRepository.findOne({ prod_id: item.prod_id })
+      const chktProduct = item.product
+      if (
+        currentProduct.available === true
+       ) {
+
+      }
+      if (item.vrnt_id) {
+        const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id, "variants.vrnt_id": item.vrnt_id }, { $inc: { "variants.$.stock": newStock } })
+        if (!product) throw new BadRequestException("Product info has changed")
+        const variant = product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
+        if (!variant) throw new BadRequestException("Product info has changed")
+        if (variant.stock < 0) throw new BadRequestException("Product info has chagned")
+        return product
+      } else {
+
+        const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id }, { $inc: { stock: newStock } })
+        if (!newProduct) throw new BadRequestException("Product info has changed")
+        if (newProduct.stock < 0) throw new BadRequestException("Out of stock")
+        return newProduct
+      }
+    }))
   }
 }

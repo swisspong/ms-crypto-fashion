@@ -32,6 +32,7 @@ import { CARTS_SERVICE } from '@app/common/constants/carts.constant';
       }),
       envFilePath: './apps/products/.env',
     }),
+    RmqModule,
     RmqModule.register({ name: CARTS_SERVICE }),
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
     DatabaseModule,

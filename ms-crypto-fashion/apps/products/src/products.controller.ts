@@ -6,17 +6,20 @@ import { CreateMerchantDto } from './merchants/dto/create-merchant.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateProductDto } from './dto/create-product.dto';
 import { GetProductDto } from './dto/get-product.dto';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import { GetProductNoTypeSerchatDto } from './dto/get-product-no-type-search.dto';
 import { GetProductStoreDto } from './dto/get-product-store.dto';
 import { StoreQueryDto } from './dto/store-query.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { PRODUCTS_ORDERING_EVENT } from '@app/common/constants/products.constant';
+import { OrderingEventPayload } from '@app/common/interfaces/order-event.interface';
+import { RmqService } from '@app/common';
 
 @ApiTags("Products")
 @Controller('products')
 export class ProductsController {
   private readonly logger = new Logger(ProductsController.name)
-  constructor(private readonly productsService: ProductsService) { }
+  constructor(private readonly productsService: ProductsService, private readonly rmqService: RmqService,) { }
 
   @Roles(RoleFormat.MERCHANT)
   @Post()
@@ -58,6 +61,11 @@ export class ProductsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
+  }
+  @MessagePattern(PRODUCTS_ORDERING_EVENT)
+  async handlerOrdering(@Payload() data: OrderingEventPayload, context: RmqContext) {
+    await this.productsService.cutStock(data)
+    this.rmqService.ack(context);
   }
 
 

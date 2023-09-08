@@ -7,6 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import { TcpOptions, Transport } from '@nestjs/microservices';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { RmqService } from '@app/common';
+import { PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
 
 
 async function bootstrap() {
@@ -29,13 +31,17 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('', app, document);
   const configService = app.get<ConfigService>(ConfigService)
-  app.connectMicroservice({
+
+  const rmqService = app.get<RmqService>(RmqService)
+  app.connectMicroservice([{
     transport: Transport.TCP,
     options: {
       host: 'products-service',
       port: Number(configService.get<number>('MICROSERVICE_PORT'))
     }
-  } as TcpOptions);
+  },
+  rmqService.getOptoins(PRODUCTS_SERVICE)
+  ])
   // app.connectMicroservice(rmqService.getOptoins(AUTH_SERVICE))
   await app.startAllMicroservices();
 

@@ -4,16 +4,16 @@ import { GetUser, GetUserId, Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
 import { ApiTags } from '@nestjs/swagger';
 import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
-import { CHECKOUT_EVENT, FINDONE_ORDER_EVENT, UPDATEREVIEW_ORDER_EVENT } from '@app/common/constants/order.constant';
+import { FINDONE_ORDER_EVENT, ORDERING_EVENT, UPDATEREVIEW_ORDER_EVENT } from '@app/common/constants/order.constant';
 import { RmqService } from '@app/common';
-import { FindOrderById, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
+import { FindOrderById, OrderingEventPayload, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
 ApiTags('Order')
 @Controller('orders')
 export class OrdersController {
   constructor(
     private readonly ordersService: OrdersService,
     private readonly rmqService: RmqService,
-  ) {  }
+  ) { }
 
   @Get()
   getHello(): string {
@@ -21,7 +21,7 @@ export class OrdersController {
   }
 
   @MessagePattern(FINDONE_ORDER_EVENT)
-  async handlerOrderFindone(@Payload() data: FindOrderById, @Ctx() context: RmqContext, ) {
+  async handlerOrderFindone(@Payload() data: FindOrderById, @Ctx() context: RmqContext,) {
     const order = this.ordersService.findoneOrderById(data)
     this.rmqService.ack(context);
     return order;
@@ -32,7 +32,12 @@ export class OrdersController {
     await this.ordersService.updateReviewStatus(data)
     this.rmqService.ack(context);
   }
- 
+  @MessagePattern(ORDERING_EVENT)
+  async handlerOrdering(@Payload() data: OrderingEventPayload, context: RmqContext) {
+    await this.ordersService.ordering(data)
+    this.rmqService.ack(context);
+  }
+
   // @Post()
   // create(@GetUserId() userId: string, @Body() createOrderDto: CreateOrderDto) {
   //   return this.ordersService.ordering(userId, createOrderDto);

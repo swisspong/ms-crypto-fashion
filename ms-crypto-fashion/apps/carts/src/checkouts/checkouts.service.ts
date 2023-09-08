@@ -1,17 +1,21 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateCheckoutItemsDto } from '../dto/create-checkout.dto';
 import { CartsRepository } from '../carts.repository';
 import { CartItem, Product } from '../schemas/cart.schema';
 import { MerchantStatus } from '@app/common/enums';
 import { CheckoutsRepository } from './checkouts.repository';
 import ShortUniqueId from 'short-unique-id';
+import { OrderingDto } from './dto/ordering.dto';
+import { lastValueFrom } from 'rxjs';
+import { ClientProxy } from '@nestjs/microservices';
+import { ORDERING_EVENT, ORDER_SERVICE } from '@app/common/constants/order.constant';
 
 @Injectable()
 export class CheckoutsService {
     constructor(
         private readonly cartsRepository: CartsRepository,
         private readonly checkoutsRepository: CheckoutsRepository,
-        // @Inject('PRODUCTS') private readonly productsClient: ClientProxy,
+        @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy,
     ) { }
     private readonly uid = new ShortUniqueId()
     async createCheckoutItems(userId: string, createCheckoutDto: CreateCheckoutItemsDto) {
@@ -25,7 +29,25 @@ export class CheckoutsService {
         await this.checkoutsRepository.create({
             user_id: userId,
             chkt_id: `chkt_${this.uid.stamp(15)}`,
-            items: cart.items,
+            items: cart.items.map(item => {
+                const price = item.vrnt_id ? item.product.variants.find(variant => variant.vrnt_id === item.vrnt_id).price : item.product.price
+                const variant = item.vrnt_id ? item.product.variants.find(vrnt => vrnt.vrnt_id === item.vrnt_id).variant_selecteds.map(vrnts => {
+                    const group = item.product.groups.find(grp => grp.vgrp_id === vrnts.vgrp_id)
+                    const option = group.options.find(optn => optn.optn_id === vrnts.optn_id)
+                    return {
+                        ...vrnts,
+                        option_name: option.name,
+                        group_name: group.name
+                    }
+                }) : []
+                return {
+                    ...item,     
+                    price,
+                    total: price * item.quantity,
+                    variant,
+                    image: item.vrnt_id ? item.product.variants.find(vrnt => vrnt.vrnt_id === item.vrnt_id).image_url ?? item.product.image_urls[0] : item.product.image_urls[0]
+                }
+            }),
 
         })
         return {
@@ -37,7 +59,7 @@ export class CheckoutsService {
         if (!checkout) throw new NotFoundException("Checkout not found.")
         return checkout
     }
-    async createOrder(chktId: string) {
+    async createOrder(chktId: string, orderingDto: OrderingDto) {
         const checkout = await this.checkoutsRepository.findOne({ chkt_id: chktId })
         if (!checkout) throw new NotFoundException("Checkout not found.")
         const cart = await this.cartsRepository.findOne({ user_id: checkout.user_id })
@@ -91,21 +113,26 @@ export class CheckoutsService {
                     const chktVariant = chktItem.product.variants.find(variant => chktItem.vrnt_id === variant.vrnt_id)
                     const cartVariant = cartItem.product.variants.find(variant => chktItem.vrnt_id === variant.vrnt_id)
                     if (chktItem.quantity > chktVariant.stock || cartItem.quantity > cartVariant.stock || chktItem.quantity > cartVariant.stock) throw new BadRequestException("Product not enough.")
-
                 } else {
                     if (chktItem.quantity > chktItem.product.stock || cartItem.quantity > cartItem.product.stock || chktItem.quantity > cartItem.product.stock) throw new BadRequestException("Product not enough.")
                 }
-
-
             } else {
                 throw new BadRequestException("Product info has changed.")
             }
             return chktItem
-
-
         })
-        //push event to order chkt item array and payment
-        
+
+        await lastValueFrom(
+            this.orderClient.emit(ORDERING_EVENT, {
+                ...checkout,
+                ...orderingDto
+            })
+        )
+
+        return {
+            message: 'success'
+        }
+
     }
     checkItem(item: CartItem) {
         const product = item.product

@@ -50,8 +50,8 @@ export class Order extends AbstractDocument {
     @Prop()
     tracking?: string
 
-    @Prop()
-    google_id?: string;
+    // @Prop()
+    // google_id?: string;
 
     @Prop({ enum: StatusFormat, default: StatusFormat.NOT_FULLFILLMENT })
     status?: string

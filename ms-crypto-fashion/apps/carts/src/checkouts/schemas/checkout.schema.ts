@@ -78,6 +78,15 @@ export class Product {
 export class CheckoutItem {
     item_id: string;
     quantity: number
+    price: number;
+    total: number
+    variant: {
+        optn_id: string
+        vgrp_id: string;
+        option_name: string
+        group_name: string
+    }[]
+    image: string;
     vrnt_id?: string
     prod_id: string
     product: Product
