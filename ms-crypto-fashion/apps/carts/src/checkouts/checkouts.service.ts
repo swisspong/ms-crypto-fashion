@@ -96,15 +96,16 @@ export class CheckoutsService {
                     if (chktItem.quantity > chktItem.product.stock || cartItem.quantity > cartItem.product.stock || chktItem.quantity > cartItem.product.stock) throw new BadRequestException("Product not enough.")
                 }
 
-                
+
             } else {
                 throw new BadRequestException("Product info has changed.")
             }
-            // cartItem.
+            return chktItem
 
 
         })
-
+        //push event to order chkt item array and payment
+        
     }
     checkItem(item: CartItem) {
         const product = item.product
