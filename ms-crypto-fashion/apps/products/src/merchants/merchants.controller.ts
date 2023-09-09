@@ -7,10 +7,18 @@ import { ApiTags } from '@nestjs/swagger';
 import { CredentialMerchantDto } from './dto/credential-merchant.dto';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
+import { CHARGE_MONTH_EVENT } from '@app/common/constants/product.constant';
+import { UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
+import { log } from 'console';
+import { RmqService } from '@app/common';
 @ApiTags('Merchant')
 @Controller('merchants')
 export class MerchantsController {
-  constructor(private readonly merchantsService: MerchantsService) { }
+  constructor(
+    private readonly rmqService: RmqService,
+    private readonly merchantsService: MerchantsService
+  ) { }
   @Roles(RoleFormat.USER)
   @Post("/start")
   create(@Res({ passthrough: true }) res, @GetUserId() userId: string, @GetUser('role') role: string, @GetUser('permission') permission: string[], @GetUser('merchant') merchant: string | undefined, @Body() createMerchantDto: CreateMerchantDto) {
@@ -81,6 +89,14 @@ export class MerchantsController {
   @Patch(':id/approves')
   updateApproves(@Param('id') id: string, @Body() updateMerchantDto: UpdateStatusDto) {
     return this.merchantsService.updateApproves(id, updateMerchantDto)
+  }
+
+
+  // Event micro
+  @EventPattern(CHARGE_MONTH_EVENT)
+  async handlerAmountUpdate(@Payload() data: UpdateChargeMerchant, @Ctx() context: RmqContext) {
+    await this.merchantsService.updateChargeMerchantEvent(data)
+    this.rmqService.ack(context)
   }
 
 

@@ -13,6 +13,7 @@ import { ProductsModule } from '../products.module';
   imports: [
     JwtUtilsModule,
     RmqModule.register({ name: AUTH_SERVICE }),
+    RmqModule,
     MongooseModule.forFeature([{ name: Merchant.name, schema: MerchantSchema }]),
   ],
   controllers: [MerchantsController],

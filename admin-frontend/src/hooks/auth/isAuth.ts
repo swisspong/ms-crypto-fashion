@@ -48,7 +48,7 @@ export const withUser = () => {
             if (role !== RoleFormat.ADMIN) {
                 return {
                     redirect: {
-                        destination: "http://localhost:3000/signin",
+                        destination: "http://example.com/signin",
                         permanent: false,
                     },
                 };
@@ -103,7 +103,7 @@ export const withUserPermission = (permission: string[], next: string) => {
 
                 return {
                     redirect: {
-                        destination: "http://localhost:3000/signin",
+                        destination: "http:/http://example.com/signin",
                         permanent: false,
                     },
                 };

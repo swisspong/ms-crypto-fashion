@@ -56,6 +56,8 @@ const PaymentSubscriptionDialog = () => {
       }
     }
     const token = await tokenHandler(omise)
+    console.log(token)
+
     const body: ICreateCreditCard = {
       amount_: 300,
       token: token.id

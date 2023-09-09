@@ -12,6 +12,8 @@ import { CredentialMerchantDto } from './dto/credential-merchant.dto';
 // import { MerchantStatus } from './schemas/merchant.schema';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
+import { UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
+import { StatusFormat } from 'apps/orders/src/schemas/order.schema';
 interface StatusTotal {
     _id: MerchantStatus;
     count: number
@@ -258,6 +260,15 @@ export class MerchantsService {
             return await this.merchantsRepository.findOneAndUpdate({ mcht_id: id }, { $set: { status: status } })
         } catch (error) {
             console.log(error)
+        }
+    }
+
+    async updateChargeMerchantEvent(data: UpdateChargeMerchant) {
+        try {
+            const {amount, end_date, mcht_id} = data
+            await this.merchantsRepository.findAndUpdate({mcht_id}, {$set: {amount, end_date, status: MerchantStatus.OPENED}})
+        } catch (error) {
+            throw error
         }
     }
 }

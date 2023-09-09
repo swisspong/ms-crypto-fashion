@@ -7,6 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import { TcpOptions, Transport } from '@nestjs/microservices';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { PRODUCT_SERVICE } from '@app/common/constants/product.constant';
+import { RmqService } from '@app/common';
 
 
 async function bootstrap() {
@@ -32,11 +34,12 @@ async function bootstrap() {
   app.connectMicroservice({
     transport: Transport.TCP,
     options: {
-      host: 'products-service',
+      host: PRODUCT_SERVICE,
       port: Number(configService.get<number>('MICROSERVICE_PORT'))
     }
   } as TcpOptions);
-  // app.connectMicroservice(rmqService.getOptoins(AUTH_SERVICE))
+  const rmqService = app.get<RmqService>(RmqService)
+  app.connectMicroservice(rmqService.getOptoins(PRODUCT_SERVICE))
   await app.startAllMicroservices();
 
   // * set cors
