@@ -35,13 +35,15 @@ async function bootstrap() {
   const configService = app.get<ConfigService>(ConfigService)
 
   const rmqService = app.get<RmqService>(RmqService)
-  app.connectMicroservice([{
+  app.connectMicroservice([
+    {
     transport: Transport.TCP,
     options: {
       host: PRODUCTS_SERVICE,
       port: Number(configService.get<number>('MICROSERVICE_PORT'))
     }
   },
+  
   rmqService.getOptoins(PRODUCTS_SERVICE)
   ])
   await app.startAllMicroservices();

@@ -52,7 +52,8 @@ export class PaymentsService {
         end_date: end_date_credit,
         mcht_id: user_id
       }
-
+      console.log(data);
+      
       await lastValueFrom(
         this.productClient.emit(CHARGE_MONTH_EVENT, {
           ...data
