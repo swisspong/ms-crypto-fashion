@@ -90,7 +90,6 @@ export class Cart extends AbstractDocument {
     @Prop({ required: true, unique: true })
     user_id: string;
 
-
     @Prop([{ type: CartItem }])
     items: CartItem[]
 

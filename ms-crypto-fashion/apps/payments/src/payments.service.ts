@@ -2,9 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import * as Omise from 'omise';
 import { CreditCardPaymentDto } from './dto/payment-credit-card.dto';
 import { lastValueFrom } from 'rxjs';
-import { CHARGE_MONTH_EVENT, PRODUCT_SERVICE } from '@app/common/constants/product.constant';
+
 import { ClientProxy } from '@nestjs/microservices';
 import { UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
+import { CHARGE_MONTH_EVENT, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
 
 @Injectable()
 export class PaymentsService {
@@ -15,7 +16,7 @@ export class PaymentsService {
   })
 
   constructor(
-    @Inject(PRODUCT_SERVICE) private readonly productClient: ClientProxy
+    @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy
   ) { }
 
   getHello(): string {

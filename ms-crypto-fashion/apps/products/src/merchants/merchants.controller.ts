@@ -8,10 +8,10 @@ import { CredentialMerchantDto } from './dto/credential-merchant.dto';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { CHARGE_MONTH_EVENT } from '@app/common/constants/product.constant';
 import { UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
 import { log } from 'console';
 import { RmqService } from '@app/common';
+import { CHARGE_MONTH_EVENT } from '@app/common/constants/products.constant';
 @ApiTags('Merchant')
 @Controller('merchants')
 export class MerchantsController {

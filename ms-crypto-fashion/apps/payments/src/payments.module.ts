@@ -5,8 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { DatabaseModule, JwtUtilsModule, RmqModule, authProviders } from '@app/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { PRODUCT_SERVICE } from '@app/common/constants/product.constant';
 import { JwtStrategy } from '@app/common/strategy';
+import { PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { JwtStrategy } from '@app/common/strategy';
       }),
       envFilePath: './apps/payments/.env',
     }),
-    RmqModule.register({ name: PRODUCT_SERVICE }),
+    RmqModule.register({ name: PRODUCTS_SERVICE }),
     JwtUtilsModule
     // DatabaseModule,
     // MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }])
