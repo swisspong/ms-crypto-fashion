@@ -44,7 +44,7 @@ interface Variant {
     stock: number;
     image_url?: string
 }
-interface Product {
+export interface IProduct {
     prod_id: string;
     name: string;
     available?: boolean
@@ -72,7 +72,7 @@ export interface CheckoutItem {
     image:string
     vrnt_id?: string
     prod_id: string
-    product: Product
+    product: IProduct
 }
 
 

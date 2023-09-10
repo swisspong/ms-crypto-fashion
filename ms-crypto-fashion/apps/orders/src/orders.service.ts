@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { OrdersRepository } from './orders.repository';
-import axios from 'axios';
+// import axios from 'axios';
 import { ClientProxy, RmqContext } from '@nestjs/microservices';
 import { RmqService } from '@app/common';
 import { CheckoutItem, FindOrderById, OrderingEventPayload, PaymentMethodFormat, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
@@ -437,4 +437,5 @@ export class OrdersService {
   //     session.endSession()
   //   }
   // }
+  
 }

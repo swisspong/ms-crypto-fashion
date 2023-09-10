@@ -17,7 +17,7 @@ import { Types } from 'mongoose';
 import { CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants/carts.constant';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
-import { OrderingEventPayload } from '@app/common/interfaces/order-event.interface';
+import { IProduct, OrderingEventPayload } from '@app/common/interfaces/order-event.interface';
 
 @Injectable()
 export class ProductsService {
@@ -700,7 +700,7 @@ export class ProductsService {
       const chktProduct = item.product
       if (
         currentProduct.available === true
-       ) {
+      ) {
 
       }
       if (item.vrnt_id) {
@@ -719,4 +719,5 @@ export class ProductsService {
       }
     }))
   }
+
 }

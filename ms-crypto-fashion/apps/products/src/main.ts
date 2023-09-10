@@ -9,7 +9,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 
 import { RmqService } from '@app/common';
-import { PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
+import { PRODUCTS_SERVICE, PRODUCTS_TCP } from '@app/common/constants/products.constant';
 
 
 
@@ -39,7 +39,7 @@ async function bootstrap() {
     {
       transport: Transport.TCP,
       options: {
-        host: PRODUCTS_SERVICE,
+        host: PRODUCTS_TCP,
         port: Number(configService.get<number>('MICROSERVICE_PORT'))
       }
     }

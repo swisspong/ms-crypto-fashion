@@ -9,6 +9,9 @@ import { CartItem } from './schemas/cart.schema';
 import { ProductPayloadDataEvent } from '@app/common/interfaces/products-event.interface';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { CreateCheckoutItemsDto } from './dto/create-checkout.dto';
+import { PRODUCTS_TCP } from '@app/common/constants/products.constant';
+import { IProduct } from '@app/common/interfaces/order-event.interface';
+import { ProductsUtilService } from '@app/common/utils/products/products-util.service';
 
 @Injectable()
 export class CartsService {
@@ -16,7 +19,8 @@ export class CartsService {
   private readonly uid = new ShortUniqueId()
   constructor(
     private readonly cartsRepository: CartsRepository,
-    @Inject('PRODUCTS') private readonly productsClient: ClientProxy,
+    @Inject(PRODUCTS_TCP) private readonly productsClient: ClientProxy,
+    private readonly productsUtilService: ProductsUtilService
   ) { }
 
   async updateCartItemEvent(data: ProductPayloadDataEvent) {
@@ -42,32 +46,21 @@ export class CartsService {
     let cart = await this.cartsRepository.findOne({ user_id: userId })
     cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
     if (!cart) throw new NotFoundException("Cart not found.")
-    const { data: product } = await lastValueFrom(this.productsClient.send({ cmd: 'get_product' }, { prod_id: productId }));
+    const { data: product }: { data: IProduct } = await lastValueFrom(this.productsClient.send({ cmd: 'get_product' }, { prod_id: productId }));
     this.logger.log("res from product =>", product)
     if (!product) throw new NotFoundException("Product not found.")
     if (!product.available) throw new BadRequestException("Product not available.")
     // if (product.stock <= 0) throw new BadRequestException("stock not enough.")
     this.logger.warn(product.merchant)
     if (product.merchant.status !== MerchantStatus.OPENED) throw new BadRequestException("Merchant not available.")
-    product.variants.map(variant => {
-      if (variant.variant_selecteds.length <= 0) throw new BadRequestException("The option is invalid.")
-      variant.variant_selecteds.map(variant_selected => {
-        const group = product.groups.find(group => group.vgrp_id === variant_selected.vgrp_id)
-        if (!group) throw new BadRequestException("The option is invalid.")
-        const option = group.options.find(option => option.optn_id === variant_selected.optn_id)
-        if (!option) throw new BadRequestException("The option is invalid.")
-      })
-    })
+
+    if (!this.productsUtilService.isValid(product)) throw new BadRequestException("Product data has changed.")
 
     const existIndex = cart.items.findIndex(item => {
       if (item.prod_id === product.prod_id) {
-        if (addToCartDto.vrnt_id) {
-
-          if (item.vrnt_id === addToCartDto.vrnt_id) return true;
-          return false
-        } else {
-
-          if (product.stock < item.quantity + addToCartDto.quantity) throw new BadRequestException("The product not enough.")
+        if (product.variants.length > 0 && item.vrnt_id && item.vrnt_id === addToCartDto.vrnt_id && this.productsUtilService.isIncludeVariant(product, item.vrnt_id)) {
+          return true
+        } else if (product.variants.length <= 0 && !item.vrnt_id) {
           return true
         }
       }
@@ -77,13 +70,7 @@ export class CartsService {
       if (product.variants.length <= 0) throw new BadRequestException("The product has no options.")
       const variant = product.variants.find(variant => variant.vrnt_id === addToCartDto.vrnt_id)
       if (!variant) throw new NotFoundException("Variant not found.")
-      if (variant.variant_selecteds.length <= 0) throw new BadRequestException("The option is invalid.")
-      variant.variant_selecteds.map(variant_selected => {
-        const group = product.groups.find(group => group.vgrp_id === variant_selected.vgrp_id)
-        if (!group) throw new BadRequestException("The option is invalid.")
-        const option = group.options.find(option => option.optn_id === variant_selected.optn_id)
-        if (!option) throw new BadRequestException("The option is invalid.")
-      })
+
       if (existIndex >= 0) {
         cart.items[existIndex].quantity = cart.items[existIndex].quantity + addToCartDto.quantity
         if (cart.items[existIndex].quantity > variant.stock) throw new BadRequestException("The product not enough.")
@@ -96,8 +83,6 @@ export class CartsService {
         newItem.vrnt_id = addToCartDto.vrnt_id
         if (newItem.quantity > variant.stock) throw new BadRequestException("The product not enough.")
         cart.items.push(newItem)
-
-
       }
     } else {
       if (product.variants.length > 0) throw new BadRequestException("The product has options.")
@@ -111,7 +96,7 @@ export class CartsService {
         newItem.item_id = `item_${this.uid.stamp(15)}`
         newItem.prod_id = product.prod_id
         newItem.quantity = addToCartDto.quantity
-        const { description, sku, ...prod } = product
+        const { description, sku, ...prod } = product as any
         newItem.product = prod
         if (newItem.quantity > product.stock) throw new BadRequestException("The product not enough.")
         cart.items.push(newItem)
@@ -137,31 +122,15 @@ export class CartsService {
 
     if (!product) throw new NotFoundException("Product not found.")
     if (!product.available) throw new BadRequestException("Product not available.")
-    // if (product.stock <= 0) throw new BadRequestException("stock not enough.")
-    if (product.merchant.status !== MerchantStatus.OPENED) throw new BadRequestException("Merchant not available.")
-    product.variants.map(variant => {
-      if (variant.variant_selecteds.length <= 0) throw new BadRequestException("The option is invalid.")
-      variant.variant_selecteds.map(variant_selected => {
-        const group = product.groups.find(group => group.vgrp_id === variant_selected.vgrp_id)
-        if (!group) throw new BadRequestException("The option is invalid.")
-        const option = group.options.find(option => option.optn_id === variant_selected.optn_id)
-        if (!option) throw new BadRequestException("The option is invalid.")
-      })
-    })
 
+    if (product.merchant.status !== MerchantStatus.OPENED) throw new BadRequestException("Merchant not available.")
+
+    if (!this.productsUtilService.isValid(product)) throw new BadRequestException("Products data has changed.")
 
     if (updateCartDto.vrnt_id) {
       if (product.variants.length <= 0) throw new BadRequestException("The product has no options.")
       const variant = product.variants.find(variant => variant.vrnt_id === updateCartDto.vrnt_id)
       if (!variant) throw new NotFoundException("Variant not found.")
-      if (variant.variant_selecteds.length <= 0) throw new BadRequestException("The option is invalid.")
-      variant.variant_selecteds.map(variant_selected => {
-        const group = product.groups.find(group => group.vgrp_id === variant_selected.vgrp_id)
-        if (!group) throw new BadRequestException("The option is invalid.")
-        const option = group.options.find(option => option.optn_id === variant_selected.optn_id)
-        if (!option) throw new BadRequestException("The option is invalid.")
-      })
-
       cart.items[existItemIndex].quantity = updateCartDto.quantity
       if (cart.items[existItemIndex].quantity > variant.stock) throw new BadRequestException("The product not enough.")
 
