@@ -265,6 +265,9 @@ export class MerchantsService {
 
     async updateChargeMerchantEvent(data: UpdateChargeMerchant) {
         try {
+            console.log("Merchant Data")
+            console.log(data);
+            
             const {amount, end_date, mcht_id} = data
             await this.merchantsRepository.findAndUpdate({mcht_id}, {$set: {amount, end_date, status: MerchantStatus.OPENED}})
         } catch (error) {
