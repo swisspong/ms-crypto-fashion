@@ -72,4 +72,13 @@ export class ProductsUtilService {
     isIncludeVariant(product: IProduct, vrntId: string) {
         return product.variants.some(vrnt => vrnt.vrnt_id === vrntId)
     }
+    isHasVariant(product: IProduct) {
+        return product.variants.length > 0 && product.groups.length > 0
+    }
+    isEnoughVariant(product: IProduct, vrntId: string, quantity: number) {
+        return product.variants.some(variant => variant.vrnt_id === vrntId && variant.stock >= quantity)
+    }
+    isEnoughStock(product: IProduct, quantity: number) {
+        return product.stock >= quantity
+    }
 }

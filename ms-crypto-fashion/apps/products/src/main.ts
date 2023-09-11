@@ -39,7 +39,7 @@ async function bootstrap() {
     {
       transport: Transport.TCP,
       options: {
-        host: PRODUCTS_TCP,
+        host: PRODUCTS_SERVICE,
         port: Number(configService.get<number>('MICROSERVICE_PORT'))
       }
     }

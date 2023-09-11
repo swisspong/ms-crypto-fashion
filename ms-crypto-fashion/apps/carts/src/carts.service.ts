@@ -9,7 +9,7 @@ import { CartItem } from './schemas/cart.schema';
 import { ProductPayloadDataEvent } from '@app/common/interfaces/products-event.interface';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { CreateCheckoutItemsDto } from './dto/create-checkout.dto';
-import { PRODUCTS_TCP } from '@app/common/constants/products.constant';
+import { PRODUCTS_SERVICE, PRODUCTS_TCP } from '@app/common/constants/products.constant';
 import { IProduct } from '@app/common/interfaces/order-event.interface';
 import { ProductsUtilService } from '@app/common/utils/products/products-util.service';
 
@@ -19,7 +19,7 @@ export class CartsService {
   private readonly uid = new ShortUniqueId()
   constructor(
     private readonly cartsRepository: CartsRepository,
-    @Inject(PRODUCTS_TCP) private readonly productsClient: ClientProxy,
+    @Inject(PRODUCTS_SERVICE) private readonly productsClient: ClientProxy,
     private readonly productsUtilService: ProductsUtilService
   ) { }
 
@@ -34,6 +34,11 @@ export class CartsService {
 
     let cart = await this.cartsRepository.findOne({ user_id: userId })
     cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
+    const errorItems: CartItem[] = []
+    this.filterItem(errorItems, cart.items)
+    if (errorItems.length > 0) {
+      await this.cartsRepository.findOneAndUpdate({ user_id: userId }, { $set: { items: cart.items } })
+    }
     return cart.items
     // const { data: products } = await lastValueFrom(this.productsClient.send({ cmd: 'check_product_list' }, { items: cart.items.map(item => ({ prod_id: item.prod_id, quantity: item.quantity, vrnt_id: item.vrnt_id })) }));
     // return products.map(product => {
@@ -58,10 +63,14 @@ export class CartsService {
 
     const existIndex = cart.items.findIndex(item => {
       if (item.prod_id === product.prod_id) {
-        if (product.variants.length > 0 && item.vrnt_id && item.vrnt_id === addToCartDto.vrnt_id && this.productsUtilService.isIncludeVariant(product, item.vrnt_id)) {
-          return true
-        } else if (product.variants.length <= 0 && !item.vrnt_id) {
-          return true
+        if (addToCartDto.vrnt_id) {
+          if (!this.productsUtilService.isHasVariant(product)) throw new BadRequestException("Product has no variant.")
+          if (!this.productsUtilService.isIncludeVariant(product, addToCartDto.vrnt_id)) throw new NotFoundException("Variant not found.")
+          if (item.vrnt_id === addToCartDto.vrnt_id) return true
+        } else {
+          if (!this.productsUtilService.isHasVariant(product)) {
+            return true
+          }
         }
       }
       return false
@@ -104,6 +113,8 @@ export class CartsService {
 
       }
     }
+    const errorItems: CartItem[] = []
+    this.filterItem(errorItems, cart.items)
     const newCart = await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { items: cart.items })
     return newCart
 
@@ -136,7 +147,7 @@ export class CartsService {
 
       if (cart.items[existItemIndex].vrnt_id !== updateCartDto.vrnt_id) {
         const itemDuplicate = cart.items.find(item => {
-          if ((item.product as any)._id === (cart.items[existItemIndex].product as any)._id) {
+          if (item.product.prod_id === cart.items[existItemIndex].product.prod_id) {
             if (item.vrnt_id === updateCartDto.vrnt_id) {
               return true
             }
@@ -152,6 +163,8 @@ export class CartsService {
       if (cart.items[existItemIndex].quantity > product.stock) throw new BadRequestException("The product not enough.")
     }
 
+    const errorItems: CartItem[] = []
+    this.filterItem(errorItems, cart.items)
 
     const newCart = await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { items: cart.items })
     return newCart
@@ -165,11 +178,48 @@ export class CartsService {
     const itemIndex = cart.items.findIndex(item => item.item_id === itemId)
     if (itemIndex < 0) throw new BadRequestException("Item not found.")
     cart.items.splice(itemIndex, 1)
+    const errorItems: CartItem[] = []
+    this.filterItem(errorItems, cart.items)
     const newCart = await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { items: cart.items })
     return newCart
   }
 
+  isValidItem(cartItem: CartItem) {
+    if (cartItem.prod_id === cartItem.product.prod_id &&
+      cartItem.product.available === true &&
+      cartItem.product.merchant.status === MerchantStatus.OPENED
+    ) {
+      if (cartItem.vrnt_id) {
+        if (
+          this.productsUtilService.isHasVariant(cartItem.product) &&
+          this.productsUtilService.isIncludeVariant(cartItem.product, cartItem.vrnt_id) &&
+          this.productsUtilService.isEnoughVariant(cartItem.product, cartItem.vrnt_id, cartItem.quantity)
+        ) {
+          return true
+        }
+      } else {
+        if (
+          !this.productsUtilService.isHasVariant(cartItem.product) &&
+          this.productsUtilService.isEnoughStock(cartItem.product, cartItem.quantity)
+        ) {
+          return true
+        }
+      }
 
+    }
+    return false
+  }
+  filterItem(errorItems: CartItem[], items: CartItem[]) {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      if (this.productsUtilService.isValid(item.product) && this.isValidItem(item)) {
 
+      }
+      let tmpIndex = i
+      --i
+      const errorItem = items.splice(tmpIndex, 1)[0]
+      errorItems.push(errorItem)
+    }
+  }
 
 }

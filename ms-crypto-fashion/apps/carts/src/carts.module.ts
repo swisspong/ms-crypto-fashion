@@ -10,7 +10,7 @@ import { JwtStrategy } from '@app/common/strategy';
 import { CartsRepository } from './carts.repository';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CheckoutsModule } from './checkouts/checkouts.module';
-import { PRODUCTS_TCP } from '@app/common/constants/products.constant';
+import { PRODUCTS_SERVICE, PRODUCTS_TCP } from '@app/common/constants/products.constant';
 import { ProductsUtilModule } from '@app/common/utils/products/products-util.module';
 
 @Module({
@@ -28,7 +28,7 @@ import { ProductsUtilModule } from '@app/common/utils/products/products-util.mod
     MongooseModule.forFeature([{ name: Cart.name, schema: CartSchema }]),
     ClientsModule.register([
       {
-        name: PRODUCTS_TCP,
+        name: PRODUCTS_SERVICE,
         transport: Transport.TCP,
         options: {
           host: 'products-service',

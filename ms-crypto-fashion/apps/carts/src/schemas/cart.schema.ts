@@ -8,7 +8,7 @@ export enum PaymentMethodFormat {
     CREDIT = "credit",
     WALLET = "wallet",
 }
-class Merchant extends AbstractDocument {
+class Merchant  {
 
     mcht_id: string;
 
@@ -44,8 +44,8 @@ class Variant {
     stock: number;
     image_url?: string
 }
-export class Product extends AbstractDocument {
-
+export class Product  {
+    
     prod_id: string;
 
 
