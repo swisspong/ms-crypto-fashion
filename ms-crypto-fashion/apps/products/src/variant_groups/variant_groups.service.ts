@@ -23,7 +23,9 @@ export class VariantGroupsService {
   ) { }
 
   async create(merchantId: string, productId: string, createVariantGroupDto: CreateVariantGroupDto) {
-    const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchantId) })
+    const merchant = await this.merchantsRepository.findOne({mcht_id: merchantId})
+    if (!merchant)  throw new NotFoundException("Merchant not found.")
+    const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchant._id) })
     if (!product) throw new NotFoundException("Product not found.")
     const tmpGroups = [...createVariantGroupDto.groups, ...product.groups]
 

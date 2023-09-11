@@ -107,6 +107,9 @@ export class CategoriesService {
             },
         ])
 
+        console.log(categories);
+        
+
         return {
             data: categories,
             page: categoriesFilter.page,

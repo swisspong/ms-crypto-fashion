@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useUserInfo } from "@/src/hooks/user/queries";
 import { useSignout } from "@/src/hooks/user/auth/mutations";
+import { useMerchantById } from "@/src/hooks/merchant/queries";
 
 export function Menu() {
   const router = useRouter();
@@ -35,6 +36,8 @@ export function Menu() {
     .toUpperCase()
     .replace("/", " > ");
   const { data, isLoading, isSuccess } = useUserInfo();
+  const {data: merchantInfo} = useMerchantById(data?.mcht_id)
+  
 
   const {
     mutate,
@@ -43,8 +46,9 @@ export function Menu() {
   } = useSignout();
 
   useEffect(() => {
+
     if (logoutSuccess) {
-      router.push("http://localhost:3000/signin");
+      router.push(`${process.env.HOST_CUSTOMER}/signin`);
     }
   }, [logoutSuccess]);
   return (
@@ -73,9 +77,9 @@ export function Menu() {
           <MenubarContent forceMount>
             <MenubarLabel inset>Account</MenubarLabel>
             <MenubarSeparator />
-            <MenubarRadioGroup value={`admin`}>
-              <MenubarRadioItem value={`admin`}>
-                {data?.username}
+            <MenubarRadioGroup value={`merchant`}>
+              <MenubarRadioItem value={`merchant`}>
+                {merchantInfo?.name}
               </MenubarRadioItem>
             </MenubarRadioGroup>
             <MenubarSeparator />

@@ -48,7 +48,7 @@ export const withUser = () => {
             if (role !== RoleFormat.ADMIN) {
                 return {
                     redirect: {
-                        destination: "http://example.com/signin",
+                        destination: `${process.env.HOST_CUSTOMER}/signin`,
                         permanent: false,
                     },
                 };
@@ -103,7 +103,7 @@ export const withUserPermission = (permission: string[], next: string) => {
 
                 return {
                     redirect: {
-                        destination: "http:/http://example.com/signin",
+                        destination: `${process.env.HOST_CUSTOMER}/signin`,
                         permanent: false,
                     },
                 };

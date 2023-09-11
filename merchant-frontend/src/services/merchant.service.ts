@@ -22,3 +22,9 @@ export const getMerchantCredential = async (): Promise<IMerchantRes> => {
         (response) => response.data
     );
 };
+
+export const getMerchantById = async (mchtId: string): Promise<IMerchantRes> => {
+    return await api.get(`/merchants/${mchtId}`).then(
+        (response) => response.data
+    );
+};
