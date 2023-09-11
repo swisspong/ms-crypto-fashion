@@ -46,17 +46,15 @@ const CartItem: React.FC<CartItemProps> = ({
   return (
     <li className="py-6 border-b list-none">
       <div className="flex relative">
-        {data.message ? (
+        {/* {data.message ? (
           <>
             <div className="absolute inset-0 opacity-75 bg-background z-40 rounded-md flex justify-center items-center"></div>
             <p className="absolute inset-0 flex flex-col justify-center items-center text-sm font-medium text-destructive z-50">
               {data.message}
-              {/* <Button onClick={()=>router.push("/cart")}>
-                Back to cart
-              </Button> */}
+           
             </p>
           </>
-        ) : undefined}
+        ) : undefined} */}
         <div className="self-center mr-2">
           <Checkbox
             disabled={isNormalPay === undefined}

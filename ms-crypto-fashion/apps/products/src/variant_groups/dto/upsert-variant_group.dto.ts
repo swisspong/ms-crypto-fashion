@@ -90,14 +90,14 @@ class UpsertGroupDto {
 export class UpsertVariantGroupDto {
     @ApiProperty({ isArray: true, type: UpsertGroupDto })
     @IsArray()
-    @ArrayNotEmpty()
+    // @ArrayNotEmpty()
     @ValidateNested({ each: true })
     @Type(() => UpsertGroupDto)
     groups: UpsertGroupDto[]
 
     @ApiProperty({ isArray: true, type: UpsertVariantDto })
     @IsArray()
-    @ArrayNotEmpty()
+    // @ArrayNotEmpty()
     @ValidateNested({ each: true })
     @Type(() => UpsertVariantDto)
     variants: UpsertVariantDto[]

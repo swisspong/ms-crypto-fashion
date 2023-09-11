@@ -34,17 +34,17 @@ const CartItemRemove: React.FC<CartItemProps> = ({ data }) => {
     <li className="py-6 border-b list-none">
       <div className="flex relative">
         <div className="relative h-24 w-24 rounded-md overflow-hidden">
-          <Image
-            fill
+          <img
+ 
             src={data.product?.image_urls[0]}
             alt=""
             className="object-cover object-center"
           />
         </div>
         <div className="relative ml-4 flex flex-1 flex-col justify-between sm:ml-6">
-          <div className="absolute z-10 right-0 top-0">
-            <Badge variant={"destructive"}>{data.message}</Badge>
-          </div>
+          {/* <div className="absolute z-10 right-0 top-0">
+            <Badge variant={"destructive"}>{"hjgkjgg"}</Badge>
+          </div> */}
           <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
             <div className="flex items-center space-x-2 border p-1 rounded-md">
               <Store size={15} />

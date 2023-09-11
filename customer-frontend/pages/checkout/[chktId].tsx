@@ -22,6 +22,7 @@ import { useGetCheckoutById } from "@/src/hooks/checkout/queries";
 import { useRouter } from "next/router";
 import { useMyAddress } from "@/src/hooks/address/queries";
 import AddressListDialog from "@/components/account/address-list-dialog";
+import RemoveCheckoutAlertDialog from "@/components/checkout/remove-checkout-alert-dialog";
 
 const formSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -169,6 +170,7 @@ const CheckoutPage = () => {
         </div>
       </Container>
       <Footer />
+      <RemoveCheckoutAlertDialog data={getCheckout.data?.errorItems}/>
     </div>
   );
 };

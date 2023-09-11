@@ -3,7 +3,18 @@ interface ICheckoutPayload {
     items: string[]
 }
 
-
+interface ICheckoutResponse {
+    chkt_id: string
+    user_id: string
+    payment_method: "credit" | "wallet"
+    total_quantity: number
+    total: number
+    items: Item[]
+    errorItems: Item[]
+}
+interface ICheckoutOrdering {
+    chkt?: string
+}
 
 interface ICheckout {
     chkt_id: string

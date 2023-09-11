@@ -12,6 +12,7 @@ import { CreateCheckoutItemsDto } from './dto/create-checkout.dto';
 import { PRODUCTS_SERVICE, PRODUCTS_TCP } from '@app/common/constants/products.constant';
 import { IProduct } from '@app/common/interfaces/order-event.interface';
 import { ProductsUtilService } from '@app/common/utils/products/products-util.service';
+import { DeleteManyItemsDto } from './dto/delet-many-items.dto';
 
 @Injectable()
 export class CartsService {
@@ -35,11 +36,14 @@ export class CartsService {
     let cart = await this.cartsRepository.findOne({ user_id: userId })
     cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
     const errorItems: CartItem[] = []
+    this.logger.warn("cart item before => ", cart.items)
     this.filterItem(errorItems, cart.items)
-    if (errorItems.length > 0) {
-      await this.cartsRepository.findOneAndUpdate({ user_id: userId }, { $set: { items: cart.items } })
-    }
-    return cart.items
+    this.logger.warn("cart item after => ", cart.items)
+    this.logger.warn("erorr item => ", errorItems)
+    // if (errorItems.length > 0) {
+    //   await this.cartsRepository.findOneAndUpdate({ user_id: userId }, { $set: { items: cart.items } })
+    // }
+    return { items: cart.items, errorItems: errorItems }
     // const { data: products } = await lastValueFrom(this.productsClient.send({ cmd: 'check_product_list' }, { items: cart.items.map(item => ({ prod_id: item.prod_id, quantity: item.quantity, vrnt_id: item.vrnt_id })) }));
     // return products.map(product => {
     //   const item = cart.items.find(item => item.prod_id === product.prod_id)
@@ -90,6 +94,8 @@ export class CartsService {
         newItem.prod_id = product.prod_id
         newItem.quantity = addToCartDto.quantity
         newItem.vrnt_id = addToCartDto.vrnt_id
+        const { description, sku, ...prod } = product as any
+        newItem.product = prod
         if (newItem.quantity > variant.stock) throw new BadRequestException("The product not enough.")
         cart.items.push(newItem)
       }
@@ -114,7 +120,10 @@ export class CartsService {
       }
     }
     const errorItems: CartItem[] = []
+    this.logger.warn("before call filter=> ", cart.items)
     this.filterItem(errorItems, cart.items)
+    this.logger.warn("after call filter=> ", cart.items)
+
     const newCart = await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { items: cart.items })
     return newCart
 
@@ -184,6 +193,14 @@ export class CartsService {
     return newCart
   }
 
+  async removeMany(userId: string, dto: DeleteManyItemsDto) {
+    let cart = await this.cartsRepository.findOne({ user_id: userId })
+    cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
+    cart.items = cart.items.filter(item => !dto.items.some(id => id === item.item_id))
+    const newCart = await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { items: cart.items })
+    return newCart
+  }
+
   isValidItem(cartItem: CartItem) {
     if (cartItem.prod_id === cartItem.product.prod_id &&
       cartItem.product.available === true &&
@@ -212,13 +229,12 @@ export class CartsService {
   filterItem(errorItems: CartItem[], items: CartItem[]) {
     for (let i = 0; i < items.length; i++) {
       const item = items[i]
-      if (this.productsUtilService.isValid(item.product) && this.isValidItem(item)) {
-
+      if (!this.productsUtilService.isValid(item.product) || !this.isValidItem(item)) {
+        let tmpIndex = i
+        --i
+        const errorItem = items.splice(tmpIndex, 1)[0]
+        errorItems.push(errorItem)
       }
-      let tmpIndex = i
-      --i
-      const errorItem = items.splice(tmpIndex, 1)[0]
-      errorItems.push(errorItem)
     }
   }
 

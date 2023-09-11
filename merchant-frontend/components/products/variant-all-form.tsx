@@ -52,7 +52,7 @@ const formSchema = z.object({
         ),
       })
     )
-    .min(1)
+    .min(0)
     .refine(
       (val) => {
         return val.find((item, index) =>
@@ -79,7 +79,7 @@ const formSchema = z.object({
         stock: z.number().min(0),
       })
     )
-    .min(1)
+    .min(0)
     .refine(
       (val) => {
         return !val.some((item, index) => {

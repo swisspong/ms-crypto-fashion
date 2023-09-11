@@ -96,9 +96,11 @@ export class CheckoutItem {
 export class Checkout extends AbstractDocument {
     @Prop({ required: true, unique: true })
     chkt_id: string
-    @Prop({ required: true, unique: true })
+    @Prop({ required: true })
     user_id: string;
-
+    
+    @Prop({ enum: PaymentMethodFormat })
+    payment_method: string
 
     @Prop([{ type: CheckoutItem }])
     items: CheckoutItem[]

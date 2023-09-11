@@ -17,7 +17,7 @@ import { formatBalance, formatChainAsNum } from "@/lib/utils";
 import Web3 from "web3";
 import { postOrderWallet } from "@/src/services/order.service";
 interface Props {
-  data?: ICheckout;
+  data?: ICheckoutResponse;
   address: IAddress | undefined;
 }
 const MetamaskPayment: FC<Props> = ({ address, data }) => {

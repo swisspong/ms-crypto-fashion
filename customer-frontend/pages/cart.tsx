@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import dynamic from "next/dynamic";
 import { PaymentMethodFormat } from "@/src/types/enums/product";
+import RemoveItemAllertDialog from "@/components/cart/remove-item-allert-dialog";
 const RemoveItemDialog = dynamic(
   () => import("@/components/remove-item-dialog"),
   { ssr: false }
@@ -44,13 +45,13 @@ const CartPage = () => {
           <h1 className="text-3xl font-bold text-black">Shopping Cart</h1>
           <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start gap-x-12">
             <div className="lg:col-span-7">
-              {data?.length === 0 && (
+              {data?.items?.length === 0 && (
                 <p className="text-neutral-500 flex justify-center">
                   No items added to cart.
                 </p>
               )}
               {data
-                ?.filter(
+                ?.items?.filter(
                   (item) =>
                     isNormalPay === undefined ||
                     (isNormalPay === true &&
@@ -62,7 +63,7 @@ const CartPage = () => {
                         PaymentMethodFormat.WALLET
                       ))
                 )
-                .map((item) => (
+                ?.map((item) => (
                   <CartItem
                     data={item}
                     setSelecteds={setSelecteds}
@@ -73,13 +74,13 @@ const CartPage = () => {
             </div>
             <Summary
               selecteds={selecteds}
-              data={data}
+              data={data?.items}
               isNormalPay={isNormalPay}
               paymentMethodHandler={paymentMethodHandler}
             />
           </div>
         </div>
-        <RemoveItemDialog data={data?.filter((item) => item.message)} />
+        <RemoveItemAllertDialog data={data?.errorItems} />
       </Container>
 
       <Footer />

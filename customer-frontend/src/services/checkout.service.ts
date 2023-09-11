@@ -5,9 +5,19 @@ export const postCheckout = async (body: ICheckoutPayload): Promise<ICheckout> =
         (response) => response.data
     );
 };
-
-export const getCheckoutById = async (chktId?: string): Promise<ICheckout> => {
+export const postCheckoutOrder = async (chktId: string, body: IOrderPayload): Promise<ICheckoutOrdering> => {
+    return await api.post(`/checkouts/${chktId}`, body).then(
+        (response) => response.data
+    );
+};
+export const getCheckoutById = async (chktId?: string): Promise<ICheckoutResponse> => {
     return await api.get(`/checkouts/${chktId}`).then(
+        (response) => response.data
+    );
+};
+
+export const deleteCheckout = async (chktId: string): Promise<void> => {
+    await api.delete(`/checkouts/${chktId}`).then(
         (response) => response.data
     );
 };

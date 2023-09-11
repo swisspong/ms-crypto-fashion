@@ -109,6 +109,14 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
         return document;
     }
+    async deleteMany(filterQuery: FilterQuery<TDocument>) {
+        const document = await this.model.deleteMany(filterQuery, { lean: true })
+        if (!document) {
+            this.logger.warn(`Document not found with filterQuery:`, filterQuery);
+            throw new NotFoundException('Document not found.');
+        }
+        return document;
+    }
 
     async upsert(
         filterQuery: FilterQuery<TDocument>,
@@ -124,7 +132,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     async find(filterQuery: FilterQuery<TDocument>) {
         return this.model.find(filterQuery, {}, { lean: true })
     }
-    async findPopulate(filterQuery: FilterQuery<TDocument>,populate: (string | PopulateOptions)[]) {
+    async findPopulate(filterQuery: FilterQuery<TDocument>, populate: (string | PopulateOptions)[]) {
         return this.model.find(filterQuery, {}, { lean: true }).populate(populate)
     }
     async findCount(filterQuery: FilterQuery<TDocument>): Promise<number> {

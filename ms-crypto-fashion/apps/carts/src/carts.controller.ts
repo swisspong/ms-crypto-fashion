@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { GetUserId } from '@app/common/decorators';
 import { AddToCartDto } from './dto/add-to-cart.dto';
@@ -8,6 +8,7 @@ import { RmqService } from '@app/common';
 import { CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants/carts.constant';
 import { ProductPayloadDataEvent } from '@app/common/interfaces/products-event.interface';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
+import { DeleteManyItemsDto } from './dto/delet-many-items.dto';
 @ApiTags('Carts')
 @Controller('carts')
 export class CartsController {
@@ -32,6 +33,10 @@ export class CartsController {
   @Delete(':itemId')
   remove(@GetUserId() userId: string, @Param('itemId') itemId: string) {
     return this.cartsService.remove(userId, itemId);
+  }
+  @Delete()
+  removeMany(@GetUserId() userId: string, @Query() items:DeleteManyItemsDto) {
+    return this.cartsService.removeMany(userId, items);
   }
   @EventPattern(CARTS_UPDATE_PRODUCT_EVENT)
   async handleProductUpdateCreated(@Payload() data : ProductPayloadDataEvent, @Ctx() context: RmqContext) {

@@ -54,8 +54,8 @@ const CheckoutItem: React.FC<CheckoutItemProps> = ({
           </>
         ) : undefined}
         <div className="relative h-24 w-24 rounded-md overflow-hidden sm:h-48 sm:w-48">
-          <Image
-            fill
+          <img
+          
             src={data.image}
             alt=""
             className="object-cover object-center"

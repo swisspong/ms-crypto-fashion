@@ -35,8 +35,9 @@ import {
 import { useCreateToken } from "@/src/hooks/payment/mutations";
 import { PaymentMethodFormat } from "@/src/types/enums/product";
 import MetamaskPayment from "./payment/metamask-payment";
+import { useCheckoutOrdering } from "@/src/hooks/checkout/mutations";
 interface Props {
-  data?: ICheckout;
+  data?: ICheckoutResponse;
   address: IAddress | undefined;
 }
 
@@ -66,11 +67,17 @@ export function PaymentMethod({ data, address }: Props) {
   });
   const router = useRouter();
   const orderMutate = useCreateOrder();
+  const checkoutOrderMutate = useCheckoutOrdering()
   useEffect(() => {
-    if (orderMutate.isSuccess) {
-      router.replace("/account/orders");
+    if (checkoutOrderMutate.isSuccess) {
+      if (checkoutOrderMutate.data.chkt) {
+        
+      } else {
+
+        router.replace("/account/orders");
+      }
     }
-  }, [orderMutate.isSuccess]);
+  }, [checkoutOrderMutate.isSuccess]);
   const {
     mutateAsync: tokenHandler,
     isLoading: tokenLoading,
@@ -92,21 +99,24 @@ export function PaymentMethod({ data, address }: Props) {
 
     if (address && data?.chkt_id) {
       console.log(address, data.chkt_id);
-      orderMutate.mutate({
-        address: address?.address,
-        chkt_id: data.chkt_id,
-        post_code: address?.post_code,
-        recipient: address?.recipient,
-        tel_number: address?.tel_number,
-        token: token.id,
-        payment_method: "credit",
+      checkoutOrderMutate.mutate({
+        chktId: data.chkt_id,
+        body: {
+          address: address?.address,
+          chkt_id: data.chkt_id,
+          post_code: address?.post_code,
+          recipient: address?.recipient,
+          tel_number: address?.tel_number,
+          token: token.id,
+          payment_method: "credit",
+        }
       });
     }
     // creditHandler(body)
   }
   return data?.payment_method &&
     data?.payment_method === PaymentMethodFormat.WALLET ? (
-    <MetamaskPayment data={data} address={address}/>
+    <MetamaskPayment data={data} address={address} />
   ) : (
     <Card className="mt-4">
       <CardHeader>

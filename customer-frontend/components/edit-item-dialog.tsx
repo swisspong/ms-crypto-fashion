@@ -104,8 +104,8 @@ const EditItemDialog: FC<Props> = ({ optn, data }) => {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="relative h-24 w-24 rounded-md overflow-hidden sm:h-48 sm:w-48">
-            <Image
-              fill
+            <img
+              
               src={data.product?.image_urls[0]}
               alt=""
               className="object-cover object-center"

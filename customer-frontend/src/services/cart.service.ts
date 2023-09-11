@@ -22,7 +22,7 @@ export const deleteManyItemInCart = async (body: IDeleteManyItem): Promise<void>
     );
 };
 
-export const getMyCarts = async (): Promise<ICartItem[]> => {
+export const getMyCarts = async (): Promise<ICartResponse> => {
     return await api.get(`/carts`).then(
         (response) => response.data
     );
