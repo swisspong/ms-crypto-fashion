@@ -35,6 +35,8 @@
     "axios": "^1.4.0",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
+    "dotenv": "^16.3.1",
+    "dotenv-cli": "^7.3.0",
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.6",
     "lucide-react": "^0.244.0",

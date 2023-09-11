@@ -19,6 +19,8 @@ import { ComplaintsModule } from './complaints/complaints.module';
 import { CommentsModule } from './comments/comments.module';
 import { AssetsModule } from './assets/assets.module';
 import { CARTS_SERVICE } from '@app/common/constants/carts.constant';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronService } from './cron/cron.service';
 
 @Module({
   imports: [
@@ -43,12 +45,14 @@ import { CARTS_SERVICE } from '@app/common/constants/carts.constant';
     VariantsModule,
     ComplaintsModule,
     CommentsModule,
-    AssetsModule
+    AssetsModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [ProductsController],
   providers: [
     ...authProviders,
     ProductsService,
+    CronService,
     ProductsRepository,
     JwtStrategy
   ],

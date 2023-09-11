@@ -34,19 +34,24 @@ export class ProductsService {
     if (!merchant) throw new ForbiddenException()
     const existProduct = await this.productsRepository.findOne({ merchant: merchant._id, name: createProductDto.name })
     if (existProduct) throw new BadRequestException("Product is exist.")
+
+    console.log(createProductDto.categories.map(item => item.cat_id));
+    
+
     const categories = await this.categoriesRepository.find({
-      merchant: merchant._id,
+      mcht_id: merchant.mcht_id,
       cat_id: {
         $in: createProductDto.categories.map(item => item.cat_id)
       }
     })
+    console.log("categories", categories)
     const categoriesWeb = await this.categoriesWebRepository.find({
 
       catweb_id: {
         $in: createProductDto.categories_web.map(item => item.cat_id)
       }
     })
-    console.log(categories, createProductDto.categories, createProductDto.categories.map(item => item.cat_id))
+    // console.log(categories, createProductDto.categories, createProductDto.categories.map(item => item.cat_id))
     if (categories.length !== createProductDto.categories.length) throw new BadRequestException("Invalid Category")
     if (categoriesWeb.length !== createProductDto.categories_web.length) throw new BadRequestException("Invalid Category")
     const newProduct = await this.productsRepository.create({

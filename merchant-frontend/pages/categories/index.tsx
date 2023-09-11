@@ -53,6 +53,7 @@ export default function Categories() {
     [pageIndex, pageSize]
   );
 
+
   return (
     <Layout>
       <div className="space-between flex items-center mb-4">

@@ -10,6 +10,7 @@ export const withUser = (roles?: string[]) => {
             getInfoSsr(context.req.headers.cookie)
         );
         const me = queryClient.getQueryData(["me"]);
+        console.log('check', process.env.HOST_CUSTOMER)
         if (!me) {
             return {
                 redirect: {
@@ -23,13 +24,17 @@ export const withUser = (roles?: string[]) => {
         if (me && roles && roles.length > 0) {
             const info = me as IUserRes
             const isInclude = roles.includes(info.role)
+            
+            
             if (!isInclude) return {
                 redirect: {
-                    destination: "http://localhost:3000",
+                    destination: `${process.env.HOST_CUSTOMER}`,
                     permanent: false,
                 },
             };
         }
+
+        console.log("End-----------")
         return {
             props: {
                 dehydratedState: dehydrate(queryClient),

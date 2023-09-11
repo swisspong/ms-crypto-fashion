@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { Merchant } from "./schemas/merchant.schema";
 import { AbstractRepository } from "@app/common/database/abstract.repository";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
-import { Connection, Model } from "mongoose";
+import { ClientSession, Connection, FilterQuery, Model, UpdateQuery, UpdateWriteOpResult } from "mongoose";
 
 
 @Injectable()
@@ -14,6 +14,9 @@ export class MerchantsRepository extends AbstractRepository<Merchant> {
         @InjectConnection() connection: Connection,
     ) {
         super(userModel, connection);
+    }
+    async findOneAndUpdateMany(filterQuery: FilterQuery<Merchant>[], data: UpdateQuery<Merchant>, session?: ClientSession): Promise<UpdateWriteOpResult> {
+        return this.model.updateMany({ $or: filterQuery }, data, { new: true }).session(session).exec();
     }
 
     // async findOnePopulate(filterQuery: FilterQuery<User>): Promise<User> {

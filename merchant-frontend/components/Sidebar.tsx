@@ -82,7 +82,7 @@ export function Sidebar({ className }: SidebarProps) {
               );
             })}
             <Link
-              href={"http://localhost:3000/storefront"}
+              href={`${process.env.HOST_CUSTOMER}/storefront`}
               passHref
               target="_blank"
             >

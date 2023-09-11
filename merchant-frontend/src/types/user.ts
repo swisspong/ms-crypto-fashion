@@ -14,6 +14,7 @@ export interface IUserRes {
     permission: any[]
     createdAt: string
     updatedAt: string
+    mcht_id: string
     __v: number
     merchant: IMerchantRes
     cart: string

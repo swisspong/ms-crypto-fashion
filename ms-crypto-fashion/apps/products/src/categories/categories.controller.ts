@@ -14,12 +14,12 @@ export class CategoriesController {
  
   @Roles(RoleFormat.MERCHANT)
   @Post()
-  create(@GetUserId() userId: string, @Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoriesService.create(userId, createCategoryDto);
+  create(@GetUser('merchant') merchantId: string, @Body() createCategoryDto: CreateCategoryDto) {
+    return this.categoriesService.create(merchantId, createCategoryDto);
   }
   @Roles(RoleFormat.MERCHANT)
   @Get('/owner')
-  myMerchant(@GetUserId() userId: string, @GetUser('merchant') merchantId: string, @Query() filter: GetCategoryByOwnerDto) {
+  myMerchant( @GetUser('merchant') merchantId: string, @Query() filter: GetCategoryByOwnerDto) {
     console.log(merchantId,"++++++++++++++++++++++++++")
     return this.categoriesService.findAllOnlyOwner( merchantId, filter);
   }

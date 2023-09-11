@@ -6,10 +6,15 @@ import { DatabaseModule } from '@app/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from '../schemas/product.schema';
 import { ProductsRepository } from '../products.repository';
+import { MerchantsModule } from '../merchants/merchants.module';
 
 @Module({
-  imports: [DatabaseModule, MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }])],
+  imports: [
+    DatabaseModule,
+    MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
+    MerchantsModule
+  ],
   controllers: [VariantGroupsController],
-  providers: [VariantGroupsService,ProductsRepository],
+  providers: [VariantGroupsService, ProductsRepository],
 })
 export class VariantGroupsModule { }
