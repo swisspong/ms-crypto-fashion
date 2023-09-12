@@ -126,7 +126,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!me) {
     return {
       redirect: {
-        destination: "http://localhost:3000/signin",
+        destination: `${process.env.HOST_CUSTOMER}/signin`,
         permanent: false,
       },
     };
@@ -135,7 +135,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (me && (me as any).role !== "merchant") {
     return {
       redirect: {
-        destination: "http://localhost:3000",
+        destination: `${process.env.HOST_CUSTOMER}`,
         permanent: false,
       },
     };

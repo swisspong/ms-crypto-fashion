@@ -41,6 +41,7 @@ export enum SERVICE_FORMAT {
   ADDRESS = 'address',
   CHECKOUT = 'checkout',
   COMMENT = 'comment',
+  COMPLAINT = 'complaint'
 }
 interface DynamicApiOptions {
   ssr: boolean,
@@ -70,6 +71,8 @@ const urlFactory = (value: SERVICE_FORMAT) => {
       return [csrString, ssrString.concat('products:8001')]
     case SERVICE_FORMAT.CHECKOUT:
       return [csrString, ssrString.concat('orders:8003')]
+      case SERVICE_FORMAT.COMPLAINT:
+      return [csrString, ssrString.concat('products:8001')]
     default:
       return [csrString, ssrString.concat('auth:8000')]
   }

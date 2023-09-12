@@ -10,7 +10,7 @@ import { useMerchantById } from "@/src/hooks/merchant/queries";
 import { useProductById } from "@/src/hooks/product/user/queries";
 import { useUserInfo } from "@/src/hooks/user/queries";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -20,6 +20,12 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useReplyCommnt } from "@/src/hooks/comment/mutations";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useCreateComplaint } from "@/src/hooks/complaint/mutations";
+import { TComplaintPlayload } from "@/src/types/complaint";
+import { TypeFormat } from "@/src/types/enums/complaint";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 const ProductStorefrontPage = () => {
@@ -29,6 +35,9 @@ const ProductStorefrontPage = () => {
   const { data: commentData } = useAllCommentById(router.query.prodId as string);
   const [vrntSelected, setVrntSelected] = useState<string | undefined>();
   const { mutate: replyHandler, isLoading, isSuccess } = useReplyCommnt()
+
+  const { mutate: complaintHandler, isLoading: compLoading, isSuccess: compSuccess } = useCreateComplaint()
+
   // * info me
   const {
     data: me,
@@ -36,8 +45,14 @@ const ProductStorefrontPage = () => {
     isSuccess: meSuccess,
   } = useUserInfo();
 
+  const [open, setOpen] = useState(false)
+
+  // ! use state report & complain
+  const [compText, setCompText] = useState('');
+
   const [replyText, setReplyText] = useState('');
   const [idToUpdate, setIdToUpdate] = useState<string>()
+  const [selectedValue, setSelectedValue] = useState<TypeFormat>();
 
   // * Submit
   const handleReplySubmit = (e: React.FormEvent) => {
@@ -53,6 +68,25 @@ const ProductStorefrontPage = () => {
     }
   };
 
+  const handlerComplaintSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const data: TComplaintPlayload = {
+      detail: compText,
+      type: selectedValue!,
+      prod_id: router.query.prodId as string,
+      mcht_id: router.query.mchtId as string
+    }
+
+    complaintHandler(data)
+
+  }
+
+
+
+  const handleSelect = (value: TypeFormat) => {
+    setSelectedValue(value);
+  };
+
   // * input textarea
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value, id } = e.target;
@@ -60,13 +94,22 @@ const ProductStorefrontPage = () => {
     setReplyText(value)
   };
 
+  const handlerComplainChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
+    setCompText(value)
+  }
+
+  useEffect(() => {
+    if (compSuccess) setOpen(false)
+  }, [compSuccess])
+
   return (
     <div className="bg-white">
       <Navbar />
       <Container>
         <div className="px-4 py-10 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
-            <Alert className="col-span-2 mb-10 flex items-center space-x-4">
+            <Alert className="px-4 py-6 lg:px-8 col-span-2 mb-10 flex items-center ">
               <Avatar className="h-9 w-9">
                 <AvatarImage src={merchantInfo?.banner_url} alt="@shadcn" />
                 <AvatarFallback>
@@ -77,13 +120,52 @@ const ProductStorefrontPage = () => {
                     .join("")}
                 </AvatarFallback>
               </Avatar>
-              <div>
+              <div className="ml-4">
                 <AlertTitle className="underline">
                   {merchantInfo?.name}
                 </AlertTitle>
                 <AlertDescription>
                   {merchantInfo?.banner_title}
                 </AlertDescription>
+              </div>
+
+              <div className="ml-auto mr-4">
+                <Dialog open={open}>
+                  <Button variant="ghost" size="sm" onClick={() => {
+                    setOpen(true)
+                  }} className="text-xs text-muted-foreground">Report</Button>
+                  <DialogContent>
+                    <form onSubmit={handlerComplaintSubmit}>
+                      <DialogHeader>
+                        <DialogTitle>Report product</DialogTitle>
+                        <DialogDescription>
+                          Describe the problem of the product
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="mt-4">
+                        <Select onValueChange={handleSelect}>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select type report" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value={TypeFormat.MERCHANT}>{TypeFormat.MERCHANT}</SelectItem>
+                            <SelectItem value={TypeFormat.PRODUCT}>{TypeFormat.PRODUCT}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="report">Detail</Label>
+                          <Textarea onChange={handlerComplainChange} placeholder="Type your message here." />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="button" onClick={() => { setOpen(false) }}>Close</Button>
+                        <Button variant="destructive" type="submit">Report</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </div>
             </Alert>
             <Gallery
@@ -137,6 +219,7 @@ const ProductStorefrontPage = () => {
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
+
                     <p className="text-gray-600 text-sm font-medium ml-2">{comment.user.username}</p>
 
                   </div>

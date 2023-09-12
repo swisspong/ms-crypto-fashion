@@ -12,23 +12,10 @@ export class ComplaintsService {
         private readonly complaintsRepository: ComplaintsRepository,
     ) { }
 
-    async create(createComplaintDto: CreateComplaintDto) {
+    async create(user_id: string,   createComplaintDto: CreateComplaintDto) {
         try {
 
-            const { mcht_id, prod_id } = createComplaintDto
-            let type: TypeFormat = undefined;
-
-            //  check type complaint
-            if (prod_id !== undefined) {
-                type = TypeFormat.PRODUCT
-            } else if (mcht_id !== undefined) {
-                type = TypeFormat.MERCHANT
-            } else {
-                throw new ForbiddenException("Merchant is your!")
-            }
-
-
-            const complaint = await this.complaintsRepository.create({ comp_id: `complaint_${this.uid.stamp(15)}`, type, ...createComplaintDto })
+            const complaint = await this.complaintsRepository.create({ comp_id: `complaint_${this.uid.stamp(15)}`, ...createComplaintDto, user_id})
 
             return complaint;
         } catch (error) {
