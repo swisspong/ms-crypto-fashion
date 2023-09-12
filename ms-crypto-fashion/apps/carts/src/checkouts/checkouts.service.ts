@@ -30,10 +30,10 @@ export class CheckoutsService {
         if (!cart) throw new NotFoundException("Cart not found.")
         const itemsSelecteds = cart.items.filter(item => createCheckoutDto.items.some(itemDto => itemDto === item.item_id))
         if (itemsSelecteds.length !== createCheckoutDto.items.length) throw new NotFoundException("Invalid item in cart.")
-
-        const errorItems: CartItem[] = []
-        this.filterItem(errorItems, itemsSelecteds)
-        if (!itemsSelecteds.every(item => item.product.payment_methods.includes(createCheckoutDto.payment_method))) throw new BadRequestException("Product information is incorrect")
+        const errorItems = this.filterErrorCartItem(createCheckoutDto.payment_method, itemsSelecteds)
+        // const errorItems: CartItem[] = []
+        // this.filterItem(errorItems, itemsSelecteds)
+        // if (!itemsSelecteds.every(item => item.product.payment_methods.includes(createCheckoutDto.payment_method))) throw new BadRequestException("Product information is incorrect")
         if (errorItems.length > 0) throw new BadRequestException("Product information is incorrect")
 
         const checkout = await this.checkoutsRepository.create({
@@ -71,60 +71,62 @@ export class CheckoutsService {
         if (!cart) throw new NotFoundException("Cart not found.")
 
 
+
+        const errorItems = this.filterErrorItem(checkout.payment_method, checkout.items, cart.items)
         // checkout.items.map(chktItem => {
         //     const cartItemIndex = cart.items.findIndex(cartItem => cartItem.item_id === chktItem.item_id)
         //     if (cartItemIndex < 0) throw new NotFoundException("Product in cart not found.")
         //     const cartItem = cart.items.splice(cartItemIndex, 1)[0]
         //     if (!this.productsUtilService.isEqual(chktItem.product, cartItem.product)) throw new BadRequestException("Product data has changed.")
         // })
-        const errorItems = []
-        for (let i = 0; i < checkout.items.length; i++) {
-            const item = checkout.items[i]
-            const cartItemIndex = cart.items.findIndex(cartItem => cartItem.item_id === item.item_id)
+        // const errorItems = []
+        // for (let i = 0; i < checkout.items.length; i++) {
+        //     const item = checkout.items[i]
+        //     const cartItemIndex = cart.items.findIndex(cartItem => cartItem.item_id === item.item_id)
 
-            if (cartItemIndex < 0 || !this.productsUtilService.isValid(item.product) || !this.isValidItem(item)) {
-                let tmpIndex = i
-                --i
-                const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                errorItems.push(errorItem)
-                continue
-            }
-            const cartItem = cart.items.splice(cartItemIndex, 1)[0]
-            if (!this.productsUtilService.isValid(cartItem.product) || !this.productsUtilService.isEqual(item.product, cartItem.product)) {
-                let tmpIndex = i
-                --i
-                const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                errorItems.push(errorItem)
-                continue
-            }
-            if (item.vrnt_id) {
-                const variant = cartItem.product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
-                if (variant) {
-                    if (item.quantity > variant.stock) {
-                        let tmpIndex = i
-                        --i
-                        const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                        errorItems.push(errorItem)
-                        continue
-                    }
-                }
-            } else {
-                if (item.quantity > cartItem.product.stock) {
-                    let tmpIndex = i
-                    --i
-                    const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                    errorItems.push(errorItem)
-                    continue
-                }
-            }
-            if (!cartItem.product.payment_methods.includes(checkout.payment_method)) {
-                let tmpIndex = i
-                --i
-                const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                errorItems.push(errorItem)
-                continue
-            }
-        }
+        //     if (cartItemIndex < 0 || !this.productsUtilService.isValid(item.product) || !this.isValidItem(item)) {
+        //         let tmpIndex = i
+        //         --i
+        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //         errorItems.push(errorItem)
+        //         continue
+        //     }
+        //     const cartItem = cart.items.splice(cartItemIndex, 1)[0]
+        //     if (!this.productsUtilService.isValid(cartItem.product) || !this.productsUtilService.isEqual(item.product, cartItem.product)) {
+        //         let tmpIndex = i
+        //         --i
+        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //         errorItems.push(errorItem)
+        //         continue
+        //     }
+        //     if (item.vrnt_id) {
+        //         const variant = cartItem.product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
+        //         if (variant) {
+        //             if (item.quantity > variant.stock) {
+        //                 let tmpIndex = i
+        //                 --i
+        //                 const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //                 errorItems.push(errorItem)
+        //                 continue
+        //             }
+        //         }
+        //     } else {
+        //         if (item.quantity > cartItem.product.stock) {
+        //             let tmpIndex = i
+        //             --i
+        //             const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //             errorItems.push(errorItem)
+        //             continue
+        //         }
+        //     }
+        //     if (!cartItem.product.payment_methods.includes(checkout.payment_method)) {
+        //         let tmpIndex = i
+        //         --i
+        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //         errorItems.push(errorItem)
+        //         continue
+        //     }
+        // }
 
 
         // cartItemSelecteds.every(cartItem => cartItem.product.payment_methods.includes(checkout.payment_method))
@@ -148,7 +150,7 @@ export class CheckoutsService {
         const cart = await this.cartsRepository.findOne({ user_id: checkout.user_id })
         if (!cart) throw new NotFoundException("Cart not found.")
 
-        const errorItems: CartItem[] = []
+        //const errorItems: CartItem[] = []
 
         // for (let i = 0; i < checkout.items.length; i++) {
         //     const item = checkout.items[i]
@@ -168,53 +170,54 @@ export class CheckoutsService {
         //         errorItems.push(errorItem)
         //     }
         // }
-        for (let i = 0; i < checkout.items.length; i++) {
-            const item = checkout.items[i]
-            const cartItemIndex = cart.items.findIndex(cartItem => cartItem.item_id === item.item_id)
+        // for (let i = 0; i < checkout.items.length; i++) {
+        //     const item = checkout.items[i]
+        //     const cartItemIndex = cart.items.findIndex(cartItem => cartItem.item_id === item.item_id)
 
-            if (cartItemIndex < 0 || !this.productsUtilService.isValid(item.product) || !this.isValidItem(item)) {
-                let tmpIndex = i
-                --i
-                const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                errorItems.push(errorItem)
-                continue
-            }
-            const cartItem = cart.items.splice(cartItemIndex, 1)[0]
-            if (!this.productsUtilService.isValid(cartItem.product) || !this.productsUtilService.isEqual(item.product, cartItem.product)) {
-                let tmpIndex = i
-                --i
-                const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                errorItems.push(errorItem)
-                continue
-            }
-            if (item.vrnt_id) {
-                const variant = cartItem.product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
-                if (variant) {
-                    if (item.quantity > variant.stock) {
-                        let tmpIndex = i
-                        --i
-                        const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                        errorItems.push(errorItem)
-                        continue
-                    }
-                }
-            } else {
-                if (item.quantity > cartItem.product.stock) {
-                    let tmpIndex = i
-                    --i
-                    const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                    errorItems.push(errorItem)
-                    continue
-                }
-            }
-            if (!cartItem.product.payment_methods.includes(checkout.payment_method)) {
-                let tmpIndex = i
-                --i
-                const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                errorItems.push(errorItem)
-                continue
-            }
-        }
+        //     if (cartItemIndex < 0 || !this.productsUtilService.isValid(item.product) || !this.isValidItem(item)) {
+        //         let tmpIndex = i
+        //         --i
+        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //         errorItems.push(errorItem)
+        //         continue
+        //     }
+        //     const cartItem = cart.items.splice(cartItemIndex, 1)[0]
+        //     if (!this.productsUtilService.isValid(cartItem.product) || !this.productsUtilService.isEqual(item.product, cartItem.product)) {
+        //         let tmpIndex = i
+        //         --i
+        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //         errorItems.push(errorItem)
+        //         continue
+        //     }
+        //     if (item.vrnt_id) {
+        //         const variant = cartItem.product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
+        //         if (variant) {
+        //             if (item.quantity > variant.stock) {
+        //                 let tmpIndex = i
+        //                 --i
+        //                 const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //                 errorItems.push(errorItem)
+        //                 continue
+        //             }
+        //         }
+        //     } else {
+        //         if (item.quantity > cartItem.product.stock) {
+        //             let tmpIndex = i
+        //             --i
+        //             const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //             errorItems.push(errorItem)
+        //             continue
+        //         }
+        //     }
+        //     if (!cartItem.product.payment_methods.includes(checkout.payment_method)) {
+        //         let tmpIndex = i
+        //         --i
+        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //         errorItems.push(errorItem)
+        //         continue
+        //     }
+        // }
+        const errorItems = this.filterErrorItem(checkout.payment_method, checkout.items, cart.items)
         cart.items = cart.items.filter(item => !errorItems.some(errItem => item.item_id === errItem.item_id))
 
         await this.cartsRepository.findOneAndUpdate({ _id: cart._id }, { $set: { items: cart.items } })
@@ -233,62 +236,62 @@ export class CheckoutsService {
         //     const cartItem = cart.items.splice(cartItemIndex, 1)[0]
         //     if (!this.productsUtilService.isEqual(chktItem.product, cartItem.product)) throw new BadRequestException("Product data has changed.")
         // })
-        const errorItems = []
+        const errorItems = this.filterErrorItem(checkout.payment_method, checkout.items, cart.items)
 
         //  this.filterItem(errorItems, checkout.items)
 
-        for (let i = 0; i < checkout.items.length; i++) {
-            const item = checkout.items[i]
-            const cartItemIndex = cart.items.findIndex(cartItem => cartItem.item_id === item.item_id)
-            this.logger.warn(cart,item.item_id)
-            if (cartItemIndex < 0 || !this.productsUtilService.isValid(item.product) || !this.isValidItem(item)) {
-                this.logger.warn("1 check",cartItemIndex)
-                let tmpIndex = i
-                --i
-                const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                errorItems.push(errorItem)
-                continue
-            }
-            const cartItem = cart.items.splice(cartItemIndex, 1)[0]
-            if (!this.productsUtilService.isValid(cartItem.product) || !this.productsUtilService.isEqual(item.product, cartItem.product)) {
-                this.logger.warn("2 check")
-                let tmpIndex = i
-                --i
-                const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                errorItems.push(errorItem)
-                continue
-            }
-            if (item.vrnt_id) {
-                const variant = cartItem.product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
-                if (variant) {
-                    this.logger.warn("quantity variant  check ")
-                    if (item.quantity > variant.stock) {
-                        let tmpIndex = i
-                        --i
-                        const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                        errorItems.push(errorItem)
-                        continue
-                    }
-                }
-            } else {
-                if (item.quantity > cartItem.product.stock) {
-                    this.logger.warn("quantity check ")
-                    let tmpIndex = i
-                    --i
-                    const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                    errorItems.push(errorItem)
-                    continue
-                }
-            }
-            if (!cartItem.product.payment_methods.includes(checkout.payment_method)) {
-                this.logger.warn("payemnt check ")
-                let tmpIndex = i
-                --i
-                const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-                errorItems.push(errorItem)
-                continue
-            }
-        }
+        // for (let i = 0; i < checkout.items.length; i++) {
+        //     const item = checkout.items[i]
+        //     const cartItemIndex = cart.items.findIndex(cartItem => cartItem.item_id === item.item_id)
+        //     this.logger.warn(cart, item.item_id)
+        //     if (cartItemIndex < 0 || !this.productsUtilService.isValid(item.product) || !this.isValidItem(item)) {
+        //         this.logger.warn("1 check", cartItemIndex)
+        //         let tmpIndex = i
+        //         --i
+        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //         errorItems.push(errorItem)
+        //         continue
+        //     }
+        //     const cartItem = cart.items.splice(cartItemIndex, 1)[0]
+        //     if (!this.productsUtilService.isValid(cartItem.product) || !this.productsUtilService.isEqual(item.product, cartItem.product)) {
+        //         this.logger.warn("2 check")
+        //         let tmpIndex = i
+        //         --i
+        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //         errorItems.push(errorItem)
+        //         continue
+        //     }
+        //     if (item.vrnt_id) {
+        //         const variant = cartItem.product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
+        //         if (variant) {
+        //             this.logger.warn("quantity variant  check ")
+        //             if (item.quantity > variant.stock) {
+        //                 let tmpIndex = i
+        //                 --i
+        //                 const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //                 errorItems.push(errorItem)
+        //                 continue
+        //             }
+        //         }
+        //     } else {
+        //         if (item.quantity > cartItem.product.stock) {
+        //             this.logger.warn("quantity check ")
+        //             let tmpIndex = i
+        //             --i
+        //             const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //             errorItems.push(errorItem)
+        //             continue
+        //         }
+        //     }
+        //     if (!cartItem.product.payment_methods.includes(checkout.payment_method)) {
+        //         this.logger.warn("payemnt check ")
+        //         let tmpIndex = i
+        //         --i
+        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
+        //         errorItems.push(errorItem)
+        //         continue
+        //     }
+        // }
 
 
 
@@ -321,9 +324,9 @@ export class CheckoutsService {
         //     return chktItem
         // })
 
-        cart.items = cart.items.filter(item => !errorItems.some(errItem => item.item_id === errItem.item_id))
+        // cart.items = cart.items.filter(item => !errorItems.some(errItem => item.item_id === errItem.item_id))
         if (errorItems.length > 0) {
-          //  await this.cartsRepository.findOneAndUpdate({ _id: cart._id }, { $set: { items: cart.items } })
+            //  await this.cartsRepository.findOneAndUpdate({ _id: cart._id }, { $set: { items: cart.items } })
         } else {
             await lastValueFrom(
                 this.orderClient.emit(ORDERING_EVENT, {
@@ -332,7 +335,7 @@ export class CheckoutsService {
                 })
             )
         }
-        
+
         if (errorItems.length > 0) throw new BadRequestException("Product information is incorrect")
         return {
             //chkt_id: errorItems.length > 0 ? checkout.chkt_id : undefined
@@ -340,25 +343,23 @@ export class CheckoutsService {
 
     }
     isValidItem(cartItem: CartItem) {
-        if (cartItem.prod_id === cartItem.product.prod_id &&
+        if (
+            cartItem.prod_id === cartItem.product.prod_id &&
             cartItem.product.available === true &&
             cartItem.product.merchant.status === MerchantStatus.OPENED
         ) {
-            if (cartItem.vrnt_id) {
-                if (
-                    this.productsUtilService.isHasVariant(cartItem.product) &&
-                    this.productsUtilService.isIncludeVariant(cartItem.product, cartItem.vrnt_id) &&
-                    this.productsUtilService.isEnoughVariant(cartItem.product, cartItem.vrnt_id, cartItem.quantity)
-                ) {
-                    return true
-                }
-            } else {
-                if (
-                    !this.productsUtilService.isHasVariant(cartItem.product) &&
-                    this.productsUtilService.isEnoughStock(cartItem.product, cartItem.quantity)
-                ) {
-                    return true
-                }
+            if (
+                cartItem.vrnt_id &&
+                this.productsUtilService.isHasVariant(cartItem.product) &&
+                this.productsUtilService.isIncludeVariant(cartItem.product, cartItem.vrnt_id) &&
+                this.productsUtilService.isEnoughVariant(cartItem.product, cartItem.vrnt_id, cartItem.quantity)
+            ) {
+                return true
+            } else if (
+                !this.productsUtilService.isHasVariant(cartItem.product) &&
+                this.productsUtilService.isEnoughStock(cartItem.product, cartItem.quantity)
+            ) {
+                return true
             }
 
         }
@@ -375,5 +376,52 @@ export class CheckoutsService {
                 errorItems.push(errorItem)
             }
         }
+    }
+    filterErrorCartItem(paymentMethod: string, cartItems: CartItem[]) {
+        return cartItems.filter(cartItem => {
+            if (
+                !this.productsUtilService.isValid(cartItem.product) ||
+                !this.isValidItem(cartItem) ||
+                !cartItem.product.payment_methods.includes(paymentMethod)
+            )
+                return true
+
+        })
+
+    }
+    filterErrorItem(paymentMethod: string, chktItems: CartItem[], cartItems: CartItem[]) {
+        return chktItems.filter(chktItem => {
+            const cartItem = cartItems.find(cartItem => cartItem.item_id === chktItem.item_id)
+            if (
+                !cartItem ||
+                !this.productsUtilService.isValid(cartItem.product) ||
+                !this.isValidItem(cartItem) ||
+                !cartItem.product.payment_methods.includes(paymentMethod) ||
+                //chktItem
+                !this.productsUtilService.isValid(chktItem.product) ||
+                !this.isValidItem(chktItem) ||
+                !chktItem.product.payment_methods.includes(paymentMethod) ||
+                !this.productsUtilService.isEqual(chktItem.product, cartItem.product)
+            ) {
+                return true
+            }
+            if (
+                chktItem.vrnt_id &&
+                this.productsUtilService.isHasVariant(chktItem.product) &&
+                this.productsUtilService.isHasVariant(cartItem.product)
+
+            ) {
+                const variantInCart = cartItem.product.variants.find(variant => variant.vrnt_id === chktItem.vrnt_id)
+                if (!variantInCart || chktItem.quantity > variantInCart.stock) return true
+            } else if (
+                this.productsUtilService.isHasVariant(chktItem.product) ||
+                this.productsUtilService.isHasVariant(cartItem.product) ||
+                chktItem.quantity > cartItem.product.stock
+            ) {
+                return true
+            }
+            return false
+
+        })
     }
 }
