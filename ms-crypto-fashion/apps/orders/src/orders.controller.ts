@@ -23,14 +23,14 @@ export class OrdersController {
   //   return this.ordersService.getHello();
   // }
 
-  @MessagePattern(FINDONE_ORDER_EVENT)
-  async handlerOrderFindone(@Payload() data: FindOrderById, @Ctx() context: RmqContext,) {
-    const order = this.ordersService.findoneOrderById(data)
-    this.rmqService.ack(context);
-    return order;
-  }
+  // @EventPattern(FINDONE_ORDER_EVENT)
+  // async handlerOrderFindone(@Payload() data: FindOrderById, @Ctx() context: RmqContext,) {
+  //   const order = this.ordersService.findoneOrderById(data)
+  //   this.rmqService.ack(context);
+  //   return order;
+  // }
 
-  @MessagePattern(UPDATEREVIEW_ORDER_EVENT)
+  @EventPattern(UPDATEREVIEW_ORDER_EVENT)
   async handlerOrder(@Payload() data: UpdateStatusOrder, context: RmqContext) {
     await this.ordersService.updateReviewStatus(data)
     this.rmqService.ack(context);

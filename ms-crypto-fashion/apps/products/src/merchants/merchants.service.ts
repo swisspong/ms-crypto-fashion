@@ -1,4 +1,4 @@
-import { Injectable, Inject, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject, ForbiddenException, BadRequestException, Logger } from '@nestjs/common';
 import { CreateMerchantDto } from './dto/create-merchant.dto';
 import ShortUniqueId from 'short-unique-id';
 import { ClientProxy } from '@nestjs/microservices';
@@ -21,6 +21,7 @@ interface StatusTotal {
 
 @Injectable()
 export class MerchantsService {
+    private readonly logger = new Logger(MerchantsService.name)
     constructor(
         @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
         private readonly jwtUtilsService: JwtUtilsService,
@@ -265,11 +266,10 @@ export class MerchantsService {
 
     async updateChargeMerchantEvent(data: UpdateChargeMerchant) {
         try {
-            console.log("Merchant Data")
-            console.log(data);
             
             const {amount, end_date, mcht_id} = data
             await this.merchantsRepository.findAndUpdate({mcht_id}, {$set: {amount, end_date, status: MerchantStatus.OPENED}})
+            this.logger.warn("update charge month merchant")
         } catch (error) {
             throw error
         }
