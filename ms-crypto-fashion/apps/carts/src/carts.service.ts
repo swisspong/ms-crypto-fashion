@@ -13,6 +13,8 @@ import { PRODUCTS_SERVICE, PRODUCTS_TCP } from '@app/common/constants/products.c
 import { IProduct } from '@app/common/interfaces/order-event.interface';
 import { ProductsUtilService } from '@app/common/utils/products/products-util.service';
 import { DeleteManyItemsDto } from './dto/delet-many-items.dto';
+import { IDeleteChktEventPayload } from '@app/common/interfaces/carts.interface';
+import { CheckoutsRepository } from './checkouts/checkouts.repository';
 
 @Injectable()
 export class CartsService {
@@ -20,6 +22,7 @@ export class CartsService {
   private readonly uid = new ShortUniqueId()
   constructor(
     private readonly cartsRepository: CartsRepository,
+    private readonly checkoutsRepository: CheckoutsRepository,
     @Inject(PRODUCTS_SERVICE) private readonly productsClient: ClientProxy,
     private readonly productsUtilService: ProductsUtilService
   ) { }
@@ -28,6 +31,21 @@ export class CartsService {
     const { description, sku, ...product } = data
     await this.cartsRepository.findAndUpdate({ "items.prod_id": product.prod_id }, { '$set': { 'items.$.product': product } })
 
+  }
+
+  async deleteChktAndItems(data: IDeleteChktEventPayload) {
+    const { chkt_id, user_id } = data
+    const checkout = await this.checkoutsRepository.findOneAndDelete({ chkt_id, user_id })
+    const cart = await this.cartsRepository.findOne({ user_id: user_id })
+    cart.items = cart.items.filter(item => {
+      const index = checkout.items.findIndex(chktItem => chktItem.item_id === item.item_id)
+      if (index >= 0) {
+        checkout.items.splice(index, 1)
+        return false
+      }
+      return true
+    })
+    await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { $set: { items: cart.items } })
   }
 
 

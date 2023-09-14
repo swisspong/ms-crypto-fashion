@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateCheckoutItemsDto } from '../dto/create-checkout.dto';
 import { CartsRepository } from '../carts.repository';
-import { CartItem, Product } from '../schemas/cart.schema';
+import { CartItem, PaymentMethodFormat, Product } from '../schemas/cart.schema';
 import { MerchantStatus } from '@app/common/enums';
 import { CheckoutsRepository } from './checkouts.repository';
 import ShortUniqueId from 'short-unique-id';
@@ -230,110 +230,21 @@ export class CheckoutsService {
         if (!checkout) throw new NotFoundException("Checkout not found.")
         const cart = await this.cartsRepository.findOne({ user_id: userId })
         if (!cart) throw new NotFoundException("Cart not found.")
-        // checkout.items.map(chktItem => {
-        //     const cartItemIndex = cart.items.findIndex(cartItem => cartItem.item_id === chktItem.item_id)
-        //     if (cartItemIndex < 0) throw new NotFoundException("Product in cart not found.")
-        //     const cartItem = cart.items.splice(cartItemIndex, 1)[0]
-        //     if (!this.productsUtilService.isEqual(chktItem.product, cartItem.product)) throw new BadRequestException("Product data has changed.")
-        // })
         const errorItems = this.filterErrorItem(checkout.payment_method, checkout.items, cart.items)
-
-        //  this.filterItem(errorItems, checkout.items)
-
-        // for (let i = 0; i < checkout.items.length; i++) {
-        //     const item = checkout.items[i]
-        //     const cartItemIndex = cart.items.findIndex(cartItem => cartItem.item_id === item.item_id)
-        //     this.logger.warn(cart, item.item_id)
-        //     if (cartItemIndex < 0 || !this.productsUtilService.isValid(item.product) || !this.isValidItem(item)) {
-        //         this.logger.warn("1 check", cartItemIndex)
-        //         let tmpIndex = i
-        //         --i
-        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-        //         errorItems.push(errorItem)
-        //         continue
-        //     }
-        //     const cartItem = cart.items.splice(cartItemIndex, 1)[0]
-        //     if (!this.productsUtilService.isValid(cartItem.product) || !this.productsUtilService.isEqual(item.product, cartItem.product)) {
-        //         this.logger.warn("2 check")
-        //         let tmpIndex = i
-        //         --i
-        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-        //         errorItems.push(errorItem)
-        //         continue
-        //     }
-        //     if (item.vrnt_id) {
-        //         const variant = cartItem.product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
-        //         if (variant) {
-        //             this.logger.warn("quantity variant  check ")
-        //             if (item.quantity > variant.stock) {
-        //                 let tmpIndex = i
-        //                 --i
-        //                 const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-        //                 errorItems.push(errorItem)
-        //                 continue
-        //             }
-        //         }
-        //     } else {
-        //         if (item.quantity > cartItem.product.stock) {
-        //             this.logger.warn("quantity check ")
-        //             let tmpIndex = i
-        //             --i
-        //             const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-        //             errorItems.push(errorItem)
-        //             continue
-        //         }
-        //     }
-        //     if (!cartItem.product.payment_methods.includes(checkout.payment_method)) {
-        //         this.logger.warn("payemnt check ")
-        //         let tmpIndex = i
-        //         --i
-        //         const errorItem = checkout.items.splice(tmpIndex, 1)[0]
-        //         errorItems.push(errorItem)
-        //         continue
-        //     }
-        // }
-
-
-
-        // if (errorItems.length > 0) throw new BadRequestException("Product information is incorrect")
-        // checkout.items.map(chktItem => {
-        //     const cartItemIndex = cart.items.findIndex(cartItem => cartItem.item_id === chktItem.item_id)
-        //     if (cartItemIndex < 0) throw new NotFoundException("Product in cart not found.")
-        //     const cartItem = cart.items[cartItemIndex]
-        //     cart.items.splice(cartItemIndex, 1)
-        //     if (!this.productsUtilService.isEqual(chktItem.product, cartItem.product)) throw new BadRequestException("Product data has changed.")
-        //     // cart item 
-        //     const isValid = this.productsUtilService.isValid(cartItem.product)
-        //     if (!isValid) throw new BadRequestException("Product data has changed.")
-        //     if (cartItem.vrnt_id) {
-        //         const variant = cartItem.product.variants.find(vrnt => vrnt.vrnt_id === cartItem.vrnt_id)
-        //         if (!variant) throw new BadRequestException("Product data has changed.")
-        //         if (cartItem.quantity > variant.stock) throw new BadRequestException("Out of stock.")
-        //     } else {
-        //         if (cartItem.quantity > cartItem.product.stock) throw new BadRequestException("Out of stock.")
-        //     }
-        //     // checkout item
-        //     if (!this.productsUtilService.isValid(chktItem.product)) throw new BadRequestException("Product data has changed.")
-        //     if (chktItem.vrnt_id) {
-        //         const variant = chktItem.product.variants.find(vrnt => vrnt.vrnt_id === chktItem.vrnt_id)
-        //         if (!variant) throw new BadRequestException("Product data has changed.")
-        //         if (chktItem.quantity > variant.stock) throw new BadRequestException("Out of stock.")
-        //     } else {
-        //         if (chktItem.quantity > chktItem.product.stock) throw new BadRequestException("Out of stock.")
-        //     }
-        //     return chktItem
-        // })
-
-        // cart.items = cart.items.filter(item => !errorItems.some(errItem => item.item_id === errItem.item_id))
+        if (!orderingDto.token && orderingDto.payment_method === PaymentMethodFormat.CREDIT) {
+            throw new BadRequestException("Invalid payment")
+        }
         if (errorItems.length > 0) {
             //  await this.cartsRepository.findOneAndUpdate({ _id: cart._id }, { $set: { items: cart.items } })
         } else {
+            this.logger.warn("emit event ordering")
             await lastValueFrom(
                 this.orderClient.emit(ORDERING_EVENT, {
                     ...checkout,
                     ...orderingDto
                 })
             )
+
         }
 
         if (errorItems.length > 0) throw new BadRequestException("Product information is incorrect")

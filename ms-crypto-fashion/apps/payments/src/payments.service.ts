@@ -4,8 +4,11 @@ import { CreditCardPaymentDto } from './dto/payment-credit-card.dto';
 import { lastValueFrom } from 'rxjs';
 
 import { ClientProxy } from '@nestjs/microservices';
-import { UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
+import { PaidOrderingEvent, UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
 import { CHARGE_MONTH_EVENT, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
+import { ORDER_SERVICE, UPDATE_ORDER_STATUS_EVENT } from '@app/common/constants/order.constant';
+import { IUpdateOrderStatusEventPayload } from '@app/common/interfaces/order-event.interface';
+import { PaymentMethodFormat } from '@app/common/enums';
 
 @Injectable()
 export class PaymentsService {
@@ -16,7 +19,8 @@ export class PaymentsService {
   })
 
   constructor(
-    @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy
+    @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy,
+    @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy
   ) { }
 
   getHello(): string {
@@ -28,14 +32,14 @@ export class PaymentsService {
     try {
       const { amount_, token } = creaditCardPaymentDto
       const amount = amount_ * 100 //convert amount_
-      
-      
+
+
       const charge = await this.omise.charges.create({
         amount: amount,
         currency: 'thb',
         card: token
       });
-      
+
 
       // const amount_convert = charge.amount / 100;
       const amount_convert = amount / 100;
@@ -53,7 +57,7 @@ export class PaymentsService {
         mcht_id: user_id
       }
       console.log(data);
-      
+
       await lastValueFrom(
         this.productClient.emit(CHARGE_MONTH_EVENT, {
           ...data
@@ -67,6 +71,30 @@ export class PaymentsService {
     }
   }
 
+
+  async paidManyOrders(data: PaidOrderingEvent) {
+    const { amount_, token, orderIds, chkt_id, user_id, payment_method } = data
+
+    if (payment_method === PaymentMethodFormat.CREDIT) {
+      const amount = amount_ * 100 //convert amount_
+      const charge = await this.omise.charges.create({
+        amount: amount,
+        currency: 'thb',
+        card: token
+      });
+      const payload: IUpdateOrderStatusEventPayload = {
+        user_id,
+        chkt_id,
+        orderIds: orderIds,
+        sucess: true,
+        chargeId: charge.id
+      }
+      await lastValueFrom(this.orderClient.emit(UPDATE_ORDER_STATUS_EVENT, payload))
+    }else{
+      
+    }
+
+  }
   // // Open shop
   // async createShopCreditCard(user_id: string, creditCardPaymentDto: CreditCardPaymentDto) {
   //   try {

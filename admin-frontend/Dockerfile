@@ -1,16 +1,13 @@
-
 FROM node:18-alpine AS deps
 RUN apk add --no-cache libc6-compat
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm install -g npm@10.0.0
-# RUN  npm install --no-proxy
 RUN  npm install --production
 
 FROM node:18-alpine AS builder
-WORKDIR /usr/src/app
-COPY --from=deps /usr/src/app/node_modules ./node_modules
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED 1
@@ -18,7 +15,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
 FROM node:18-alpine AS runner
-WORKDIR /usr/src/app
+WORKDIR /app
 
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
@@ -26,9 +23,9 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder --chown=nextjs:nodejs /usr/src/app/.next ./.next
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
 
 USER nextjs
 
@@ -37,6 +34,58 @@ EXPOSE 3000
 ENV PORT 3000
 
 CMD ["npm", "start"]
+# FROM node:18-alpine  As deps
+
+# WORKDIR /usr/src/app
+
+# COPY package*.json ./
+# RUN npm install -g npm@10.1.0
+
+
+# RUN npm install
+
+# COPY . .
+# EXPOSE 3000
+# CMD ["npm", "start"]
+# FROM node:18-alpine AS deps
+# #RUN apk add --no-cache libc6-compat
+# WORKDIR /usr/src/app
+
+# COPY package.json package-lock.json ./
+# RUN npm install -g npm@10.1.0
+# # RUN  npm install --no-proxy
+# #RUN  npm install --production
+# RUN  npm install
+
+# FROM node:18-alpine AS builder
+# WORKDIR /usr/src/app
+# COPY --from=deps /usr/src/app/node_modules ./node_modules
+# COPY . .
+
+# ENV NEXT_TELEMETRY_DISABLED 1
+
+# RUN npm run build
+
+# FROM node:18-alpine AS runner
+# WORKDIR /usr/src/app
+
+# ENV NODE_ENV production
+# ENV NEXT_TELEMETRY_DISABLED 1
+
+# RUN addgroup --system --gid 1001 nodejs
+# RUN adduser --system --uid 1001 nextjs
+
+# COPY --from=builder --chown=nextjs:nodejs /usr/src/app/.next ./.next
+# COPY --from=builder /usr/src/app/node_modules ./node_modules
+# COPY --from=builder /usr/src/app/package.json ./package.json
+
+# USER nextjs
+
+# EXPOSE 3000
+
+# ENV PORT 3000
+
+# CMD ["npm", "start"]
 # # FROM node:18-alpine  As development
 
 # # WORKDIR /usr/src/app

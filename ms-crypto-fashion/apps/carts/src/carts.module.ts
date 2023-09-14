@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { CartsController } from './carts.controller';
 import { CartsService } from './carts.service';
 import { DatabaseModule, RmqModule, authProviders } from '@app/common';
@@ -12,6 +12,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CheckoutsModule } from './checkouts/checkouts.module';
 import { PRODUCTS_SERVICE, PRODUCTS_TCP } from '@app/common/constants/products.constant';
 import { ProductsUtilModule } from '@app/common/utils/products/products-util.module';
+import { ORDER_SERVICE } from '@app/common/constants/order.constant';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ProductsUtilModule } from '@app/common/utils/products/products-util.mod
         },
       },
     ]),
+    
     CheckoutsModule,
     ProductsUtilModule
   ],

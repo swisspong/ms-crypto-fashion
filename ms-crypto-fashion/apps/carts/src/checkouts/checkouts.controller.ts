@@ -15,7 +15,7 @@ export class CheckoutsController {
   }
   @Get(':chktId')
   getCheckout(@Param("chktId") chktId: string) {
-    this.logger.warn("getCheckout =>", chktId)
+   // this.logger.warn("getCheckout =>", chktId)
     return this.checkoutsService.getCheckout(chktId)
   }
   @Delete(':chktId')

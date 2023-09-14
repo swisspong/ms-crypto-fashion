@@ -21,6 +21,9 @@ import { AssetsModule } from './assets/assets.module';
 import { CARTS_SERVICE } from '@app/common/constants/carts.constant';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronService } from './cron/cron.service';
+import { ProductsUtilModule } from '@app/common/utils/products/products-util.module';
+import { CartsUtilModule } from '@app/common/utils/carts/carts-util.module';
+import { PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
 
 @Module({
   imports: [
@@ -36,6 +39,9 @@ import { CronService } from './cron/cron.service';
     }),
     RmqModule,
     RmqModule.register({ name: CARTS_SERVICE }),
+    RmqModule.register({ name: PAYMENT_SERVICE }),
+    ProductsUtilModule,
+    CartsUtilModule,
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
     DatabaseModule,
     CategoriesModule,

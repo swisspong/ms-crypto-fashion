@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import ShortUniqueId from 'short-unique-id';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductsRepository } from './products.repository';
@@ -18,15 +18,24 @@ import { CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { IProduct, OrderingEventPayload } from '@app/common/interfaces/order-event.interface';
+import { ProductsUtilService } from '@app/common/utils/products/products-util.service';
+import { CartsUtilService } from '@app/common/utils/carts/carts-util.service';
+import { PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
+import { IProductOrderingEventPayload } from '@app/common/interfaces/products-event.interface';
+import { PAID_ORDERING_EVENT, PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
 
 @Injectable()
 export class ProductsService {
+  private readonly logger = new Logger(ProductsService.name)
   private readonly uid = new ShortUniqueId()
   constructor(
     private readonly productsRepository: ProductsRepository,
     private readonly categoriesRepository: CategoriesRepository,
     private readonly categoriesWebRepository: CategoryWebRepository,
     private readonly merchantsRepository: MerchantsRepository,
+    private readonly productsUtilService: ProductsUtilService,
+    private readonly cartsUtilService: CartsUtilService,
+    @Inject(PAYMENT_SERVICE) private readonly paymentClient: ClientProxy,
     @Inject(CARTS_SERVICE) private readonly cartsClient: ClientProxy,
   ) { }
   async create(userId: string, createProductDto: CreateProductDto) {
@@ -36,7 +45,7 @@ export class ProductsService {
     if (existProduct) throw new BadRequestException("Product is exist.")
 
     console.log(createProductDto.categories.map(item => item.cat_id));
-    
+
 
     const categories = await this.categoriesRepository.find({
       mcht_id: merchant.mcht_id,
@@ -636,7 +645,7 @@ export class ProductsService {
       categories_web: categoriesWeb.map(cat => cat._id),
 
     })
-
+    this.logger.warn("emit from product to carts")
     await lastValueFrom(
       this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
         ...newProduct, merchant
@@ -698,29 +707,90 @@ export class ProductsService {
     return await this.productsRepository.findOneAndDelete({ prod_id })
   }
 
-  async cutStock(data: OrderingEventPayload) {
+  async cutStock(data: IProductOrderingEventPayload) {
     await Promise.all(data.items.map(async (item) => {
       const newStock = -item.quantity
-      const currentProduct = await this.productsRepository.findOne({ prod_id: item.prod_id })
+      const currentProduct = await this.productsRepository.findOnePopulate({ prod_id: item.prod_id },
+        [
+          {
+            model: "Merchant",
+            path: 'merchant',
+          }
+        ]
+      ) as IProduct
+      const payload: PaidOrderingEvent = {
+        payment_method: data.payment_method,
+        user_id: data.user_id,
+        chkt_id: data.chkt_id,
+        amount_: data.total,
+        token: data.token,
+        orderIds: data.orderIds
+      }
       const chktProduct = item.product
       if (
-        currentProduct.available === true
+        currentProduct &&
+        chktProduct &&
+        this.productsUtilService.isValid(currentProduct) &&
+        this.productsUtilService.isValid(chktProduct) &&
+        this.productsUtilService.isEqual(currentProduct, chktProduct) &&
+        this.productsUtilService.isIncludePayment(currentProduct, data.payment_method) &&
+        this.productsUtilService.isIncludePayment(chktProduct, data.payment_method)
       ) {
 
-      }
-      if (item.vrnt_id) {
-        const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id, "variants.vrnt_id": item.vrnt_id }, { $inc: { "variants.$.stock": newStock } })
-        if (!product) throw new BadRequestException("Product info has changed")
-        const variant = product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
-        if (!variant) throw new BadRequestException("Product info has changed")
-        if (variant.stock < 0) throw new BadRequestException("Product info has chagned")
-        return product
-      } else {
+        if (
+          item.vrnt_id &&
+          this.productsUtilService.isHasVariant(currentProduct) &&
+          this.productsUtilService.isIncludeVariant(currentProduct, item.vrnt_id) &&
+          this.productsUtilService.isEnoughVariant(currentProduct, item.vrnt_id, item.quantity)
+        ) {
+          const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id, "variants.vrnt_id": item.vrnt_id }, { $inc: { "variants.$.stock": newStock } }) as IProduct
+          if (product && this.productsUtilService.isEnoughVariant(product, item.vrnt_id, 0)) {
+            this.logger.warn("Emit to payment")
+            await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+            await lastValueFrom(
+              this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+                ...product
+              })
+            )
+            return
+          }
+        } else if (
+          !item.vrnt_id &&
+          !this.productsUtilService.isHasVariant(currentProduct) &&
+          this.productsUtilService.isEnoughStock(currentProduct, item.quantity)
+        ) {
+          const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id }, { $inc: { stock: newStock } }) as IProduct
+          if (product && this.productsUtilService.isEnoughStock(product, 0)) {
+            this.logger.warn("Emit to payment")
+            await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+            await lastValueFrom(
+              this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+                ...product
+              })
+            )
+            return
+          }
 
-        const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id }, { $inc: { stock: newStock } })
-        if (!newProduct) throw new BadRequestException("Product info has changed")
-        if (newProduct.stock < 0) throw new BadRequestException("Out of stock")
-        return newProduct
+        }
+
+
+        //throw error here
+
+
+        // if (item.vrnt_id) {
+        //   const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id, "variants.vrnt_id": item.vrnt_id }, { $inc: { "variants.$.stock": newStock } })
+        //   if (!product) throw new BadRequestException("Product info has changed")
+        //   const variant = product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
+        //   if (!variant) throw new BadRequestException("Product info has changed")
+        //   if (variant.stock < 0) throw new BadRequestException("Product info has chagned")
+        //   return product
+        // } else {
+
+        //   const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id }, { $inc: { stock: newStock } })
+        //   if (!newProduct) throw new BadRequestException("Product info has changed")
+        //   if (newProduct.stock < 0) throw new BadRequestException("Out of stock")
+        //   return newProduct
+        // }
       }
     }))
   }

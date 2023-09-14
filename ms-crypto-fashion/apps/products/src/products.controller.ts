@@ -6,7 +6,7 @@ import { CreateMerchantDto } from './merchants/dto/create-merchant.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateProductDto } from './dto/create-product.dto';
 import { GetProductDto } from './dto/get-product.dto';
-import { MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
+import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import { GetProductNoTypeSerchatDto } from './dto/get-product-no-type-search.dto';
 import { GetProductStoreDto } from './dto/get-product-store.dto';
 import { StoreQueryDto } from './dto/store-query.dto';
@@ -14,6 +14,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { PRODUCTS_ORDERING_EVENT } from '@app/common/constants/products.constant';
 import { OrderingEventPayload } from '@app/common/interfaces/order-event.interface';
 import { RmqService } from '@app/common';
+import { IProductOrderingEventPayload } from '@app/common/interfaces/products-event.interface';
 
 @ApiTags("Products")
 @Controller('products')
@@ -63,7 +64,8 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
   @MessagePattern(PRODUCTS_ORDERING_EVENT)
-  async handlerOrdering(@Payload() data: OrderingEventPayload, context: RmqContext) {
+  async handlerOrdering(@Payload() data: IProductOrderingEventPayload,@Ctx() context: RmqContext) {
+    this.logger.warn("Received message from ordering")
     await this.productsService.cutStock(data)
     this.rmqService.ack(context);
   }

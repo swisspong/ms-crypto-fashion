@@ -114,8 +114,8 @@ services:
     env_file:
       - ./admin-frontend/.env
     volumes:
-      - ./admin-frontend:/usr/src/app
-      - /usr/src/app/node_modules
+      - ./admin-frontend:/app
+      - /app/node_modules
   merchant-client:
     container_name: merchant-client
     restart: always
@@ -144,13 +144,22 @@ services:
     env_file:
       - ./customer-frontend/.env
     volumes:
-      - ./customer-frontend:/usr/src/app
-      - /usr/src/app/node_modules
+      - ./customer-frontend:/app
+      - /app/node_modules
 
+  # rabbitmq:
+  #   image: rabbitmq
+  #   ports:
+  #     - "5672:5672"
   rabbitmq:
-    image: rabbitmq
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
     ports:
-      - "5672:5672"
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./data/rabbitmq/data/:/var/lib/rabbitmq/
+        - ./data/rabbitmq/log/:/var/log/rabbitmq
   mongo1:
     image: mongo:5
     container_name: mongo1

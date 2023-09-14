@@ -18,6 +18,7 @@ import { ProductsUtilModule } from '@app/common/utils/products/products-util.mod
     ProductsUtilModule
   ],
   controllers: [CheckoutsController],
-  providers: [CheckoutsService,CheckoutsRepository],
+  providers: [CheckoutsService, CheckoutsRepository],
+  exports: [CheckoutsRepository]
 })
 export class CheckoutsModule { }

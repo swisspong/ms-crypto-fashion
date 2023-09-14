@@ -69,7 +69,7 @@ export interface CheckoutItem {
         option_name: string
         group_name: string
     }[]
-    image:string
+    image: string
     vrnt_id?: string
     prod_id: string
     product: IProduct
@@ -86,4 +86,12 @@ export interface OrderingEventPayload {
     tel_number: string
     token?: string
     payment_method: PaymentMethodFormat
+}
+
+export interface IUpdateOrderStatusEventPayload {
+    chkt_id: string
+    user_id:string
+    orderIds: string[]
+    sucess: boolean
+    chargeId: string
 }

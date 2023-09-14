@@ -6,6 +6,8 @@ export class ProductsUtilService {
     constructor() { }
     isValid(product: IProduct) {
         if (
+            product &&
+            product.merchant &&
             product.available === true &&
             product.merchant.status === MerchantStatus.OPENED &&
             (
@@ -71,6 +73,9 @@ export class ProductsUtilService {
     }
     isIncludeVariant(product: IProduct, vrntId: string) {
         return product.variants.some(vrnt => vrnt.vrnt_id === vrntId)
+    }
+    isIncludePayment(product: IProduct, payment: string) {
+        return product.payment_methods.includes(payment)
     }
     isHasVariant(product: IProduct) {
         return product.variants.length > 0 && product.groups.length > 0

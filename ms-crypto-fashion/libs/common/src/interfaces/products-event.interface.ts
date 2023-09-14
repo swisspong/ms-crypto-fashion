@@ -1,3 +1,5 @@
+import { ICartItem } from "./carts.interface"
+import { IProduct } from "./order-event.interface"
 
 interface IMerchant {
     _id: string
@@ -58,4 +60,15 @@ interface IVariant {
     price: number
     stock: number
     image_url?: string
+}
+
+
+export interface IProductOrderingEventPayload {
+    chkt_id: string
+    payment_method:string
+    user_id:string
+    total: number;
+    token: string;
+    orderIds: string[]
+    items: ICartItem[]
 }

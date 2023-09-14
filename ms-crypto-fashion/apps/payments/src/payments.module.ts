@@ -7,6 +7,7 @@ import { DatabaseModule, JwtUtilsModule, RmqModule, authProviders } from '@app/c
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtStrategy } from '@app/common/strategy';
 import { PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
+import { ORDER_SERVICE } from '@app/common/constants/order.constant';
 
 @Module({
   imports: [
@@ -18,9 +19,11 @@ import { PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
         PORT: Joi.number().required(),
         JWT_SECRET: Joi.string().required()
       }),
-      envFilePath: './apps/payments/.env',
+      // envFilePath: './apps/payments/.env',
     }),
+    RmqModule,
     RmqModule.register({ name: PRODUCTS_SERVICE }),
+    RmqModule.register({ name: ORDER_SERVICE }),
     JwtUtilsModule
     // DatabaseModule,
     // MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }])
@@ -32,4 +35,4 @@ import { PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
     PaymentsService
   ],
 })
-export class PaymentsModule {}
+export class PaymentsModule { }

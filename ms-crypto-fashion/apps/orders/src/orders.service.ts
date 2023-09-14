@@ -3,18 +3,27 @@ import { OrdersRepository } from './orders.repository';
 // import axios from 'axios';
 import { ClientProxy, RmqContext } from '@nestjs/microservices';
 import { RmqService } from '@app/common';
-import { CheckoutItem, FindOrderById, OrderingEventPayload, PaymentMethodFormat, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
-import { Order, OrderItem, PaymentFormat } from './schemas/order.schema';
+import { CheckoutItem, FindOrderById, IUpdateOrderStatusEventPayload, OrderingEventPayload, PaymentMethodFormat, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
+import { Order, OrderItem, PaymentFormat, StatusFormat } from './schemas/order.schema';
 import ShortUniqueId from 'short-unique-id';
 import { PRODUCTS_ORDERING_EVENT, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
 import { lastValueFrom } from 'rxjs';
+import { CartsUtilService } from '@app/common/utils/carts/carts-util.service';
+import { IProductOrderingEventPayload } from '@app/common/interfaces/products-event.interface';
+import { ORDER_SERVICE } from '@app/common/constants/order.constant';
+import { CARTS_DELETE_ITEMS_EVENT, CARTS_SERVICE } from '@app/common/constants/carts.constant';
+import { IDeleteChktEventPayload } from '@app/common/interfaces/carts.interface';
+import { OrderPaginationDto } from './dto/order-pagination.dto';
+import { FullfillmentDto } from './dto/fullfuillment.dto';
 
 @Injectable()
 export class OrdersService {
   protected readonly logger = new Logger(OrdersService.name);
   constructor(
     private readonly ordersRepository: OrdersRepository,
+    @Inject(CARTS_SERVICE) private readonly cartsClient: ClientProxy,
     @Inject(PRODUCTS_SERVICE) private readonly productsClient: ClientProxy,
+
   ) { }
   private uid = new ShortUniqueId()
   getHello(): string {
@@ -33,7 +42,51 @@ export class OrdersService {
       throw error;
     }
   }
+  async myOrders(userId: string, filter: OrderPaginationDto) {
+    //const total = await this.ordersRepository.countDoc({ user_id: userId })
+    const total = await this.ordersRepository.aggregate([
+      {
+        $match: {
+          user_id: userId
+        },
+      },
 
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          count: 1,
+        },
+      },
+    ])
+    const orders = await this.ordersRepository.aggregate([
+      {
+        $match: {
+          user_id: userId
+        },
+      },
+
+      { $sort: { createdAt: -1 } },
+      {
+        $skip: (filter.page - 1) * filter.per_page,
+      },
+      {
+        $limit: filter.per_page
+      },
+    ])
+    return {
+      data: orders,
+      page: filter.page,
+      per_page: filter.per_page,
+      total: total[0]?.count || 0,
+      total_page: Math.ceil((total[0]?.count || 0) / filter.per_page)
+    }
+  }
   async updateReviewStatus(data: UpdateStatusOrder) {
     try {
       const { order_id, review } = data
@@ -45,8 +98,6 @@ export class OrdersService {
     }
   }
   async ordering(data: OrderingEventPayload) {
-
-
 
     const groupByMchtId = {}
     data.items.forEach(checkoutItem => {
@@ -87,20 +138,34 @@ export class OrdersService {
 
         return orderItem
       })
+
+      order.payment_status = PaymentFormat.PENDING
       order.total = order.items.reduce((prev, curr) => curr.total + prev, 0)
       order.total_quantity = order.items.reduce((prev, curr) => curr.quantity + prev, 0)
       order.mcht_id = merchant.mcht_id
       order.mcht_name = merchant.name
+      order.payment_method = data.payment_method
       return order
     })
 
 
-    const newOrders = await this.ordersRepository.createMany(orders)
+    await this.ordersRepository.createMany(orders)
     // - event to product to cut stock
     //    - event to payment 
     //         - event to cart to remove item
-    await lastValueFrom(this.productsClient.emit(PRODUCTS_ORDERING_EVENT, { ...data }))
-    return { message: "success" }
+
+    const payload: IProductOrderingEventPayload = {
+      payment_method: data.payment_method,
+      user_id: data.user_id,
+      chkt_id: data.chkt_id,
+      items: data.items,
+      orderIds: orders.map(order => order.order_id),
+      token: data.token,
+      total: orders.reduce((prev, curr) => prev + curr.total, 0)
+    }
+    this.logger.warn("Emit to product")
+    await lastValueFrom(this.productsClient.emit(PRODUCTS_ORDERING_EVENT, { ...payload }))
+    //return { message: "success" }
 
     // wait this.checkoutsRepository.findOneAndDelete({ chkt_id: checkout.chkt_id }, session)
 
@@ -120,6 +185,21 @@ export class OrdersService {
     //   return newOrders
 
     // }  
+  }
+  async updateStatus(data: IUpdateOrderStatusEventPayload) {
+    await Promise.all(
+      data.orderIds.map(async id => {
+        await this.ordersRepository.findOneAndUpdate({ order_id: id }, { $set: { payment_status: PaymentFormat.PAID, chrg_id: data.chargeId } })
+      })
+    )
+    const { chkt_id, user_id } = data
+    const payload: IDeleteChktEventPayload = {
+      user_id,
+      chkt_id
+    }
+    await lastValueFrom(
+      this.cartsClient.emit(CARTS_DELETE_ITEMS_EVENT, payload)
+    )
   }
   // TODO: แสดงยอดขายและจำนวนรายการสั่งซื้ออต่ละเดือนปีปัจจุบัน
   async getOrderTradeByMonth() {
@@ -253,8 +333,70 @@ export class OrdersService {
       console.log(error)
     }
   }
+  async myOrderById(orderId: string, userId: string) {
+    const order = await this.ordersRepository.findOne({ order_id: orderId, user_id: userId })
+    return order
+  }
+  async allOrderByMerchant(merchantId: string, filter: OrderPaginationDto) {
+    this.logger.warn("all")
+    // const merchant = await this.merchantsRepository.findOne({ _id: new ObjectId(merchantId) })
+    // const total = await this.ordersRepository.countDoc({ mcht_id: merchant.mcht_id })
+    // const orders = await this.ordersRepository.find({ mcht_id: merchant.mcht_id }, undefined, (filter.page - 1) * filter.per_page, filter.per_page, { createdAt: "desc" })
+    const total = await this.ordersRepository.aggregate([
+      {
+        $match: {
+          mcht_id: merchantId
+        },
+      },
 
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          count: 1,
+        },
+      },
+    ])
+    const orders = await this.ordersRepository.aggregate([
+      {
+        $match: {
+          mcht_id: merchantId
+        },
+      },
 
+      { $sort: { createdAt: -1 } },
+      {
+        $skip: (filter.page - 1) * filter.per_page,
+      },
+      {
+        $limit: filter.per_page
+      },
+    ])
+    return {
+      data: orders,
+      page: filter.page,
+      per_page: filter.per_page,
+      total: total[0]?.count || 0,
+      total_page: Math.ceil((total[0]?.count || 0) / filter.per_page)
+    }
+  }
+  async oneOrderByMerchant(orderId: string, merchantId: string) {
+
+    const order = await this.ordersRepository.findOne({ order_id: orderId, mcht_id: merchantId })
+    return order
+  }
+
+  async fullfillmentOrder(orderId: string, merchantId: string, dto: FullfillmentDto) {
+
+    const order = await this.ordersRepository.findOne({ order_id: orderId, mcht_id: merchantId })
+    if (order.status === StatusFormat.FULLFILLMENT) return order
+    return await this.ordersRepository.findOneAndUpdate({ order_id: orderId, mcht_id: merchantId }, { status: StatusFormat.FULLFILLMENT, shipping_carier: dto.shipping_carier, tracking: dto.tracking, shipped_at: new Date() })
+  }
   // async getWei(priceTHB: number) {
   //   const data: { THB: number } = await (await axios.get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=THB")).data
   //   const rateInTHB = data.THB
@@ -437,5 +579,5 @@ export class OrdersService {
   //     session.endSession()
   //   }
   // }
-  
+
 }

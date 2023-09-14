@@ -1,6 +1,9 @@
 import { AbstractDocument } from "@app/common";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-
+export enum PaymentMethodFormat {
+    CREDIT = "credit",
+    WALLET = "wallet",
+}
 export enum StatusFormat {
 
     NOT_FULLFILLMENT = "not fullfillment",
@@ -52,6 +55,8 @@ export class Order extends AbstractDocument {
 
     // @Prop()
     // google_id?: string;
+    @Prop({ enum: PaymentMethodFormat })
+    payment_method: string
 
     @Prop({ enum: StatusFormat, default: StatusFormat.NOT_FULLFILLMENT })
     status?: string
