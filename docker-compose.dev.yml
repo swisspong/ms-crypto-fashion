@@ -2,6 +2,7 @@ version: "3"
 services:
   auth:
     container_name: auth-service
+    
     restart: always
     build:
       context: ./ms-crypto-fashion
@@ -22,6 +23,7 @@ services:
       - /usr/src/app/node_modules
   products:
     container_name: products-service
+    
     restart: always
     build:
       context: ./ms-crypto-fashion
@@ -43,6 +45,7 @@ services:
       - /usr/src/app/node_modules
   carts:
     container_name: carts-service
+    
     restart: always
     build:
       context: ./ms-crypto-fashion
@@ -63,6 +66,7 @@ services:
       - /usr/src/app/node_modules
   orders:
     container_name: orders-service
+    
     restart: always
     build:
       context: ./ms-crypto-fashion
@@ -83,6 +87,7 @@ services:
       - /usr/src/app/node_modules
   payments:
     container_name: payments-service
+    
     restart: always
     build:
       context: ./ms-crypto-fashion

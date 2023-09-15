@@ -1,5 +1,5 @@
 import { ICartItem } from "./carts.interface"
-import { IProduct } from "./order-event.interface"
+import { IOrderItemsEvent, IProduct } from "./order-event.interface"
 
 interface IMerchant {
     _id: string
@@ -69,6 +69,6 @@ export interface IProductOrderingEventPayload {
     user_id:string
     total: number;
     token: string;
-    orderIds: string[]
+    orders: IOrderItemsEvent[]
     items: ICartItem[]
 }

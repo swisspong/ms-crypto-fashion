@@ -9,6 +9,7 @@ import { RmqService } from '@app/common';
 import { FindOrderById, IUpdateOrderStatusEventPayload, OrderingEventPayload, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
 import { OrderPaginationDto } from './dto/order-pagination.dto';
 import { FullfillmentDto } from './dto/fullfuillment.dto';
+import { CancelOrderDto } from './dto/cancel-order.dto';
 ApiTags('Order')
 @Controller('orders')
 export class OrdersController {
@@ -53,18 +54,18 @@ export class OrdersController {
   // create(@GetUserId() userId: string, @Body() createOrderDto: CreateOrderDto) {
   //   return this.ordersService.ordering(userId, createOrderDto);
   // }
-  // @Roles(RoleFormat.MERCHANT)
-  // @Post('merchant/cancel')
-  // merchantCancel(@GetUser("merchant") mchtId: string, @Body() cancelOrderDto: CancelOrderDto) {
-  //   const { order_id } = cancelOrderDto
-  //   return this.ordersService.cancelOrderByMerchant(mchtId, order_id);
-  // }
+  @Roles(RoleFormat.MERCHANT)
+  @Post('merchant/cancel')
+  merchantCancel(@GetUser("merchant") mchtId: string, @Body() cancelOrderDto: CancelOrderDto) {
+    const { order_id } = cancelOrderDto
+    return this.ordersService.cancelOrderByMerchant(mchtId, order_id);
+  }
 
-  // @Post('cancel')
-  // customerCancel(@GetUserId() userId: string, @Body() cancelOrderDto: CancelOrderDto) {
-  //   const { order_id } = cancelOrderDto
-  //   return this.ordersService.cancelOrderByCustomer(userId, order_id);
-  // }
+  @Post('cancel')
+  customerCancel(@GetUserId() userId: string, @Body() cancelOrderDto: CancelOrderDto) {
+    const { order_id } = cancelOrderDto
+    return this.ordersService.cancelOrderByCustomer(userId, order_id);
+  }
   @Roles(RoleFormat.MERCHANT)
   @Get("merchant")
   allOrderByMerchant(@GetUser('merchant') merchantId: string, @Query() filter: OrderPaginationDto) {

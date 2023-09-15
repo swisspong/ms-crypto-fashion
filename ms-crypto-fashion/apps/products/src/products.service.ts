@@ -8,7 +8,7 @@ import { MerchantsRepository } from './merchants/merchants.repository';
 import { GetProductDto } from './dto/get-product.dto';
 import { SearchType } from './dto/get-product-base.dto';
 import { GetProductNoTypeSerchatDto } from './dto/get-product-no-type-search.dto';
-import { MerchantStatus } from '@app/common/enums';
+import { MerchantStatus, PaymentMethodFormat } from '@app/common/enums';
 import { GetProductStoreDto } from './dto/get-product-store.dto';
 import { Product } from './schemas/product.schema';
 import { StoreQueryDto } from './dto/store-query.dto';
@@ -724,7 +724,7 @@ export class ProductsService {
         chkt_id: data.chkt_id,
         amount_: data.total,
         token: data.token,
-        orderIds: data.orderIds
+        orders: data.orders
       }
       const chktProduct = item.product
       if (
@@ -745,8 +745,11 @@ export class ProductsService {
         ) {
           const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id, "variants.vrnt_id": item.vrnt_id }, { $inc: { "variants.$.stock": newStock } }) as IProduct
           if (product && this.productsUtilService.isEnoughVariant(product, item.vrnt_id, 0)) {
-            this.logger.warn("Emit to payment")
-            await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+            if (data.payment_method === PaymentMethodFormat.CREDIT) {
+              this.logger.warn("Emit to payment", data.payment_method)
+
+              await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+            }
             await lastValueFrom(
               this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
                 ...product
@@ -761,8 +764,10 @@ export class ProductsService {
         ) {
           const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id }, { $inc: { stock: newStock } }) as IProduct
           if (product && this.productsUtilService.isEnoughStock(product, 0)) {
-            this.logger.warn("Emit to payment")
-            await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+            if (data.payment_method === PaymentMethodFormat.CREDIT) {
+              this.logger.warn("Emit to payment no options", data.payment_method)
+              await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+            }
             await lastValueFrom(
               this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
                 ...product

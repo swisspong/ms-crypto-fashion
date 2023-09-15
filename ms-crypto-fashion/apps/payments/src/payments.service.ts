@@ -9,16 +9,20 @@ import { CHARGE_MONTH_EVENT, PRODUCTS_SERVICE } from '@app/common/constants/prod
 import { ORDER_SERVICE, UPDATE_ORDER_STATUS_EVENT } from '@app/common/constants/order.constant';
 import { IUpdateOrderStatusEventPayload } from '@app/common/interfaces/order-event.interface';
 import { PaymentMethodFormat } from '@app/common/enums';
+import { TransactionPurchaseRepository } from './transaction-purchase.repository';
+import ShortUniqueId from 'short-unique-id';
+import { TransactionFormat } from './schemas/transaction.schema';
 
 @Injectable()
 export class PaymentsService {
-
+  private readonly uid = new ShortUniqueId()
   private readonly omise: Omise.IOmise = Omise({
     publicKey: process.env.OMISE_PUBLIC_KEY,
     secretKey: process.env.OMISE_SECRET_KEY,
   })
 
   constructor(
+    private readonly transactionPurchaseRepository: TransactionPurchaseRepository,
     @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy,
     @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy
   ) { }
@@ -73,7 +77,7 @@ export class PaymentsService {
 
 
   async paidManyOrders(data: PaidOrderingEvent) {
-    const { amount_, token, orderIds, chkt_id, user_id, payment_method } = data
+    const { amount_, token, orders, chkt_id, user_id, payment_method } = data
 
     if (payment_method === PaymentMethodFormat.CREDIT) {
       const amount = amount_ * 100 //convert amount_
@@ -85,13 +89,24 @@ export class PaymentsService {
       const payload: IUpdateOrderStatusEventPayload = {
         user_id,
         chkt_id,
-        orderIds: orderIds,
+        orderIds: orders.map(order => order.orderId),
         sucess: true,
         chargeId: charge.id
       }
+
+      await this.transactionPurchaseRepository.createMany(
+        orders.map(order => ({
+          tx_id: `tx_${this.uid.stamp(15)}`,
+          amount: order.total,
+          type: TransactionFormat.DEPOSIT,
+          order_id: order.orderId,
+          payment_method: PaymentMethodFormat.CREDIT,
+          user_id,
+          mcht_id: order.mchtId
+        })))
       await lastValueFrom(this.orderClient.emit(UPDATE_ORDER_STATUS_EVENT, payload))
-    }else{
-      
+    } else {
+
     }
 
   }

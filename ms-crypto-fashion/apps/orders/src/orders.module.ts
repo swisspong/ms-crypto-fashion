@@ -12,6 +12,7 @@ import { CartsUtilModule } from '@app/common/utils/carts/carts-util.module';
 import { ORDER_SERVICE } from '@app/common/constants/order.constant';
 import { CARTS_SERVICE } from '@app/common/constants/carts.constant';
 import { JwtStrategy } from '@app/common/strategy';
+import { PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { JwtStrategy } from '@app/common/strategy';
     RmqModule,
     RmqModule.register({ name: PRODUCTS_SERVICE }),
     RmqModule.register({ name: CARTS_SERVICE }),
+    RmqModule.register({ name: PAYMENT_SERVICE }),
    // JwtUtilsModule,
   ],
   controllers: [OrdersController],
