@@ -11,6 +11,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ORDERING_EVENT, ORDER_SERVICE } from '@app/common/constants/order.constant';
 import { ProductsUtilService } from '@app/common/utils/products/products-util.service';
 import { CheckoutItem } from './schemas/checkout.schema';
+import axios from 'axios';
 
 @Injectable()
 export class CheckoutsService {
@@ -22,6 +23,9 @@ export class CheckoutsService {
         @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy,
     ) { }
     private readonly uid = new ShortUniqueId()
+
+
+   
     async createCheckoutItems(userId: string, createCheckoutDto: CreateCheckoutItemsDto) {
         let cart = await this.cartsRepository.findOne({
             user_id: userId
@@ -40,7 +44,7 @@ export class CheckoutsService {
             user_id: userId,
             chkt_id: `chkt_${this.uid.stamp(15)}`,
             payment_method: createCheckoutDto.payment_method,
-            items: cart.items.map(item => {
+            items: itemsSelecteds.map(item => {
                 const price = item.vrnt_id ? item.product.variants.find(variant => variant.vrnt_id === item.vrnt_id).price : item.product.price
                 const variant = item.vrnt_id ? item.product.variants.find(vrnt => vrnt.vrnt_id === item.vrnt_id).variant_selecteds.map(vrnts => {
                     const group = item.product.groups.find(grp => grp.vgrp_id === vrnts.vgrp_id)
@@ -234,7 +238,9 @@ export class CheckoutsService {
         if (!orderingDto.token && orderingDto.payment_method === PaymentMethodFormat.CREDIT) {
             throw new BadRequestException("Invalid payment")
         }
+      
         if (errorItems.length > 0) {
+            throw new BadRequestException("Product information is incorrect")
             //  await this.cartsRepository.findOneAndUpdate({ _id: cart._id }, { $set: { items: cart.items } })
         } else {
             this.logger.warn("emit event ordering")
@@ -247,7 +253,11 @@ export class CheckoutsService {
 
         }
 
-        if (errorItems.length > 0) throw new BadRequestException("Product information is incorrect")
+        if (errorItems.length > 0) 
+        if (orderingDto.payment_method === PaymentMethodFormat.WALLET) {
+            // const orders = await Promise.all(newOrders.map(async order => ({ orderId: order.order_id, total: order.total, wei: await this.getWei(order.total) })))
+            // return { data: orders }
+        }
         return {
             //chkt_id: errorItems.length > 0 ? checkout.chkt_id : undefined
         }

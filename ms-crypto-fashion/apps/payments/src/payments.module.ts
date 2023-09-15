@@ -8,10 +8,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtStrategy } from '@app/common/strategy';
 import { PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
 import { ORDER_SERVICE } from '@app/common/constants/order.constant';
+import { TransactionPurchase, TransactionPurchaseSchema } from './schemas/transaction.schema';
+import { TransactionPurchaseRepository } from './transaction-purchase.repository';
+import { Web3Module } from './web3/web3.module';
 
 @Module({
   imports: [
-    // RmqModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
@@ -19,20 +21,24 @@ import { ORDER_SERVICE } from '@app/common/constants/order.constant';
         PORT: Joi.number().required(),
         JWT_SECRET: Joi.string().required()
       }),
-      // envFilePath: './apps/payments/.env',
     }),
     RmqModule,
     RmqModule.register({ name: PRODUCTS_SERVICE }),
     RmqModule.register({ name: ORDER_SERVICE }),
-    JwtUtilsModule
-    // DatabaseModule,
-    // MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }])
+    JwtUtilsModule,
+    DatabaseModule,
+    MongooseModule.forFeature([{ name: TransactionPurchase.name, schema: TransactionPurchaseSchema }]),
+    Web3Module
   ],
   controllers: [PaymentsController],
   providers: [
     ...authProviders,
     JwtStrategy,
-    PaymentsService
+    PaymentsService,
+    TransactionPurchaseRepository
   ],
+  exports:[
+    TransactionPurchaseRepository
+  ]
 })
 export class PaymentsModule { }

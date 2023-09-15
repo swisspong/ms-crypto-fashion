@@ -70,6 +70,8 @@ export class Order extends AbstractDocument {
 
     @Prop({ type: Number, min: 0, default: 0 })
     total: number;
+    @Prop({ type: Number, min: 0, default: 0 })
+    wei: number;
 
     @Prop([{ type: OrderItem }])
     items: OrderItem[]

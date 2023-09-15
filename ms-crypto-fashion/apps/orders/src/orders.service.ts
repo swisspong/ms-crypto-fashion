@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { OrdersRepository } from './orders.repository';
 // import axios from 'axios';
 import { ClientProxy, RmqContext } from '@nestjs/microservices';
@@ -15,6 +15,9 @@ import { CARTS_DELETE_ITEMS_EVENT, CARTS_SERVICE } from '@app/common/constants/c
 import { IDeleteChktEventPayload } from '@app/common/interfaces/carts.interface';
 import { OrderPaginationDto } from './dto/order-pagination.dto';
 import { FullfillmentDto } from './dto/fullfuillment.dto';
+import { IRefundWithCreditCardEventPayload } from '@app/common/interfaces/payment.event.interface';
+import { PAYMENT_SERVICE, REFUND_CREDITCARD_EVENT } from '@app/common/constants/payment.constant';
+import axios from 'axios';
 
 @Injectable()
 export class OrdersService {
@@ -23,6 +26,7 @@ export class OrdersService {
     private readonly ordersRepository: OrdersRepository,
     @Inject(CARTS_SERVICE) private readonly cartsClient: ClientProxy,
     @Inject(PRODUCTS_SERVICE) private readonly productsClient: ClientProxy,
+    @Inject(PAYMENT_SERVICE) private readonly paymentsClient: ClientProxy
 
   ) { }
   private uid = new ShortUniqueId()
@@ -31,6 +35,15 @@ export class OrdersService {
   }
 
   // Event
+  async getWei(priceTHB: number) {
+    const data: { THB: number } = await (await axios.get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=THB")).data
+    const rateInTHB = data.THB
+    const rate = (1 * 10 ** 18) / rateInTHB
+    const toWei = rate * priceTHB
+    const rate2 = rateInTHB / (1 * 10 ** 18)
+    const bath = toWei * rate2
+    return { wei: Math.ceil(toWei), bath }
+  }
 
   async findoneOrderById(data: FindOrderById) {
     try {
@@ -110,7 +123,7 @@ export class OrdersService {
 
 
 
-    const orders = groups.map(group => {
+    const orders = await Promise.all(groups.map(async group => {
       const order = new Order()
       const product = (group[1][0]).product
       const merchant = product.merchant
@@ -145,8 +158,11 @@ export class OrdersService {
       order.mcht_id = merchant.mcht_id
       order.mcht_name = merchant.name
       order.payment_method = data.payment_method
+      if (data.payment_method === PaymentMethodFormat.WALLET) {
+        order.wei = (await this.getWei(order.total)).wei
+      }
       return order
-    })
+    }))
 
 
     await this.ordersRepository.createMany(orders)
@@ -159,7 +175,7 @@ export class OrdersService {
       user_id: data.user_id,
       chkt_id: data.chkt_id,
       items: data.items,
-      orderIds: orders.map(order => order.order_id),
+      orders: orders.map(order => ({ orderId: order.order_id, total: order.total, mchtId: order.mcht_id })),
       token: data.token,
       total: orders.reduce((prev, curr) => prev + curr.total, 0)
     }
@@ -396,6 +412,53 @@ export class OrdersService {
     const order = await this.ordersRepository.findOne({ order_id: orderId, mcht_id: merchantId })
     if (order.status === StatusFormat.FULLFILLMENT) return order
     return await this.ordersRepository.findOneAndUpdate({ order_id: orderId, mcht_id: merchantId }, { status: StatusFormat.FULLFILLMENT, shipping_carier: dto.shipping_carier, tracking: dto.tracking, shipped_at: new Date() })
+  }
+
+  async cancelOrderByMerchant(mcht_id: string, orderId: string) {
+    try {
+
+      const order = await this.ordersRepository.findOne({ order_id: orderId, mcht_id: mcht_id })
+      if (!order) throw new NotFoundException()
+      if (order.payment_status !== PaymentFormat.PENDING && StatusFormat.FULLFILLMENT !== order.status && StatusFormat.CANCEL !== order.status) {
+        if (order.payment_status !== PaymentFormat.REFUND) {
+          const payload: IRefundWithCreditCardEventPayload = {
+            amount: order.total * 100,
+            chrgId: order.chrg_id
+          }
+          await lastValueFrom(this.paymentsClient.emit(REFUND_CREDITCARD_EVENT, payload))
+
+          await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { payment_status: PaymentFormat.REFUND } })
+        }
+        await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { status: StatusFormat.CANCEL } })
+      }
+      return {
+        message: "success"
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+  async cancelOrderByCustomer(userId: string, orderId: string) {
+    try {
+      const order = await this.ordersRepository.findOne({ order_id: orderId, user_id: userId })
+      if (!order) throw new NotFoundException()
+      if (order.payment_status !== PaymentFormat.PENDING && StatusFormat.FULLFILLMENT !== order.status && StatusFormat.CANCEL !== order.status) {
+        if (order.payment_status !== PaymentFormat.REFUND) {
+          const payload: IRefundWithCreditCardEventPayload = {
+            amount: order.total * 100,
+            chrgId: order.chrg_id
+          }
+          await lastValueFrom(this.paymentsClient.emit(REFUND_CREDITCARD_EVENT, payload))
+          await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { payment_status: PaymentFormat.REFUND } })
+        }
+        await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { status: StatusFormat.CANCEL } })
+      }
+      return {
+        message: "success"
+      }
+    } catch (error) {
+      throw error
+    }
   }
   // async getWei(priceTHB: number) {
   //   const data: { THB: number } = await (await axios.get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=THB")).data

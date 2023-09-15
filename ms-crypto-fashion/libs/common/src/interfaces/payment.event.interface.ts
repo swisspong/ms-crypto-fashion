@@ -1,3 +1,5 @@
+import { IOrderItemsEvent } from "./order-event.interface"
+
 export interface UpdateChargeMerchant {
     end_date: string
     amount: number
@@ -6,10 +8,14 @@ export interface UpdateChargeMerchant {
 
 export interface PaidOrderingEvent {
     chkt_id: string
-    payment_method:string
-    user_id:string
+    payment_method: string
+    user_id: string
     amount_: number;
     token: string;
-    orderIds: string[]
+    orders: IOrderItemsEvent[]
 }
 
+export interface IRefundWithCreditCardEventPayload {
+    chrgId: string
+    amount: number
+}
