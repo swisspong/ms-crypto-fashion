@@ -1,8 +1,8 @@
 interface IOrderRecentSale {
-    merchant: IMerchant
+    mcht_name: string
     totalAmount: number
+    mcht_id: string
 }
-
 interface IOrderTrade {
     month: string
     totalSales: number

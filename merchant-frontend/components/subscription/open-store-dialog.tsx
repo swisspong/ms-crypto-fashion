@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,7 @@ import {
 } from "../ui/form";
 import FileUploadOne from "../file-upload-one";
 import { useCredentialMerchant } from "@/src/hooks/merchant/mutations";
+import { useRouter } from "next/router";
 const formSchema = z.object({
   first_name: z
     .string()
@@ -36,6 +37,7 @@ const formSchema = z.object({
   image_url: z.string().url(),
 });
 const OpenStoreDialog = () => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -45,79 +47,89 @@ const OpenStoreDialog = () => {
     credentialMutate.mutate(values);
     // mutate(values)
   }
+  
+  useEffect(() => {
+    if (credentialMutate.isSuccess) router.push('/');
+  },[credentialMutate.isSuccess])
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="w-full">Open Store</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[625px]">
-        <DialogHeader>
-          <DialogTitle>Credential open store</DialogTitle>
-          <DialogDescription>
-            Make changes to your credential here. Click save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="grid grid-cols-2 gap-4 py-4">
-              <div className="grid gap-4">
-                <FormField
-                  control={form.control}
-                  name="first_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="First name (required)" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid gap-4">
-                <FormField
-                  control={form.control}
-                  name="last_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Last name (required)" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid  col-span-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="image_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>ID card image</FormLabel>
-                      <FormControl>
-                        <FileUploadOne
-                          onChange={field.onChange}
-                          image_url={field.value}
-                          //   remove={imageRemove}
-                        />
-                      </FormControl>
+    <>
+      {!credentialMutate.isSuccess && (
+        <Dialog >
+          <DialogTrigger asChild>
+            <Button className="w-full">Open Store</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[625px]">
+            <DialogHeader>
+              <DialogTitle>Credential open store</DialogTitle>
+              <DialogDescription>
+                Make changes to your credential here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="grid grid-cols-2 gap-4 py-4">
+                  <div className="grid gap-4">
+                    <FormField
+                      control={form.control}
+                      name="first_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>First name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="First name (required)" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid gap-4">
+                    <FormField
+                      control={form.control}
+                      name="last_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Last name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Last name (required)" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid  col-span-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="image_url"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ID card image</FormLabel>
+                          <FormControl>
+                            <FileUploadOne
+                              onChange={field.onChange}
+                              image_url={field.value}
+                            //   remove={imageRemove}
+                            />
+                          </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Save changes</Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit">Save changes</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      )}
+
+    </>
+
   );
 };
 
