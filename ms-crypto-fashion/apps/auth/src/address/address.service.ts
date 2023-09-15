@@ -12,8 +12,7 @@ export class AddressService {
   private readonly uid = new ShortUniqueId()
 
   constructor(
-    private readonly addressRepository: AddressRepository,
-    private readonly userRepository: UsersRepository
+    private readonly addressRepository: AddressRepository
   ) { }
 
   async createDeliveryAddress(user_id: string, createAddressDto: IAddressDto) {

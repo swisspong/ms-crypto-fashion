@@ -13,6 +13,7 @@ interface comment {
   comment_id: string
   user_id: string
   prod_id: string
+  order_id: string
   text: string
   rating: number
 }
@@ -43,11 +44,14 @@ export class CommentsService {
         const object: comment = {
           comment_id: `comment_${this.uid.stamp(15)}`,
           ...comment,
-          user_id: user_id
+          user_id: user_id,
+          order_id
         }
 
         return object
       })
+
+    
 
       // insert comment many
       const result = await this.commentRepository.createMany(newComments)
@@ -60,9 +64,7 @@ export class CommentsService {
           review: ReviewFormat.REVIEWED
         }
         await lastValueFrom(
-          this.orderClient.emit(UPDATEREVIEW_ORDER_EVENT, {
-            ...data
-          })
+          this.orderClient.emit(UPDATEREVIEW_ORDER_EVENT,data)
         )
       }
 
@@ -78,23 +80,12 @@ export class CommentsService {
     try {
       const comments = await this.commentRepository.aggregate([
         {
-          $lookup: {
-            from: "users",
-            localField: "user_id",
-            foreignField: "user_id",
-            as: "user"
-          },
-        },
-        {
           $match: {
             prod_id
           }
         },
         {
           $project: {
-            user: {
-              $arrayElemAt: ["$user", 0]
-            },
             text: 1,
             rating: 1,
             created_at: '$createdAt',
@@ -103,6 +94,10 @@ export class CommentsService {
           }
         }
       ])
+      console.log("comment ------------");
+      
+      console.log(comments)
+
       return comments
     } catch (error) {
       console.log(error)

@@ -77,13 +77,16 @@ const FormCommentDialog: FC<Props> = ({
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    
+    
+
     const reviews: TComment[] = await Object.keys(productRatings).map((prod_id) => ({
       text: formData[prod_id] as string,
       rating: productRatings[prod_id] as number,
       prod_id,
     }));
 
-    commentHandler(reviews)
+    // commentHandler(reviews)
 
 
   }

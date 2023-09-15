@@ -18,7 +18,7 @@ interface IUserRes {
     createdAt: string
     updatedAt: string
     __v: number
-    merchant: IMerchantRes
+    mcht_id: string
     cart: string
 }
 

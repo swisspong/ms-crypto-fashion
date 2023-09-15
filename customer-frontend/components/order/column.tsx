@@ -160,7 +160,7 @@ export const columns = ({
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
 
-                <Link href={`orders/edit/${row.original.order_id}`} passHref>
+                <Link href={`orders/${row.original.order_id}`} passHref>
                   <DropdownMenuItem>
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
