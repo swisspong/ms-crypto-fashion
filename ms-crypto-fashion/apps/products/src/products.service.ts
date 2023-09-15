@@ -14,7 +14,7 @@ import { Product } from './schemas/product.schema';
 import { StoreQueryDto } from './dto/store-query.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Types } from 'mongoose';
-import { CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants/carts.constant';
+import { CARTS_DELETE_ITEMS_EVENT, CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants/carts.constant';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { IProduct, OrderingEventPayload } from '@app/common/interfaces/order-event.interface';
@@ -23,6 +23,7 @@ import { CartsUtilService } from '@app/common/utils/carts/carts-util.service';
 import { PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
 import { IProductOrderingEventPayload } from '@app/common/interfaces/products-event.interface';
 import { PAID_ORDERING_EVENT, PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
+import { IDeleteChktEventPayload } from '@app/common/interfaces/carts.interface';
 
 @Injectable()
 export class ProductsService {
@@ -749,12 +750,20 @@ export class ProductsService {
               this.logger.warn("Emit to payment", data.payment_method)
 
               await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+              await lastValueFrom(
+                this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+                  ...product
+                })
+              )
+            } else if (data.payment_method === PaymentMethodFormat.WALLET) {
+              const payload: IDeleteChktEventPayload = {
+                user_id: data.user_id,
+                chkt_id: data.chkt_id
+              }
+              await lastValueFrom(
+                this.cartsClient.emit(CARTS_DELETE_ITEMS_EVENT, payload)
+              )
             }
-            await lastValueFrom(
-              this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
-                ...product
-              })
-            )
             return
           }
         } else if (
@@ -767,12 +776,20 @@ export class ProductsService {
             if (data.payment_method === PaymentMethodFormat.CREDIT) {
               this.logger.warn("Emit to payment no options", data.payment_method)
               await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+              await lastValueFrom(
+                this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+                  ...product
+                })
+              )
+            } else if (data.payment_method === PaymentMethodFormat.WALLET) {
+              const payload: IDeleteChktEventPayload = {
+                user_id: data.user_id,
+                chkt_id: data.chkt_id
+              }
+              await lastValueFrom(
+                this.cartsClient.emit(CARTS_DELETE_ITEMS_EVENT, payload)
+              )
             }
-            await lastValueFrom(
-              this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
-                ...product
-              })
-            )
             return
           }
 

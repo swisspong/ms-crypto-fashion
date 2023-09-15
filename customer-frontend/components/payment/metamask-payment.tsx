@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import configuration from "../../contracts/CryptoFashionToken.json";
+import configuration from "../../contracts/CryptoFashionTokenGoerli.json";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
@@ -15,16 +15,25 @@ import { Icons } from "../icons";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { formatBalance, formatChainAsNum } from "@/lib/utils";
 import Web3 from "web3";
-import { postOrderWallet } from "@/src/services/order.service";
+import { getOrderWalletByCheckoutId, postOrderWallet } from "@/src/services/order.service";
+import { useCheckoutOrdering } from "@/src/hooks/checkout/mutations";
+import { useRouter } from "next/router";
 interface Props {
   data?: ICheckoutResponse;
   address: IAddress | undefined;
 }
+function later(delay: number) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, delay);
+  });
+}
 const MetamaskPayment: FC<Props> = ({ address, data }) => {
+  const router = useRouter()
   const [hasProvider, setHasProvider] = useState<boolean | null>(null);
   const initialState = { accounts: [], balance: "", chainId: "" };
   const [account, setAccount] = useState<string | null>(null);
   const [wallet, setWallet] = useState(initialState);
+  const checkoutOrderMutate = useCheckoutOrdering()
   useEffect(() => {
     const refreshAccounts = (accounts: any) => {
       if (accounts.length > 0) {
@@ -68,11 +77,11 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
   //   };
   //   connect();
   // }, []);
-  const CONTRACT_ADDRESS = configuration.networks["5777"].address;
-  const CONTRACT_ABI = configuration.abi;
+  const CONTRACT_ADDRESS = "0x0736458c420284145dcA6Df52748Ae71006CA12f"
+  const CONTRACT_ABI = configuration;
 
   //const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
-  const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
+  const web3 = new Web3(Web3.givenProvider || "https://goerli.infura.io/v3/b64de7c107a44261bb1b19536d7bed23");
   const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
   function convertToWei(price: number) {
     return "0x" + Number(price * 1e18).toString(16);
@@ -82,20 +91,36 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
   }
 
   const buyProduct = async () => {
-    console.log(convertToWei(1));
+    //console.log(convertToWei(1));
     if (data && address) {
-      const ordering = await postOrderWallet({
-        address: address.address,
-        chkt_id: data.chkt_id,
-        post_code: address.post_code,
-        recipient: address.recipient,
-        tel_number: address.tel_number,
-        payment_method: "wallet",
-      });
-      const totalWei = ordering.data.reduce(
-        (prev, acc) => prev + acc.wei.wei,
-        0
-      );
+      await checkoutOrderMutate.mutateAsync({
+        chktId: router.query.chktId as string,
+        body: {
+          address: address.address,
+          chkt_id: data.chkt_id,
+          post_code: address.post_code,
+          recipient: address.recipient,
+          tel_number: address.tel_number,
+          payment_method: "wallet",
+        }
+      })
+
+      await later(2000)
+      // const ordering = await postOrderWallet({
+      //   address: address.address,
+      //   chkt_id: data.chkt_id,
+      //   post_code: address.post_code,
+      //   recipient: address.recipient,
+      //   tel_number: address.tel_number,
+      //   payment_method: "wallet",
+      // });
+      const ordering = await getOrderWalletByCheckoutId(router.query.chktId as string)
+      console.log("get order => ",ordering)
+      const totalWei = ordering.data.totalWei
+      // const totalWei = ordering.data.reduce(
+      //   (prev, acc) => prev + acc.wei.wei,
+      //   0
+      // );
 
       let result = await window.ethereum!.request({
         method: "eth_sendTransaction",
@@ -107,13 +132,17 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
             data: (contract.methods as any)
               .buyWithOrderArr(
                 convertToWeiHex(totalWei),
-                ordering.data.map((order) => [order.orderId, order.wei.wei])
+                ordering.data.items.map((order) => [order.id, order.wei])
               )
               .encodeABI(),
             value: convertToWeiHex(totalWei),
           },
         ],
-      });
+      })
+      await later(5000)
+      router.replace("/account/orders");
+
+      // console.log("result =>",result)
     }
     //   .then((result) => console.log(result));
     // await contract.methods

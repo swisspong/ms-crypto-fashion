@@ -25,7 +25,7 @@ export class CheckoutsService {
     private readonly uid = new ShortUniqueId()
 
 
-   
+
     async createCheckoutItems(userId: string, createCheckoutDto: CreateCheckoutItemsDto) {
         let cart = await this.cartsRepository.findOne({
             user_id: userId
@@ -42,6 +42,7 @@ export class CheckoutsService {
 
         const checkout = await this.checkoutsRepository.create({
             user_id: userId,
+            is_orederd: false,
             chkt_id: `chkt_${this.uid.stamp(15)}`,
             payment_method: createCheckoutDto.payment_method,
             items: itemsSelecteds.map(item => {
@@ -144,7 +145,7 @@ export class CheckoutsService {
             total_quantity: checkout.items.reduce((prev, curr) => prev + curr.quantity, 0),
             total: checkout.items.reduce((prev, curr) => prev + curr.total, 0),
             items: checkout.items,
-            errorItems: errorItems
+            errorItems: checkout.payment_method === PaymentMethodFormat.WALLET && checkout.is_orederd === true ? [] : errorItems
         }
     }
     async deleteCheckout(userId: string, chktId: string) {
@@ -238,7 +239,10 @@ export class CheckoutsService {
         if (!orderingDto.token && orderingDto.payment_method === PaymentMethodFormat.CREDIT) {
             throw new BadRequestException("Invalid payment")
         }
-      
+        if (checkout.payment_method === PaymentMethodFormat.WALLET && !checkout.is_orederd) {
+            await this.checkoutsRepository.findAndUpdate({ _id: checkout._id }, { $set: { is_orederd: true } })
+
+        }
         if (errorItems.length > 0) {
             throw new BadRequestException("Product information is incorrect")
             //  await this.cartsRepository.findOneAndUpdate({ _id: cart._id }, { $set: { items: cart.items } })
@@ -253,11 +257,12 @@ export class CheckoutsService {
 
         }
 
-        if (errorItems.length > 0) 
-        if (orderingDto.payment_method === PaymentMethodFormat.WALLET) {
-            // const orders = await Promise.all(newOrders.map(async order => ({ orderId: order.order_id, total: order.total, wei: await this.getWei(order.total) })))
-            // return { data: orders }
-        }
+        if (errorItems.length > 0)
+            if (orderingDto.payment_method === PaymentMethodFormat.WALLET) {
+
+                // const orders = await Promise.all(newOrders.map(async order => ({ orderId: order.order_id, total: order.total, wei: await this.getWei(order.total) })))
+                // return { data: orders }
+            }
         return {
             //chkt_id: errorItems.length > 0 ? checkout.chkt_id : undefined
         }

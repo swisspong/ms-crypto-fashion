@@ -47,6 +47,8 @@ export class Order extends AbstractDocument {
     @Prop({ required: true })
     mcht_id: string;
     @Prop({ required: true })
+    chkt_id: string;
+    @Prop({ required: true })
     mcht_name: string
     @Prop()
     shipping_carier?: string

@@ -98,7 +98,9 @@ export class Checkout extends AbstractDocument {
     chkt_id: string
     @Prop({ required: true })
     user_id: string;
-    
+    @Prop({ type: Boolean, default: false })
+    is_orederd: boolean;
+
     @Prop({ enum: PaymentMethodFormat })
     payment_method: string
 

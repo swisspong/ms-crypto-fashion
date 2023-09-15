@@ -89,11 +89,11 @@ export interface OrderingEventPayload {
 }
 
 export interface IUpdateOrderStatusEventPayload {
-    chkt_id: string
-    user_id: string
+    chkt_id?: string
+    user_id?: string
     orderIds: string[]
     sucess: boolean
-    chargeId: string
+    chargeId?: string
 }
 
 export interface IOrderItemsEvent {
