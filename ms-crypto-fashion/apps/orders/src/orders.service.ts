@@ -158,6 +158,7 @@ export class OrdersService {
       order.mcht_id = merchant.mcht_id
       order.mcht_name = merchant.name
       order.payment_method = data.payment_method
+      order.chkt_id = data.chkt_id
       if (data.payment_method === PaymentMethodFormat.WALLET) {
         order.wei = (await this.getWei(order.total)).wei
       }
@@ -209,13 +210,16 @@ export class OrdersService {
       })
     )
     const { chkt_id, user_id } = data
-    const payload: IDeleteChktEventPayload = {
-      user_id,
-      chkt_id
+    if (chkt_id && user_id) {
+
+      const payload: IDeleteChktEventPayload = {
+        user_id,
+        chkt_id
+      }
+      await lastValueFrom(
+        this.cartsClient.emit(CARTS_DELETE_ITEMS_EVENT, payload)
+      )
     }
-    await lastValueFrom(
-      this.cartsClient.emit(CARTS_DELETE_ITEMS_EVENT, payload)
-    )
   }
   // TODO: แสดงยอดขายและจำนวนรายการสั่งซื้ออต่ละเดือนปีปัจจุบัน
   async getOrderTradeByMonth() {
@@ -458,6 +462,16 @@ export class OrdersService {
       }
     } catch (error) {
       throw error
+    }
+  }
+
+  async getOrderWalletByCheckoutId(userId: string, chktId: string) {
+    const orders = await this.ordersRepository.find({ chkt_id: chktId, user_id: userId, payment_status: PaymentFormat.PENDING })
+    return {
+      data: {
+        items: orders.map(order => ({ id: order.order_id, wei: order.wei })),
+        totalWei: orders.reduce((prev, curr) => prev + curr.wei, 0)
+      }
     }
   }
   // async getWei(priceTHB: number) {

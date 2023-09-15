@@ -37,14 +37,14 @@ export class OrdersController {
     this.rmqService.ack(context);
   }
   @EventPattern(ORDERING_EVENT)
-  async handlerOrdering(@Payload() data: OrderingEventPayload,@Ctx() context: RmqContext) {
-    this.logger.warn("Received from checkout",data)
+  async handlerOrdering(@Payload() data: OrderingEventPayload, @Ctx() context: RmqContext) {
+    this.logger.warn("Received from checkout", data)
     await this.ordersService.ordering(data)
     this.rmqService.ack(context);
   }
   @EventPattern(UPDATE_ORDER_STATUS_EVENT)
-  async updateStatus(@Payload() data: IUpdateOrderStatusEventPayload,@Ctx() context: RmqContext) {
-    this.logger.warn("Received from Payment",data)
+  async updateStatus(@Payload() data: IUpdateOrderStatusEventPayload, @Ctx() context: RmqContext) {
+    this.logger.warn("Received from Payment", data)
     await this.ordersService.updateStatus(data)
     this.rmqService.ack(context);
   }
@@ -58,6 +58,10 @@ export class OrdersController {
   merchantCancel(@GetUser("merchant") mchtId: string, @Body() cancelOrderDto: CancelOrderDto) {
     const { order_id } = cancelOrderDto
     return this.ordersService.cancelOrderByMerchant(mchtId, order_id);
+  }
+  @Get("checkout/:chktId")
+  getOrderWalletByCheckout(@GetUserId() userId: string, @Param("chktId") chktId: string) {
+    return this.ordersService.getOrderWalletByCheckoutId(userId, chktId)
   }
 
   @Post('cancel')
@@ -107,7 +111,7 @@ export class OrdersController {
   myOrderById(@Param("orderId") orderId: string, @GetUserId() userId: string) {
     return this.ordersService.myOrderById(orderId, userId);
   }
- 
+
 
   // // find order check comment in prodict
   // @Get('user/:productId')

@@ -10,6 +10,11 @@ export const postOrderWallet = async (body: IOrderPayload): Promise<ICreateOrder
         (response) => response.data
     );
 };
+export const getOrderWalletByCheckoutId = async (chktId: string): Promise<IOrderWalletResponse> => {
+    return await api.get(`/orders/checkout/${chktId}`).then(
+        (response) => response.data
+    );
+};
 export const getMyOrders = async (data: { page: number, per_page: number }): Promise<IOrders> => {
     return await api.get(`/orders?page=${data.page}&per_page=${data.per_page}`).then(
         (response) => response.data

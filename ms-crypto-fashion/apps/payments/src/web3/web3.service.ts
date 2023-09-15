@@ -1,9 +1,13 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ethers, formatEther } from 'ethers';
 import { TransactionPurchaseRepository } from '../transaction-purchase.repository';
+import { IUpdateOrderStatusEventPayload } from '@app/common/interfaces/order-event.interface';
+import { lastValueFrom } from 'rxjs';
+import { ORDER_SERVICE, UPDATE_ORDER_STATUS_EVENT } from '@app/common/constants/order.constant';
+import { ClientProxy } from '@nestjs/microservices';
 // import { OrdersRepository } from 'src/orders/orders.repository';
 // import { PaymentFormat } from 'src/orders/schemas/order.schema';
 
@@ -13,7 +17,8 @@ export class Web3Service implements OnModuleInit {
   private readonly logger = new Logger(Web3Service.name)
   constructor(
     private configService: ConfigService,
-    private readonly transactionPurchase: TransactionPurchaseRepository
+    private readonly transactionPurchase: TransactionPurchaseRepository,
+    @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy
   ) { }
   onModuleInit() {
     console.log("init")
@@ -36,8 +41,12 @@ export class Web3Service implements OnModuleInit {
     const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider)
     // contract.listeners("PaymentDone")
     contract.on('PaymentDone', async (tx, amount, orderId, timestamp) => {
-      console.log(tx, amount, orderId, timestamp)
-      
+      this.logger.log(tx, amount, orderId, timestamp)
+      const payload: IUpdateOrderStatusEventPayload = {
+        orderIds: [orderId],
+        sucess: true
+      }
+      await lastValueFrom(this.orderClient.emit(UPDATE_ORDER_STATUS_EVENT, payload))
     })
 
   }

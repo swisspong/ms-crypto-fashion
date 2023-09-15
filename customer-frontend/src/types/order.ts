@@ -28,6 +28,12 @@ interface ICreateOrderWallet {
         }
     }[]
 }
+interface IOrderWalletResponse {
+    data: {
+        items:{id:string,wei:number}[],
+        totalWei: number
+    }
+}
 interface IOrders {
     data: IOrderRow[]
     page: number
