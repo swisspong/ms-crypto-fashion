@@ -15,6 +15,9 @@ export class Comment extends AbstractDocument{
     @Prop({ type: String, required: true})
     prod_id: string
 
+    @Prop({type: String, required: true})
+    order_id: string
+
     @Prop({type: String, trim: true})
     text?: string
 

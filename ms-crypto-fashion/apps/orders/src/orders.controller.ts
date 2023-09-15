@@ -32,7 +32,8 @@ export class OrdersController {
   // }
 
   @EventPattern(UPDATEREVIEW_ORDER_EVENT)
-  async handlerOrder(@Payload() data: UpdateStatusOrder, context: RmqContext) {
+  async handlerOrder(@Payload() data: UpdateStatusOrder,@Ctx() context: RmqContext) {
+    this.logger.warn("Received from reviewed",data)
     await this.ordersService.updateReviewStatus(data)
     this.rmqService.ack(context);
   }

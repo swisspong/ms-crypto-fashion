@@ -26,6 +26,7 @@ import { useCreateComplaint } from "@/src/hooks/complaint/mutations";
 import { TComplaintPlayload } from "@/src/types/complaint";
 import { TypeFormat } from "@/src/types/enums/complaint";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { comment } from "postcss";
 
 
 const ProductStorefrontPage = () => {
@@ -103,6 +104,8 @@ const ProductStorefrontPage = () => {
     if (compSuccess) setOpen(false)
   }, [compSuccess])
 
+  
+  
   return (
     <div className="bg-white">
       <Navbar />
@@ -208,21 +211,7 @@ const ProductStorefrontPage = () => {
             return (
               <>
                 <div className="bg-white p-4 rounded-lg shadow-xl mb-4">
-                  <div className="flex items-center">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src="/avatars/03.png" alt="@shadcn" />
-                      <AvatarFallback>
-                        {comment.user.username
-                          .split(" ")
-                          .map((word) => word.substring(0, 1).toUpperCase())
-                          .filter((word, index) => index <= 1)
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-
-                    <p className="text-gray-600 text-sm font-medium ml-2">{comment.user.username}</p>
-
-                  </div>
+                  
                   {[1, 2, 3, 4, 5].map((value) => (
                     <button
                       key={value}
@@ -237,7 +226,7 @@ const ProductStorefrontPage = () => {
                   <p className="text-gray-400 text-xs mt-2">{
                     formattedString
                   }</p>
-                  {me?.merchant === undefined ? (<></>) : me.merchant.mcht_id !== (router.query.mchtId as string) ? (<></>) : comment.message === undefined ? (<>
+                  {me?.mcht_id === undefined ? (<></>) : me.mcht_id !== (router.query.mchtId as string) ? (<></>) : comment.message === undefined ? (<>
                     <Popover >
                       <PopoverTrigger asChild className="m-4">
                         <Button variant="ghost"><MessageCircle className="mr-3" /> reply to comment.</Button>

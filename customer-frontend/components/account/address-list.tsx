@@ -32,7 +32,7 @@ const AddressList = () => {
   // TODO: request delete address
   const {mutate: deleteHandler, isLoading: deleteLoading, isSuccess: deleteSuccess} = useDeleteAddress()
   return (
-    <>
+    <div>
       <div className="grid grid-cols-2 gap-4">
         {addresses.data?.map((address) => (
           <AddressItem
@@ -61,7 +61,7 @@ const AddressList = () => {
         open={openDelete}
         openHandler={(o) => setOpenDelete(o)}
       />
-    </>
+    </div>
   );
 };
 

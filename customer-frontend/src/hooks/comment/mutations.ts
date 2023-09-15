@@ -9,10 +9,10 @@ export const useCreateCommnt = () => {
             // When mutate is called:
             onMutate: async (info) => {
                 // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-                await queryClient.cancelQueries(["comment"]);
+                await queryClient.cancelQueries(["orders"]);
 
                 // Snapshot the previous value
-                const previousInfos = queryClient.getQueryData(["comment"]);
+                const previousInfos = queryClient.getQueryData(["orders"]);
 
                 return { previousInfos };
             },
@@ -20,12 +20,12 @@ export const useCreateCommnt = () => {
             onError: (err: any, variables, context) => {
                 // displayError(err.response?.data?.message)
                 if (context?.previousInfos) {
-                    queryClient.setQueryData(["comment"], context.previousInfos);
+                    queryClient.setQueryData(["orders"], context.previousInfos);
                 }
             },
 
             onSettled: () => {
-                queryClient.invalidateQueries(["comment"]);
+                queryClient.invalidateQueries(["orders"]);
             },
         }
     );
@@ -39,10 +39,10 @@ export const useReplyCommnt = () => {
             // When mutate is called:
             onMutate: async (info) => {
                 // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-                await queryClient.cancelQueries(["comment"]);
+                await queryClient.cancelQueries(["comments"]);
 
                 // Snapshot the previous value
-                const previousInfos = queryClient.getQueryData(["comment"]);
+                const previousInfos = queryClient.getQueryData(["comments"]);
 
                 return { previousInfos };
             },
@@ -50,12 +50,12 @@ export const useReplyCommnt = () => {
             onError: (err: any, variables, context) => {
                 // displayError(err.response?.data?.message)
                 if (context?.previousInfos) {
-                    queryClient.setQueryData(["comment"], context.previousInfos);
+                    queryClient.setQueryData(["comments"], context.previousInfos);
                 }
             },
 
             onSettled: () => {
-                queryClient.invalidateQueries(["comment"]);
+                queryClient.invalidateQueries(["comments"]);
             },
         }
     );

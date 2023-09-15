@@ -33,7 +33,7 @@ const AddressItem: FC<Props> = ({
   setIdHandler
 }) => {
   return (
-    <Card>
+    <Card key={data.addr_id}>
       <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
         <div className="flex justify-between w-full">
           <div className="flex items-center">
