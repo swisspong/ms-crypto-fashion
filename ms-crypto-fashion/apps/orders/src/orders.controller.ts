@@ -256,53 +256,7 @@ export class OrdersController {
   }
 
   private clients = new ObservableArray([])
-  // async setupRmqListener(callback: (message: any) => any) {
-  //   this.rmqService.setupListener(UPDATE_ORDER_STATUS_EVENT,ORDER_SERVICE, (message) => {
-  //     callback(message)
-  //   });
-  // }
-  // private notifyClients(newStatus: string) {
-  //   // Send updates to all connected clients
-  //   for (const client of this.clients) {
-  //     client.json({ status: newStatus });
-  //   }
-  // }
-
-  // async setupRmqListener() {
-  //   const connection = await amqp.connect(this.configService.get<string>("RABBIT_MQ_URL")); // Replace with your RMQ server URL
-  //   this.channel = await connection.createChannel();
-
-
-  //   await this.channel.assertQueue(UPDATE_ORDER_STATUS_EVENT);
-
-  //   // this.channel.consume(UPDATE_ORDER_STATUS_EVENT, (msg) => {
-  //   //   if (msg !== null) {
-  //   //     // Assuming that the RMQ message contains the new status data
-  //   //     const newStatus = msg.content.toString();
-  //   //     //this.statusData = newStatus;
-  //   //     this.logger.warn('Received new status:', newStatus);
-
-  //   //     // Notify connected clients about the new status
-  //   //     //this.notifyClients(newStatus);
-
-  //   //     this.channel.ack(msg);
-  //   //   }
-  //   // });
-  // }
-
-
-
-  // @Get()
-  // getHello(): string {
-  //   return this.ordersService.getHello();
-  // }
-
-  // @EventPattern(FINDONE_ORDER_EVENT)
-  // async handlerOrderFindone(@Payload() data: FindOrderById, @Ctx() context: RmqContext,) {
-  //   const order = this.ordersService.findoneOrderById(data)
-  //   this.rmqService.ack(context);
-  //   return order;
-  // }
+ 
 
   @EventPattern(UPDATEREVIEW_ORDER_EVENT)
   async handlerOrder(@Payload() data: UpdateStatusOrder, @Ctx() context: RmqContext) {
@@ -346,22 +300,7 @@ export class OrdersController {
     const { order_id } = cancelOrderDto
     return this.ordersService.cancelOrderByMerchant(mchtId, order_id);
   }
-  // this.channel.consume(UPDATE_ORDER_STATUS_EVENT, (msg) => {
-  //   if (msg !== null) {
-  //     // Assuming that the RMQ message contains the new status data
-  //     const newStatus = msg.content.toString();
-  //     //this.statusData = newStatus;
-  //     this.logger.warn('Received new status:', newStatus);
 
-  //     // Notify connected clients about the new status
-  //     //this.notifyClients(newStatus);
-
-  //     this.channel.ack(msg);
-  //   }
-  // });
-  // res.on('close', () => {
-
-  // });
   @Get("polling/orders")
   async getPollingOrder(@GetUserId() userId: string, @Res() res: Response,@Query() filter: OrderPaginationDto) {
 
