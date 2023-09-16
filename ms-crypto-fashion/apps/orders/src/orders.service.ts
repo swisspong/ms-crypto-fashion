@@ -281,55 +281,32 @@ export class OrdersService {
           }
         },
         {
-          $lookup: {
-            from: 'merchants',
-            localField: '_id',
-            foreignField: 'mcht_id',
-            as: 'merchant'
-          }
-        },
-        {
           $project: {
             totalCount: 1,
             _id: 0
           }
         },
-        {
-          $sort: {
-            "merchant": 1
-          }
-        }
       ]);
 
       const amountMerchant = await this.ordersRepository.aggregate([
         {
           $group: {
             _id: '$mcht_id',
-            totalAmount: { $sum: '$total' }
+            mcht_name: { $first: '$mcht_name' }, // เลือกค่า mcht_name ของรายการแรกในกลุ่ม
+            totalAmount: { $sum: '$total' },
           }
         },
-        {
-          $lookup: {
-            from: 'merchants', // แทนที่ 'orders' ด้วยชื่อคอลเล็คชันของรายการสั่งซื้อ
-            localField: '_id',
-            foreignField: 'mcht_id',
-            as: 'merchant'
-          }
-        },
-
         {
           $project: {
-            merchant: {
-              $arrayElemAt: ["$merchant", 0]
-            },
+            mcht_id: '$_id',
+            mcht_name: 1,
             totalAmount: 1,
             _id: 0
-          },
-
+          }
         },
         {
           $sort: {
-            "merchant": 1
+            "mcht_id": 1
           }
         },
         {
@@ -342,7 +319,7 @@ export class OrdersService {
 
 
       const total = countMerchantOrders.length
-
+      
       return {
         page: Number(page),
         per_page: Number(per_page),

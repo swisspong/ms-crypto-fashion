@@ -12,6 +12,7 @@ import { PaymentMethodFormat } from '@app/common/enums';
 import { TransactionPurchaseRepository } from './transaction-purchase.repository';
 import ShortUniqueId from 'short-unique-id';
 import { TransactionFormat } from './schemas/transaction.schema';
+import { TransactionMerchantRepository } from './transaction-merchant.repository';
 
 @Injectable()
 export class PaymentsService {
@@ -23,16 +24,14 @@ export class PaymentsService {
 
   constructor(
     private readonly transactionPurchaseRepository: TransactionPurchaseRepository,
+    private readonly transactionMerchantRepository: TransactionMerchantRepository,
     @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy,
     @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy
   ) { }
 
-  getHello(): string {
-    return 'Hello World!';
-  }
 
   // TODO: charge for open shop
-  async openShopCreditCard(user_id: string, creaditCardPaymentDto: CreditCardPaymentDto) {
+  async openShopCreditCard(mcht_id: string, creaditCardPaymentDto: CreditCardPaymentDto) {
     try {
       const { amount_, token } = creaditCardPaymentDto
       const amount = amount_ * 100 //convert amount_
@@ -58,15 +57,20 @@ export class PaymentsService {
       const data: UpdateChargeMerchant = {
         amount: amount_convert,
         end_date: end_date_credit,
-        mcht_id: user_id
+        mcht_id
       }
-      console.log(data);
 
       await lastValueFrom(
         this.productClient.emit(CHARGE_MONTH_EVENT, {
           ...data
         })
       )
+
+      await this.transactionMerchantRepository.create({
+        tsmcht_id: `tamcht_${this.uid.stamp(15)}`,
+        amount: amount_convert,
+        mcht_id
+      })
 
       return charge
     } catch (error) {

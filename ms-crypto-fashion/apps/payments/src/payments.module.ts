@@ -11,6 +11,8 @@ import { ORDER_SERVICE } from '@app/common/constants/order.constant';
 import { TransactionPurchase, TransactionPurchaseSchema } from './schemas/transaction.schema';
 import { TransactionPurchaseRepository } from './transaction-purchase.repository';
 import { Web3Module } from './web3/web3.module';
+import { TransactionMerchant, TransactionMerchantSchema } from './schemas/transaction-merchant';
+import { TransactionMerchantRepository } from './transaction-merchant.repository';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { Web3Module } from './web3/web3.module';
     JwtUtilsModule,
     DatabaseModule,
     MongooseModule.forFeature([{ name: TransactionPurchase.name, schema: TransactionPurchaseSchema }]),
+    MongooseModule.forFeature([{name: TransactionMerchant.name, schema: TransactionMerchantSchema}]),
     Web3Module
   ],
   controllers: [PaymentsController],
@@ -35,9 +38,11 @@ import { Web3Module } from './web3/web3.module';
     ...authProviders,
     JwtStrategy,
     PaymentsService,
+    TransactionMerchantRepository,
     TransactionPurchaseRepository
   ],
   exports:[
+    TransactionMerchantRepository,
     TransactionPurchaseRepository
   ]
 })

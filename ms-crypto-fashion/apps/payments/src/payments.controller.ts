@@ -17,10 +17,6 @@ export class PaymentsController {
     private readonly rmqService: RmqService
   ) { }
 
-  @Get()
-  getHello(): string {
-    return this.paymentsService.getHello();
-  }
 
   @Roles(RoleFormat.MERCHANT)
   @Post("credit")
