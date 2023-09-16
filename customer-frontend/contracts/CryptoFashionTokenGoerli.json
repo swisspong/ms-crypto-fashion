@@ -54,6 +54,18 @@
       },
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "userId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "mchtId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "date",
         "type": "uint256"
@@ -129,7 +141,9 @@
       {
         "components": [
           { "internalType": "string", "name": "orderId", "type": "string" },
-          { "internalType": "uint256", "name": "amount", "type": "uint256" }
+          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "internalType": "string", "name": "userId", "type": "string" },
+          { "internalType": "string", "name": "mchtId", "type": "string" }
         ],
         "internalType": "struct CryptoFashionToken.Order[]",
         "name": "orders",

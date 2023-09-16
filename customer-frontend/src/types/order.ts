@@ -30,7 +30,8 @@ interface ICreateOrderWallet {
 }
 interface IOrderWalletResponse {
     data: {
-        items:{id:string,wei:number}[],
+        userId:string,
+        items:{id:string,wei:number,mchtId:string}[],
         totalWei: number
     }
 }

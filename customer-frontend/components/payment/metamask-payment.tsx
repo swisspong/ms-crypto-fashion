@@ -77,7 +77,7 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
   //   };
   //   connect();
   // }, []);
-  const CONTRACT_ADDRESS = "0x0736458c420284145dcA6Df52748Ae71006CA12f"
+  const CONTRACT_ADDRESS = "0xC6eC3CA25De2c167A691F795EA26f78b266EafB2"
   const CONTRACT_ABI = configuration;
 
   //const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
@@ -115,7 +115,7 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
       //   payment_method: "wallet",
       // });
       const ordering = await getOrderWalletByCheckoutId(router.query.chktId as string)
-      console.log("get order => ",ordering)
+      console.log("get order => ", ordering)
       const totalWei = ordering.data.totalWei
       // const totalWei = ordering.data.reduce(
       //   (prev, acc) => prev + acc.wei.wei,
@@ -132,7 +132,7 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
             data: (contract.methods as any)
               .buyWithOrderArr(
                 convertToWeiHex(totalWei),
-                ordering.data.items.map((order) => [order.id, order.wei])
+                ordering.data.items.map((order) => [order.id, order.wei, ordering.data.userId,order.mchtId])
               )
               .encodeABI(),
             value: convertToWeiHex(totalWei),

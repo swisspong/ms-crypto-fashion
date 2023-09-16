@@ -92,8 +92,10 @@ export class OrdersService {
         $limit: filter.per_page
       },
     ])
+
+    
     return {
-      data: orders,
+      data: orders as Order[],
       page: filter.page,
       per_page: filter.per_page,
       total: total[0]?.count || 0,
@@ -469,7 +471,8 @@ export class OrdersService {
     const orders = await this.ordersRepository.find({ chkt_id: chktId, user_id: userId, payment_status: PaymentFormat.PENDING })
     return {
       data: {
-        items: orders.map(order => ({ id: order.order_id, wei: order.wei })),
+        userId,
+        items: orders.map(order => ({ id: order.order_id, wei: order.wei, mchtId: order.mcht_id })),
         totalWei: orders.reduce((prev, curr) => prev + curr.wei, 0)
       }
     }

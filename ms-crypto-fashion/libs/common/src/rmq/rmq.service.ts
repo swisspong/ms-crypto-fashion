@@ -1,10 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { RmqContext, RmqOptions, Transport } from "@nestjs/microservices";
-
+import * as amqp from 'amqplib';
 
 @Injectable()
 export class RmqService {
+    private listeners: { exchange: string; routingKey: string; callback: (message: any) => void }[] = []
+    private readonly logger = new Logger(RmqService.name)
     constructor(private readonly configService: ConfigService) { }
 
     getOptoins(queue: string, noAck = false): RmqOptions {
@@ -23,4 +25,8 @@ export class RmqService {
         const originalMessage = context.getMessage();
         channel.ack(originalMessage);
     }
+   
+    
+   
+    
 }
