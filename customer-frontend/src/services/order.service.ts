@@ -25,3 +25,8 @@ export const getMyOrderById = async (orderId: string): Promise<IOrderRow> => {
         (response) => response.data
     );
 };
+export const getOrdersPolling = async (): Promise<{refetch:boolean}> => {
+    return await api.get(`/orders/polling`).then(
+        (response) => response.data
+    );
+};

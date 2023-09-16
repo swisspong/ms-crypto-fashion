@@ -13,6 +13,9 @@ import { ORDER_SERVICE } from '@app/common/constants/order.constant';
 import { CARTS_SERVICE } from '@app/common/constants/carts.constant';
 import { JwtStrategy } from '@app/common/strategy';
 import { PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ObserverArrayListenerService } from './observer-array-listener.service copy';
+import { ObserverArrayService } from './observer-array.service';
 
 @Module({
   imports: [
@@ -38,6 +41,12 @@ import { PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
     JwtStrategy,
     OrdersService,
     OrdersRepository,
+    ObserverArrayListenerService,
+    ObserverArrayService,
+    {
+      provide: EventEmitter2,
+      useValue: new EventEmitter2(),
+    },
   ],
 })
 export class OrdersModule { }

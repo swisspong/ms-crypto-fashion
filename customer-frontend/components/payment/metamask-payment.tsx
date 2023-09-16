@@ -139,7 +139,6 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
           },
         ],
       })
-      await later(5000)
       router.replace("/account/orders");
 
       // console.log("result =>",result)

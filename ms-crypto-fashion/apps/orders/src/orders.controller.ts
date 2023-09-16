@@ -14,233 +14,236 @@ import * as amqp from 'amqplib';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { PaymentFormat } from './schemas/order.schema';
+import { ObserverArrayListenerService } from './observer-array-listener.service copy';
+import { ObserverArrayService } from './observer-array.service';
 
 
 
-function ObservableArray(items) {
-  var _self = this,
-    _array = [],
-    _handlers = {
-      itemadded: [],
-      itemremoved: [],
-      itemset: []
-    };
 
-  function defineIndexProperty(index) {
-    if (!(index in _self)) {
-      Object.defineProperty(_self, index, {
-        configurable: true,
-        enumerable: true,
-        get: function () {
-          return _array[index];
-        },
-        set: function (v) {
-          _array[index] = v;
-          raiseEvent({
-            type: "itemset",
-            index: index,
-            item: v
-          });
-        }
-      });
-    }
-  }
+// function ObservableArray(items) {
+//   var _self = this,
+//     _array = [],
+//     _handlers = {
+//       itemadded: [],
+//       itemremoved: [],
+//       itemset: []
+//     };
 
-  function raiseEvent(event) {
-    _handlers[event.type].forEach(function (h) {
-      h.call(_self, event);
-    });
-  }
+//   function defineIndexProperty(index) {
+//     if (!(index in _self)) {
+//       Object.defineProperty(_self, index, {
+//         configurable: true,
+//         enumerable: true,
+//         get: function () {
+//           return _array[index];
+//         },
+//         set: function (v) {
+//           _array[index] = v;
+//           raiseEvent({
+//             type: "itemset",
+//             index: index,
+//             item: v
+//           });
+//         }
+//       });
+//     }
+//   }
 
-  Object.defineProperty(_self, "addEventListener", {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: function (eventName, handler) {
-      eventName = ("" + eventName).toLowerCase();
-      if (!(eventName in _handlers)) throw new Error("Invalid event name.");
-      if (typeof handler !== "function") throw new Error("Invalid handler.");
-      _handlers[eventName].push(handler);
-    }
-  });
+//   function raiseEvent(event) {
+//     _handlers[event.type].forEach(function (h) {
+//       h.call(_self, event);
+//     });
+//   }
 
-  Object.defineProperty(_self, "removeEventListener", {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: function (eventName, handler) {
-      eventName = ("" + eventName).toLowerCase();
-      if (!(eventName in _handlers)) throw new Error("Invalid event name.");
-      if (typeof handler !== "function") throw new Error("Invalid handler.");
-      var h = _handlers[eventName];
-      var ln = h.length;
-      while (--ln >= 0) {
-        if (h[ln] === handler) {
-          h.splice(ln, 1);
-        }
-      }
-    }
-  });
+//   Object.defineProperty(_self, "addEventListener", {
+//     configurable: false,
+//     enumerable: false,
+//     writable: false,
+//     value: function (eventName, handler) {
+//       eventName = ("" + eventName).toLowerCase();
+//       if (!(eventName in _handlers)) throw new Error("Invalid event name.");
+//       if (typeof handler !== "function") throw new Error("Invalid handler.");
+//       _handlers[eventName].push(handler);
+//     }
+//   });
 
-  Object.defineProperty(_self, "push", {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: function () {
-      var index;
-      for (var i = 0, ln = arguments.length; i < ln; i++) {
-        index = _array.length;
-        _array.push(arguments[i]);
-        defineIndexProperty(index);
-        raiseEvent({
-          type: "itemadded",
-          index: index,
-          item: arguments[i]
-        });
-      }
-      return _array.length;
-    }
-  });
+//   Object.defineProperty(_self, "removeEventListener", {
+//     configurable: false,
+//     enumerable: false,
+//     writable: false,
+//     value: function (eventName, handler) {
+//       eventName = ("" + eventName).toLowerCase();
+//       if (!(eventName in _handlers)) throw new Error("Invalid event name.");
+//       if (typeof handler !== "function") throw new Error("Invalid handler.");
+//       var h = _handlers[eventName];
+//       var ln = h.length;
+//       while (--ln >= 0) {
+//         if (h[ln] === handler) {
+//           h.splice(ln, 1);
+//         }
+//       }
+//     }
+//   });
 
-  Object.defineProperty(_self, "pop", {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: function () {
-      if (_array.length > -1) {
-        var index = _array.length - 1,
-          item = _array.pop();
-        delete _self[index];
-        raiseEvent({
-          type: "itemremoved",
-          index: index,
-          item: item
-        });
-        return item;
-      }
-    }
-  });
+//   Object.defineProperty(_self, "push", {
+//     configurable: false,
+//     enumerable: false,
+//     writable: false,
+//     value: function () {
+//       var index;
+//       for (var i = 0, ln = arguments.length; i < ln; i++) {
+//         index = _array.length;
+//         _array.push(arguments[i]);
+//         defineIndexProperty(index);
+//         raiseEvent({
+//           type: "itemadded",
+//           index: index,
+//           item: arguments[i]
+//         });
+//       }
+//       return _array.length;
+//     }
+//   });
 
-  Object.defineProperty(_self, "unshift", {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: function () {
-      for (var i = 0, ln = arguments.length; i < ln; i++) {
-        _array.splice(i, 0, arguments[i]);
-        defineIndexProperty(_array.length - 1);
-        raiseEvent({
-          type: "itemadded",
-          index: i,
-          item: arguments[i]
-        });
-      }
-      for (; i < _array.length; i++) {
-        raiseEvent({
-          type: "itemset",
-          index: i,
-          item: _array[i]
-        });
-      }
-      return _array.length;
-    }
-  });
+//   Object.defineProperty(_self, "pop", {
+//     configurable: false,
+//     enumerable: false,
+//     writable: false,
+//     value: function () {
+//       if (_array.length > -1) {
+//         var index = _array.length - 1,
+//           item = _array.pop();
+//         delete _self[index];
+//         raiseEvent({
+//           type: "itemremoved",
+//           index: index,
+//           item: item
+//         });
+//         return item;
+//       }
+//     }
+//   });
 
-  Object.defineProperty(_self, "shift", {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: function () {
-      if (_array.length > -1) {
-        var item = _array.shift();
-        delete _self[_array.length];
-        raiseEvent({
-          type: "itemremoved",
-          index: 0,
-          item: item
-        });
-        return item;
-      }
-    }
-  });
+//   Object.defineProperty(_self, "unshift", {
+//     configurable: false,
+//     enumerable: false,
+//     writable: false,
+//     value: function () {
+//       for (var i = 0, ln = arguments.length; i < ln; i++) {
+//         _array.splice(i, 0, arguments[i]);
+//         defineIndexProperty(_array.length - 1);
+//         raiseEvent({
+//           type: "itemadded",
+//           index: i,
+//           item: arguments[i]
+//         });
+//       }
+//       for (; i < _array.length; i++) {
+//         raiseEvent({
+//           type: "itemset",
+//           index: i,
+//           item: _array[i]
+//         });
+//       }
+//       return _array.length;
+//     }
+//   });
 
-  Object.defineProperty(_self, "splice", {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: function (index, howMany /*, element1, element2, ... */) {
-      var removed = [],
-        item,
-        pos;
+//   Object.defineProperty(_self, "shift", {
+//     configurable: false,
+//     enumerable: false,
+//     writable: false,
+//     value: function () {
+//       if (_array.length > -1) {
+//         var item = _array.shift();
+//         delete _self[_array.length];
+//         raiseEvent({
+//           type: "itemremoved",
+//           index: 0,
+//           item: item
+//         });
+//         return item;
+//       }
+//     }
+//   });
 
-      index = index == null ? 0 : index < 0 ? _array.length + index : index;
+//   Object.defineProperty(_self, "splice", {
+//     configurable: false,
+//     enumerable: false,
+//     writable: false,
+//     value: function (index, howMany /*, element1, element2, ... */) {
+//       var removed = [],
+//         item,
+//         pos;
 
-      howMany = howMany == null ? _array.length - index : howMany > 0 ? howMany : 0;
+//       index = index == null ? 0 : index < 0 ? _array.length + index : index;
 
-      while (howMany--) {
-        item = _array.splice(index, 1)[0];
-        removed.push(item);
-        delete _self[_array.length];
-        raiseEvent({
-          type: "itemremoved",
-          index: index + removed.length - 1,
-          item: item
-        });
-      }
+//       howMany = howMany == null ? _array.length - index : howMany > 0 ? howMany : 0;
 
-      for (var i = 2, ln = arguments.length; i < ln; i++) {
-        _array.splice(index, 0, arguments[i]);
-        defineIndexProperty(_array.length - 1);
-        raiseEvent({
-          type: "itemadded",
-          index: index,
-          item: arguments[i]
-        });
-        index++;
-      }
+//       while (howMany--) {
+//         item = _array.splice(index, 1)[0];
+//         removed.push(item);
+//         delete _self[_array.length];
+//         raiseEvent({
+//           type: "itemremoved",
+//           index: index + removed.length - 1,
+//           item: item
+//         });
+//       }
 
-      return removed;
-    }
-  });
+//       for (var i = 2, ln = arguments.length; i < ln; i++) {
+//         _array.splice(index, 0, arguments[i]);
+//         defineIndexProperty(_array.length - 1);
+//         raiseEvent({
+//           type: "itemadded",
+//           index: index,
+//           item: arguments[i]
+//         });
+//         index++;
+//       }
 
-  Object.defineProperty(_self, "length", {
-    configurable: false,
-    enumerable: false,
-    get: function () {
-      return _array.length;
-    },
-    set: function (value) {
-      var n = Number(value);
-      var length = _array.length;
-      if (n % 1 === 0 && n >= 0) {
-        if (n < length) {
-          _self.splice(n);
-        } else if (n > length) {
-          _self.push.apply(_self, new Array(n - length));
-        }
-      } else {
-        throw new RangeError("Invalid array length");
-      }
-      _array.length = n;
-      return value;
-    }
-  });
+//       return removed;
+//     }
+//   });
 
-  Object.getOwnPropertyNames(Array.prototype).forEach(function (name) {
-    if (!(name in _self)) {
-      Object.defineProperty(_self, name, {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: Array.prototype[name]
-      });
-    }
-  });
+//   Object.defineProperty(_self, "length", {
+//     configurable: false,
+//     enumerable: false,
+//     get: function () {
+//       return _array.length;
+//     },
+//     set: function (value) {
+//       var n = Number(value);
+//       var length = _array.length;
+//       if (n % 1 === 0 && n >= 0) {
+//         if (n < length) {
+//           _self.splice(n);
+//         } else if (n > length) {
+//           _self.push.apply(_self, new Array(n - length));
+//         }
+//       } else {
+//         throw new RangeError("Invalid array length");
+//       }
+//       _array.length = n;
+//       return value;
+//     }
+//   });
 
-  if (items instanceof Array) {
-    _self.push.apply(_self, items);
-  }
-}
+//   Object.getOwnPropertyNames(Array.prototype).forEach(function (name) {
+//     if (!(name in _self)) {
+//       Object.defineProperty(_self, name, {
+//         configurable: false,
+//         enumerable: false,
+//         writable: false,
+//         value: Array.prototype[name]
+//       });
+//     }
+//   });
+
+//   if (items instanceof Array) {
+//     _self.push.apply(_self, items);
+//   }
+// }
 
 ApiTags('Order')
 @Controller('orders')
@@ -251,12 +254,13 @@ export class OrdersController {
     private readonly configService: ConfigService,
     private readonly ordersService: OrdersService,
     private readonly rmqService: RmqService,
+
   ) {
 
+    // this.clients = new ObservableArray([])
   }
 
-  private clients = new ObservableArray([])
- 
+
 
   @EventPattern(UPDATEREVIEW_ORDER_EVENT)
   async handlerOrder(@Payload() data: UpdateStatusOrder, @Ctx() context: RmqContext) {
@@ -274,19 +278,20 @@ export class OrdersController {
   async updateStatus(@Payload() data: IUpdateOrderStatusEventPayload, @Ctx() context: RmqContext) {
     this.logger.warn("Received from Payment", data)
     await this.ordersService.updateStatus(data)
-    this.clients.map(client =>
-      this.logger.warn("Clients array", client.userId, data.user_id)
-    )
-    const userClients = []
-    for (let i = 0; i < this.clients.length; i++) {
-      const element = this.clients[i];
-      if (element.userId === data.user_id) {
-        userClients.push({ res: element.res, userId: element.userId })
-        this.clients.splice(i, 1)
-        --i
-      }
-    }
-    this.clients.push(...userClients);
+
+    // this.clients.map(client =>
+    //   this.logger.warn("Clients array", client.userId, data.user_id)
+    // )
+    // const userClients = []
+    // for (let i = 0; i < this.clients.length; i++) {
+    //   const element = this.clients[i];
+    //   if (element.userId === data.user_id) {
+    //     userClients.push({ res: element.res, userId: element.userId,init:false })
+    //     this.clients.splice(i, 1)
+    //     --i
+    //   }
+    // }
+    // this.clients.push(...userClients);
     this.rmqService.ack(context);
   }
 
@@ -301,28 +306,14 @@ export class OrdersController {
     return this.ordersService.cancelOrderByMerchant(mchtId, order_id);
   }
 
-  @Get("polling/orders")
-  async getPollingOrder(@GetUserId() userId: string, @Res() res: Response,@Query() filter: OrderPaginationDto) {
+
+  @Get("polling")
+  getPollingOrder(@GetUserId() userId: string, @Res() res: Response, @Query() filter: OrderPaginationDto) {
 
 
-    const data = await this.ordersService.myOrders(userId, filter);
-    console.log(data)
-    const isIncludeWalletPending = data.data.some(order => order.payment_method === PaymentMethodFormat.WALLET && order.payment_status === PaymentFormat.PENDING)
-    if(isIncludeWalletPending){
-      this.clients.push({ res, userId });
-      this.clients.addEventListener("itemadded", async function (e) {
-        if (e.item.res === res) {
-          console.log("Added %s at index %d.", e.item.userId, e.index);
-          res.json({refetch:userId === e.item.userId})
-        }
-      });
-      res.on('close', () => {
-        this.logger.warn("on close resposne")
-        this.clients = this.clients.filter((client) => client.res !== res);
-      });
-    }else{
-      res.json({refetch:false})
-    }
+
+    return this.ordersService.ordersPolling(userId, res)
+
 
   }
   @Get("checkout/:chktId")

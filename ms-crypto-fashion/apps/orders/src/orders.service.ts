@@ -18,6 +18,9 @@ import { FullfillmentDto } from './dto/fullfuillment.dto';
 import { IRefundWithCreditCardEventPayload } from '@app/common/interfaces/payment.event.interface';
 import { PAYMENT_SERVICE, REFUND_CREDITCARD_EVENT } from '@app/common/constants/payment.constant';
 import axios from 'axios';
+import { ObserverArrayListenerService } from './observer-array-listener.service copy';
+import { ObserverArrayService } from './observer-array.service';
+import { Response } from 'express';
 
 @Injectable()
 export class OrdersService {
@@ -26,7 +29,9 @@ export class OrdersService {
     private readonly ordersRepository: OrdersRepository,
     @Inject(CARTS_SERVICE) private readonly cartsClient: ClientProxy,
     @Inject(PRODUCTS_SERVICE) private readonly productsClient: ClientProxy,
-    @Inject(PAYMENT_SERVICE) private readonly paymentsClient: ClientProxy
+    @Inject(PAYMENT_SERVICE) private readonly paymentsClient: ClientProxy,
+    private readonly observerArrayListener: ObserverArrayListenerService<{ res: Response, userId: string }>,
+    private readonly observerArrayService: ObserverArrayService<{ res: Response, userId: string }>
 
   ) { }
   private uid = new ShortUniqueId()
@@ -93,7 +98,7 @@ export class OrdersService {
       },
     ])
 
-    
+
     return {
       data: orders as Order[],
       page: filter.page,
@@ -222,6 +227,13 @@ export class OrdersService {
         this.cartsClient.emit(CARTS_DELETE_ITEMS_EVENT, payload)
       )
     }
+    const items = this.observerArrayService.getItems()
+    for (let i = 0; i < items.length; i++) {
+      const element = items[i];
+      if (element.userId === data.user_id) {
+        this.observerArrayService.setItem(i, { res: element.res, userId: element.userId })
+      }
+    }
   }
   // TODO: แสดงยอดขายและจำนวนรายการสั่งซื้ออต่ละเดือนปีปัจจุบัน
   async getOrderTradeByMonth() {
@@ -319,7 +331,7 @@ export class OrdersService {
 
 
       const total = countMerchantOrders.length
-      
+
       return {
         page: Number(page),
         per_page: Number(per_page),
@@ -636,5 +648,25 @@ export class OrdersService {
   //     session.endSession()
   //   }
   // }
+  async ordersPolling(userId: string, res: Response) {
+    const orders = await this.ordersRepository.find({ user_id: userId, payment_status: PaymentFormat.PENDING })
+    this.logger.warn("out side ", orders)
+    if (orders.length <= 0) {
+      res.json({ refetch: false })
 
+    } else {
+      this.logger.warn("true case ", orders)
+
+      this.observerArrayService.addItem({ res, userId })
+      const value = await this.observerArrayListener.waitForItemSet((item) => {
+        if (item.res === res && item.userId === userId) {
+          return true
+        }
+        return false
+      })
+      res.json({ refetch: true })
+    }
+
+
+  }
 }

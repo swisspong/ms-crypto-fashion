@@ -16,7 +16,7 @@ import { DataTable } from "@/components/data-table";
 import { PaginationState } from "@tanstack/react-table";
 import { useRouter } from "next/router";
 import { columns } from "@/components/order/column";
-import { useMyOrders } from "@/src/hooks/order/queries";
+import { useGetOrdersPolling, useMyOrders } from "@/src/hooks/order/queries";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -30,9 +30,9 @@ const OrderListPage = () => {
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [items, setItems] = useState<Item[] | undefined>(undefined)
-  const {mutate: commentsHandler, isLoading, isSuccess} = useCreateCommnt()
-  const [username, setUsername] = useState<string | undefined>(undefined) 
-
+  const { mutate: commentsHandler, isLoading, isSuccess } = useCreateCommnt()
+  const [username, setUsername] = useState<string | undefined>(undefined)
+  const orderPolling = useGetOrdersPolling()
   const openDialogHandlerParam = (open: boolean) => {
     if (!open) {
       setIdHandler(undefined);
@@ -86,7 +86,19 @@ const OrderListPage = () => {
   const dataQuery = useMyOrders({ page: pageIndex + 1, per_page: pageSize });
 
   // console.log(dataQuery.data)
+  // useEffect(() => {
+  //   orderPolling.refetch()
+  // }, [])
 
+  useEffect(() => {
+    console.log(orderPolling.data)
+    if (orderPolling.isSuccess && orderPolling.data.refetch) {
+      dataQuery.refetch()
+      orderPolling.refetch()
+    }
+
+
+  }, [orderPolling.isSuccess,orderPolling.data])
   return (
     <div className="bg-white">
       <Navbar />
@@ -138,7 +150,7 @@ const OrderListPage = () => {
         </div>
 
 
-        <FormCommentDialog 
+        <FormCommentDialog
           data={items!}
           open={open}
           commentHandler={commentHandler}
@@ -146,7 +158,7 @@ const OrderListPage = () => {
           isLoading={isLoading}
           isSuccess={isLoading}
         />
-       
+
       </Container>
       <Footer />
     </div>
