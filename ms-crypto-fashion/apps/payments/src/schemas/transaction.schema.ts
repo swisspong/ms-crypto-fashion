@@ -5,6 +5,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 export enum TransactionFormat {
     DEPOSIT = "deposit",
     WITHDRAW = "withdraw",
+    REFUND = "REFUND"
 }
 
 

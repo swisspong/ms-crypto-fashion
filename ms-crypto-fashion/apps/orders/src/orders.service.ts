@@ -3,7 +3,7 @@ import { OrdersRepository } from './orders.repository';
 // import axios from 'axios';
 import { ClientProxy, RmqContext } from '@nestjs/microservices';
 import { RmqService } from '@app/common';
-import { CheckoutItem, FindOrderById, IUpdateOrderStatusEventPayload, OrderingEventPayload, PaymentMethodFormat, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
+import { CheckoutItem, FindOrderById, IOrderStatusRefundEvent, IUpdateOrderStatusEventPayload, OrderingEventPayload, PaymentMethodFormat, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
 import { Order, OrderItem, PaymentFormat, StatusFormat } from './schemas/order.schema';
 import ShortUniqueId from 'short-unique-id';
 import { PRODUCTS_ORDERING_EVENT, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
@@ -233,6 +233,12 @@ export class OrdersService {
       if (element.userId === data.user_id) {
         this.observerArrayService.setItem(i, { res: element.res, userId: element.userId })
       }
+    }
+  }
+  async updateStatusRefund(data: IOrderStatusRefundEvent) {
+    const order = await this.ordersRepository.findOne({ order_id: data.orderId })
+    if (order && order.payment_status === PaymentFormat.PAID) {
+      await this.ordersRepository.findAndUpdate({ order_id: order.order_id }, { $set: { payment_status: PaymentFormat.REFUND } })
     }
   }
   // TODO: แสดงยอดขายและจำนวนรายการสั่งซื้ออต่ละเดือนปีปัจจุบัน

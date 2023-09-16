@@ -1,13 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import * as Omise from 'omise';
 import { CreditCardPaymentDto } from './dto/payment-credit-card.dto';
 import { lastValueFrom } from 'rxjs';
 
 import { ClientProxy } from '@nestjs/microservices';
-import { PaidOrderingEvent, UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
+import { IRefundEvent, PaidOrderingEvent, UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
 import { CHARGE_MONTH_EVENT, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
-import { ORDER_SERVICE, UPDATE_ORDER_STATUS_EVENT } from '@app/common/constants/order.constant';
-import { IUpdateOrderStatusEventPayload } from '@app/common/interfaces/order-event.interface';
+import { ORDER_SERVICE, UPDATE_ORDER_STATUS_EVENT, UPDATE_STATUS_REFUND_EVENT } from '@app/common/constants/order.constant';
+import { IOrderStatusRefundEvent, IUpdateOrderStatusEventPayload } from '@app/common/interfaces/order-event.interface';
 import { PaymentMethodFormat } from '@app/common/enums';
 import { TransactionPurchaseRepository } from './transaction-purchase.repository';
 import ShortUniqueId from 'short-unique-id';
@@ -113,6 +113,71 @@ export class PaymentsService {
 
     }
 
+  }
+  async evnetRefund(data: IRefundEvent) {
+    const userTxs = await this.transactionPurchaseRepository.find({ order_id: data.orderId })
+    const isHasWithdraw = userTxs.some(tx => tx.type === TransactionFormat.WITHDRAW)
+    const isHasRefund = userTxs.some(tx => tx.type === TransactionFormat.REFUND)
+    const txDeposit = userTxs.find(tx => tx.type === TransactionFormat.DEPOSIT)
+
+    if (isHasRefund && isHasWithdraw || !txDeposit) {
+      return
+    }
+    const payload: IOrderStatusRefundEvent = {
+      orderId: data.orderId
+    }
+    if (txDeposit.payment_method === PaymentMethodFormat.CREDIT && data.chrgId) {
+
+      const charge = await this.omise.charges.createRefund(
+        data.chrgId,
+        { amount: txDeposit.amount },
+      );
+      await this.transactionPurchaseRepository.create({
+        tx_id: `tx_${this.uid.stamp(15)}`,
+        amount: txDeposit.amount,
+        type: TransactionFormat.REFUND,
+        order_id: txDeposit.order_id,
+        payment_method: PaymentMethodFormat.CREDIT,
+        user_id: txDeposit.user_id,
+        mcht_id: txDeposit.mcht_id
+      })
+      await lastValueFrom(this.orderClient.emit(UPDATE_STATUS_REFUND_EVENT, payload))
+    } else {
+      //for smart contract
+    }
+
+  }
+  async merchantRefundCreditCard(orderId: string, mchtId: string, chrgId: string) {
+    const userTxs = await this.transactionPurchaseRepository.find({ order_id: orderId, mcht_id: mchtId })
+    const isHasWithdraw = userTxs.some(tx => tx.type === TransactionFormat.WITHDRAW)
+    const isHasRefund = userTxs.some(tx => tx.type === TransactionFormat.REFUND)
+    const txDeposit = userTxs.find(tx => tx.type === TransactionFormat.DEPOSIT)
+
+    if (isHasRefund && isHasWithdraw || !txDeposit) {
+      throw new BadRequestException("This order can't refund.")
+    }
+    const payload: IOrderStatusRefundEvent = {
+      orderId: orderId
+    }
+    if (txDeposit.payment_method === PaymentMethodFormat.CREDIT) {
+
+      const charge = await this.omise.charges.createRefund(
+        chrgId,
+        { amount: txDeposit.amount },
+      );
+      await this.transactionPurchaseRepository.create({
+        tx_id: `tx_${this.uid.stamp(15)}`,
+        amount: txDeposit.amount,
+        type: TransactionFormat.REFUND,
+        order_id: txDeposit.order_id,
+        payment_method: PaymentMethodFormat.CREDIT,
+        user_id: txDeposit.user_id,
+        mcht_id: txDeposit.mcht_id
+      })
+      await lastValueFrom(this.orderClient.emit(UPDATE_STATUS_REFUND_EVENT, payload))
+    } else {
+      //for smart contract
+    }
   }
   // // Open shop
   // async createShopCreditCard(user_id: string, creditCardPaymentDto: CreditCardPaymentDto) {

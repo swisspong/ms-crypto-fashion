@@ -4,9 +4,10 @@ import { GetUser, GetUserId, Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
 import { CreditCardPaymentDto } from './dto/payment-credit-card.dto';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { PAID_ORDERING_EVENT } from '@app/common/constants/payment.constant';
+import { PAID_ORDERING_EVENT, REFUND_CREDITCARD_EVENT } from '@app/common/constants/payment.constant';
 import { RmqService } from '@app/common';
-import { PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
+import { IRefundEvent, PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
+import { IOrderStatusRefundEvent } from '@app/common/interfaces/order-event.interface';
 
 @Controller('payments')
 export class PaymentsController {
@@ -30,7 +31,11 @@ export class PaymentsController {
     await this.paymentsService.paidManyOrders(data)
     this.rmqService.ack(context);
   }
-
+  @EventPattern(REFUND_CREDITCARD_EVENT)
+  async handlerRefund(@Payload() data: IRefundEvent, @Ctx() context: RmqContext) {
+    this.paymentsService.evnetRefund(data)
+    this.rmqService.ack(context);
+  }
 
   // @GetUser("merchant") merchantId: string,
   //   // TODO: Destroy a schedule

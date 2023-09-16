@@ -99,5 +99,10 @@ export interface IUpdateOrderStatusEventPayload {
 export interface IOrderItemsEvent {
     orderId: string;
     total: number
-    mchtId:string
+    mchtId: string
 }
+
+export interface IOrderStatusRefundEvent {
+    orderId: string
+}
+

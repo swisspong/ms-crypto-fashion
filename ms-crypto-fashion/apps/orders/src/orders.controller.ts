@@ -4,9 +4,9 @@ import { GetUser, GetUserId, Roles } from '@app/common/decorators';
 import { PaymentMethodFormat, RoleFormat } from '@app/common/enums';
 import { ApiTags } from '@nestjs/swagger';
 import { Ctx, EventPattern, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
-import { FINDONE_ORDER_EVENT, ORDERING_EVENT, ORDER_SERVICE, UPDATEREVIEW_ORDER_EVENT, UPDATE_ORDER_STATUS_EVENT } from '@app/common/constants/order.constant';
+import { FINDONE_ORDER_EVENT, ORDERING_EVENT, ORDER_SERVICE, UPDATEREVIEW_ORDER_EVENT, UPDATE_ORDER_STATUS_EVENT, UPDATE_STATUS_REFUND_EVENT } from '@app/common/constants/order.constant';
 import { RmqService } from '@app/common';
-import { FindOrderById, IUpdateOrderStatusEventPayload, OrderingEventPayload, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
+import { FindOrderById, IOrderStatusRefundEvent, IUpdateOrderStatusEventPayload, OrderingEventPayload, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
 import { OrderPaginationDto } from './dto/order-pagination.dto';
 import { FullfillmentDto } from './dto/fullfuillment.dto';
 import { CancelOrderDto } from './dto/cancel-order.dto';
@@ -294,7 +294,12 @@ export class OrdersController {
     // this.clients.push(...userClients);
     this.rmqService.ack(context);
   }
-
+  @EventPattern(UPDATE_STATUS_REFUND_EVENT)
+  async updateStatusRefund(@Payload() data:IOrderStatusRefundEvent , @Ctx() context: RmqContext) {
+    this.logger.warn("Received from Payment", data)
+    await this.ordersService.updateStatusRefund(data)
+    this.rmqService.ack(context);
+  }
   // @Post()
   // create(@GetUserId() userId: string, @Body() createOrderDto: CreateOrderDto) {
   //   return this.ordersService.ordering(userId, createOrderDto);
@@ -369,6 +374,7 @@ export class OrdersController {
     return this.ordersService.myOrderById(orderId, userId);
   }
 
+  
 
   // // find order check comment in prodict
   // @Get('user/:productId')
