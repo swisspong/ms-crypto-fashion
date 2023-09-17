@@ -1,3 +1,4 @@
+import { PaymentMethodFormat } from "../enums"
 import { IOrderItemsEvent } from "./order-event.interface"
 
 export interface UpdateChargeMerchant {
@@ -15,11 +16,13 @@ export interface PaidOrderingEvent {
     orders: IOrderItemsEvent[]
 }
 
-export interface IRefundWithCreditCardEventPayload {
-    chrgId: string
-    amount: number
-}
+
 export interface IRefundEvent {
     orderId: string;
-    chrgId?: string
+    chrgId: string;
+    mchtId?: string;
+    userId?: string;
+    amount?: number;
+    method: PaymentMethodFormat
+
 }

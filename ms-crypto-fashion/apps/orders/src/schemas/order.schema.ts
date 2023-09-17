@@ -13,6 +13,7 @@ export enum StatusFormat {
 export enum PaymentFormat {
     PAID = "paid",
     PENDING = "pending",
+    INPROGRESS = "in progress",
     REFUND = "refund"
 }
 

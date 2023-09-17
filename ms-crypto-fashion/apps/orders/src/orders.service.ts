@@ -15,12 +15,13 @@ import { CARTS_DELETE_ITEMS_EVENT, CARTS_SERVICE } from '@app/common/constants/c
 import { IDeleteChktEventPayload } from '@app/common/interfaces/carts.interface';
 import { OrderPaginationDto } from './dto/order-pagination.dto';
 import { FullfillmentDto } from './dto/fullfuillment.dto';
-import { IRefundWithCreditCardEventPayload } from '@app/common/interfaces/payment.event.interface';
+
 import { PAYMENT_SERVICE, REFUND_CREDITCARD_EVENT } from '@app/common/constants/payment.constant';
 import axios from 'axios';
 import { ObserverArrayListenerService } from './observer-array-listener.service copy';
 import { ObserverArrayService } from './observer-array.service';
 import { Response } from 'express';
+import { IRefundEvent } from '@app/common/interfaces/payment.event.interface';
 
 @Injectable()
 export class OrdersService {
@@ -31,7 +32,9 @@ export class OrdersService {
     @Inject(PRODUCTS_SERVICE) private readonly productsClient: ClientProxy,
     @Inject(PAYMENT_SERVICE) private readonly paymentsClient: ClientProxy,
     private readonly observerArrayListener: ObserverArrayListenerService<{ res: Response, userId: string }>,
-    private readonly observerArrayService: ObserverArrayService<{ res: Response, userId: string }>
+    private readonly observerArrayService: ObserverArrayService<{ res: Response, userId: string }>,
+    private readonly arrayListener: ObserverArrayListenerService<{ res: Response, userId?: string, mchtId?: string }>,
+    private readonly arrayService: ObserverArrayService<{ res: Response, userId?: string, mchtId?: string }>
 
   ) { }
   private uid = new ShortUniqueId()
@@ -237,8 +240,15 @@ export class OrdersService {
   }
   async updateStatusRefund(data: IOrderStatusRefundEvent) {
     const order = await this.ordersRepository.findOne({ order_id: data.orderId })
-    if (order && order.payment_status === PaymentFormat.PAID) {
+    if (order && order.payment_status === PaymentFormat.INPROGRESS) {
       await this.ordersRepository.findAndUpdate({ order_id: order.order_id }, { $set: { payment_status: PaymentFormat.REFUND } })
+      const items = this.arrayService.getItems()
+      for (let i = 0; i < items.length; i++) {
+        const element = items[i];
+        if ((element.userId && element.userId === order.mcht_id) || (element.mchtId && element.mchtId === order.mcht_id)) {
+          this.arrayService.setItem(i, { res: element.res, userId: element.userId, mchtId: order.mcht_id })
+        }
+      }
     }
   }
   // TODO: แสดงยอดขายและจำนวนรายการสั่งซื้ออต่ละเดือนปีปัจจุบัน
@@ -417,18 +427,21 @@ export class OrdersService {
 
   async cancelOrderByMerchant(mcht_id: string, orderId: string) {
     try {
-
       const order = await this.ordersRepository.findOne({ order_id: orderId, mcht_id: mcht_id })
       if (!order) throw new NotFoundException()
-      if (order.payment_status !== PaymentFormat.PENDING && StatusFormat.FULLFILLMENT !== order.status && StatusFormat.CANCEL !== order.status) {
+      if (order.payment_status !== PaymentFormat.PENDING && order.payment_status !== PaymentFormat.INPROGRESS && StatusFormat.FULLFILLMENT !== order.status && StatusFormat.CANCEL !== order.status) {
         if (order.payment_status !== PaymentFormat.REFUND) {
-          const payload: IRefundWithCreditCardEventPayload = {
-            amount: order.total * 100,
-            chrgId: order.chrg_id
+          const payload: IRefundEvent = {
+            chrgId: order.chrg_id,
+            orderId: order.order_id,
+            amount: order.wei,
+            mchtId: order.mcht_id,
+            userId: order.user_id,
+            method: order.payment_method as PaymentMethodFormat
           }
           await lastValueFrom(this.paymentsClient.emit(REFUND_CREDITCARD_EVENT, payload))
-
-          await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { payment_status: PaymentFormat.REFUND } })
+          await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { payment_status: PaymentFormat.INPROGRESS } })
+          // await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { payment_status: PaymentFormat.REFUND } })
         }
         await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { status: StatusFormat.CANCEL } })
       }
@@ -443,14 +456,19 @@ export class OrdersService {
     try {
       const order = await this.ordersRepository.findOne({ order_id: orderId, user_id: userId })
       if (!order) throw new NotFoundException()
-      if (order.payment_status !== PaymentFormat.PENDING && StatusFormat.FULLFILLMENT !== order.status && StatusFormat.CANCEL !== order.status) {
+      if (order.payment_status !== PaymentFormat.PENDING && order.payment_status !== PaymentFormat.INPROGRESS && StatusFormat.FULLFILLMENT !== order.status && StatusFormat.CANCEL !== order.status) {
         if (order.payment_status !== PaymentFormat.REFUND) {
-          const payload: IRefundWithCreditCardEventPayload = {
-            amount: order.total * 100,
-            chrgId: order.chrg_id
+          const payload: IRefundEvent = {
+            chrgId: order.chrg_id,
+            orderId: order.order_id,
+            amount: order.wei,
+            mchtId: order.mcht_id,
+            userId: order.user_id,
+            method: order.payment_method as PaymentMethodFormat
           }
           await lastValueFrom(this.paymentsClient.emit(REFUND_CREDITCARD_EVENT, payload))
-          await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { payment_status: PaymentFormat.REFUND } })
+          await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { payment_status: PaymentFormat.INPROGRESS } })
+          // await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { payment_status: PaymentFormat.REFUND } })
         }
         await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { status: StatusFormat.CANCEL } })
       }
@@ -459,6 +477,25 @@ export class OrdersService {
       }
     } catch (error) {
       throw error
+    }
+  }
+  async merchantRefund(mchtId: string, orderId: string) {
+    const order = await this.ordersRepository.findOne({ order_id: orderId, mcht_id: mchtId })
+    if (!order) throw new NotFoundException()
+    if (order.payment_status !== PaymentFormat.REFUND && order.payment_status !== PaymentFormat.INPROGRESS) {
+      const payload: IRefundEvent = {
+        chrgId: order.chrg_id,
+        orderId: order.order_id,
+        amount: order.wei,
+        mchtId: order.mcht_id,
+        userId: order.user_id,
+        method: order.payment_method as PaymentMethodFormat
+      }
+      await this.ordersRepository.findOneAndUpdate({ _id: order._id }, { $set: { payment_status: PaymentFormat.INPROGRESS } })
+      await lastValueFrom(this.paymentsClient.emit(REFUND_CREDITCARD_EVENT, payload))
+    }
+    return {
+      message: "success"
     }
   }
 
@@ -675,4 +712,43 @@ export class OrdersService {
 
 
   }
+  async ordersPollingNew(userId: string | undefined, mchtId: string | undefined, res: Response) {
+    const orders = await this.ordersRepository.find({ user_id: userId, mcht_id: mchtId, $or: [{ payment_status: PaymentFormat.PENDING }, { payment_status: PaymentFormat.INPROGRESS }] })
+    if (orders.length <= 0) {
+      res.json({ refetch: false })
+    } else {
+      this.arrayService.addItem({ res, userId, mchtId })
+      const value = await this.arrayListener.waitForItemSet((item) => {
+        if (item.res === res && ((item.userId && userId && item.userId === userId) || (item.mchtId && mchtId && item.mchtId === mchtId))) {
+          return true
+        }
+        return false
+      })
+      res.json({ refetch: true })
+    }
+    res.on("close", () => {
+      this.arrayService.filter(item => item.res !== res)
+    })
+  }
+  async orderPolling(orderId: string, userId: string | undefined, mchtId: string | undefined, res: Response) {
+    const orders = await this.ordersRepository.findOne({ order_id: orderId, user_id: userId, mcht_id: mchtId, $or: [{ payment_status: PaymentFormat.PENDING }, { payment_status: PaymentFormat.INPROGRESS }] })
+    if (!orders) {
+      res.json({ refetch: false })
+    } else {
+      this.arrayService.addItem({ res, userId, mchtId })
+      const value = await this.arrayListener.waitForItemSet((item) => {
+        if (item.res === res && ((item.userId && userId && item.userId === userId) || (item.mchtId && mchtId && item.mchtId === mchtId))) {
+          return true
+        }
+        return false
+      })
+      res.json({ refetch: true })
+    }
+    res.on("close", () => {
+      this.arrayService.filter(item => item.res !== res)
+    })
+  }
+
+
+
 }

@@ -10,12 +10,9 @@ import { FindOrderById, IOrderStatusRefundEvent, IUpdateOrderStatusEventPayload,
 import { OrderPaginationDto } from './dto/order-pagination.dto';
 import { FullfillmentDto } from './dto/fullfuillment.dto';
 import { CancelOrderDto } from './dto/cancel-order.dto';
-import * as amqp from 'amqplib';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
-import { PaymentFormat } from './schemas/order.schema';
-import { ObserverArrayListenerService } from './observer-array-listener.service copy';
-import { ObserverArrayService } from './observer-array.service';
+import { RefundOrderDto } from './dto/refund-order.dto';
 
 
 
@@ -279,23 +276,10 @@ export class OrdersController {
     this.logger.warn("Received from Payment", data)
     await this.ordersService.updateStatus(data)
 
-    // this.clients.map(client =>
-    //   this.logger.warn("Clients array", client.userId, data.user_id)
-    // )
-    // const userClients = []
-    // for (let i = 0; i < this.clients.length; i++) {
-    //   const element = this.clients[i];
-    //   if (element.userId === data.user_id) {
-    //     userClients.push({ res: element.res, userId: element.userId,init:false })
-    //     this.clients.splice(i, 1)
-    //     --i
-    //   }
-    // }
-    // this.clients.push(...userClients);
     this.rmqService.ack(context);
   }
   @EventPattern(UPDATE_STATUS_REFUND_EVENT)
-  async updateStatusRefund(@Payload() data:IOrderStatusRefundEvent , @Ctx() context: RmqContext) {
+  async updateStatusRefund(@Payload() data: IOrderStatusRefundEvent, @Ctx() context: RmqContext) {
     this.logger.warn("Received from Payment", data)
     await this.ordersService.updateStatusRefund(data)
     this.rmqService.ack(context);
@@ -312,24 +296,46 @@ export class OrdersController {
   }
 
 
+
+
   @Get("polling")
-  getPollingOrder(@GetUserId() userId: string, @Res() res: Response, @Query() filter: OrderPaginationDto) {
-
-
-
-    return this.ordersService.ordersPolling(userId, res)
-
-
+  getPollingOrders(@GetUserId() userId: string, @Res() res: Response, @Query() filter: OrderPaginationDto) {
+    //return this.ordersService.ordersPolling(userId, res)
+    return this.ordersService.ordersPollingNew(userId, undefined, res)
   }
+  @Roles(RoleFormat.MERCHANT)
+  @Get("merchant/polling")
+  getPollingOrdersMerchant(@GetUser("merchant") mchtId: string, @Res() res: Response) {
+    return this.ordersService.ordersPollingNew(undefined, mchtId, res)
+  }
+
+
+  @Get(":orderId/polling")
+  getPollingOrder(@Param("orderId") orderId: string, @GetUserId() userId: string, @Res() res: Response, @Query() filter: OrderPaginationDto) {
+    //return this.ordersService.ordersPolling(userId, res)
+    return this.ordersService.orderPolling(orderId, userId, undefined, res)
+  }
+  @Roles(RoleFormat.MERCHANT)
+  @Get(":orderId/merchant/polling")
+  getPollingOrderMerchant(@Param("orderId") orderId: string, @GetUser("merchant") mchtId: string, @Res() res: Response) {
+    return this.ordersService.orderPolling(orderId, undefined, mchtId, res)
+  }
+
   @Get("checkout/:chktId")
   getOrderWalletByCheckout(@GetUserId() userId: string, @Param("chktId") chktId: string) {
     return this.ordersService.getOrderWalletByCheckoutId(userId, chktId)
   }
-
   @Post('cancel')
   customerCancel(@GetUserId() userId: string, @Body() cancelOrderDto: CancelOrderDto) {
     const { order_id } = cancelOrderDto
     return this.ordersService.cancelOrderByCustomer(userId, order_id);
+  }
+
+  @Roles(RoleFormat.MERCHANT)
+  @Post("refund")
+  merchantRefund(@GetUser("merchant") mchtId: string, @Body() refundDto: RefundOrderDto) {
+    const { order_id } = refundDto
+    return this.ordersService.merchantRefund(mchtId, order_id)
   }
   @Roles(RoleFormat.MERCHANT)
   @Get("merchant")
@@ -374,7 +380,7 @@ export class OrdersController {
     return this.ordersService.myOrderById(orderId, userId);
   }
 
-  
+
 
   // // find order check comment in prodict
   // @Get('user/:productId')

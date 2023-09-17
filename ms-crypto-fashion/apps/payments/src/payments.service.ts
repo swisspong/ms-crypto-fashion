@@ -13,6 +13,8 @@ import { TransactionPurchaseRepository } from './transaction-purchase.repository
 import ShortUniqueId from 'short-unique-id';
 import { TransactionFormat } from './schemas/transaction.schema';
 import { TransactionMerchantRepository } from './transaction-merchant.repository';
+import { Web3Service } from './web3/web3.service';
+
 
 @Injectable()
 export class PaymentsService {
@@ -25,6 +27,7 @@ export class PaymentsService {
   constructor(
     private readonly transactionPurchaseRepository: TransactionPurchaseRepository,
     private readonly transactionMerchantRepository: TransactionMerchantRepository,
+    private readonly web3Service: Web3Service,
     @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy,
     @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy
   ) { }
@@ -126,7 +129,7 @@ export class PaymentsService {
     const payload: IOrderStatusRefundEvent = {
       orderId: data.orderId
     }
-    if (txDeposit.payment_method === PaymentMethodFormat.CREDIT && data.chrgId) {
+    if (txDeposit.payment_method === PaymentMethodFormat.CREDIT && data.method === PaymentMethodFormat.CREDIT) {
 
       const charge = await this.omise.charges.createRefund(
         data.chrgId,
@@ -142,12 +145,12 @@ export class PaymentsService {
         mcht_id: txDeposit.mcht_id
       })
       await lastValueFrom(this.orderClient.emit(UPDATE_STATUS_REFUND_EVENT, payload))
-    } else {
-      //for smart contract
+    } else if (txDeposit.payment_method === PaymentMethodFormat.WALLET && data.amount && data.mchtId && data.userId && data.method === PaymentMethodFormat.WALLET) {
+      await this.web3Service.refund(data)
     }
 
   }
-  async merchantRefundCreditCard(orderId: string, mchtId: string, chrgId: string) {
+  async merchantRefundCreditCard(mchtId: string, orderId: string, chrgId: string) {
     const userTxs = await this.transactionPurchaseRepository.find({ order_id: orderId, mcht_id: mchtId })
     const isHasWithdraw = userTxs.some(tx => tx.type === TransactionFormat.WITHDRAW)
     const isHasRefund = userTxs.some(tx => tx.type === TransactionFormat.REFUND)

@@ -11,5 +11,6 @@ import { RmqModule } from '@app/common';
     RmqModule.register({ name: ORDER_SERVICE }),
   ],
   providers: [Web3Service],
+  exports: [Web3Service]
 })
 export class Web3Module { }

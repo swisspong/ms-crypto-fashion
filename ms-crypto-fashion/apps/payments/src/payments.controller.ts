@@ -8,6 +8,8 @@ import { PAID_ORDERING_EVENT, REFUND_CREDITCARD_EVENT } from '@app/common/consta
 import { RmqService } from '@app/common';
 import { IRefundEvent, PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
 import { IOrderStatusRefundEvent } from '@app/common/interfaces/order-event.interface';
+import { Web3Service } from './web3/web3.service';
+
 
 @Controller('payments')
 export class PaymentsController {
