@@ -77,7 +77,7 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
   //   };
   //   connect();
   // }, []);
-  const CONTRACT_ADDRESS = "0xC6eC3CA25De2c167A691F795EA26f78b266EafB2"
+  const CONTRACT_ADDRESS = "0xf0d7dE9793Bf3cE0A2552c06041dc8eA80C08AFe"
   const CONTRACT_ABI = configuration;
 
   //const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
