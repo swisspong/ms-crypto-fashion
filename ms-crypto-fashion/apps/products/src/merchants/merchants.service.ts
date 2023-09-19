@@ -193,17 +193,23 @@ export class MerchantsService {
         }
     }
     async deleteMerchantById(mcht_id: string) {
-        const data: DeleteMerchantData = {
-            mcht_id
-        }
+        try {
+            const data: DeleteMerchantData = {
+                mcht_id
+            }
 
-        await lastValueFrom(
-            this.authClient.emit(DELETE_MERCHANT_EVENT, {
-                ...data
-            })
-        )
-        const result = await this.merchantsRepository.findOneAndDelete({ mcht_id })
-        return result
+             await lastValueFrom(
+                this.authClient.emit(DELETE_MERCHANT_EVENT, {
+                    ...data
+                })
+            )
+            
+            return {message: "success"}
+            // const result = await this.merchantsRepository.findOneAndDelete({ mcht_id })
+            // return result
+        } catch (error) {
+            console.log(error);
+        }
     }
     async findAllApproves(per_page: number, page: number) {
         try {
@@ -266,10 +272,20 @@ export class MerchantsService {
 
     async updateChargeMerchantEvent(data: UpdateChargeMerchant) {
         try {
-            
-            const {amount, end_date, mcht_id} = data
-            await this.merchantsRepository.findAndUpdate({mcht_id}, {$set: {amount, end_date, status: MerchantStatus.OPENED}})
+
+            const { amount, end_date, mcht_id } = data
+            await this.merchantsRepository.findAndUpdate({ mcht_id }, { $set: { amount, end_date, status: MerchantStatus.OPENED } })
             this.logger.warn("update charge month merchant")
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async deleteMerchantEvent(data: DeleteMerchantData) {
+        try {
+            const {mcht_id} = data
+            await this.merchantsRepository.findOneAndDelete({mcht_id})
+            this.logger.warn("delete merchant")
         } catch (error) {
             throw error
         }
