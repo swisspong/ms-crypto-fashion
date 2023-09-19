@@ -29,8 +29,6 @@ export class Merchant extends AbstractDocument {
     @Prop({ type: Date })
     end_date?: Date
 
-
-
 }
 
 export const MerchantSchema = SchemaFactory.createForClass(Merchant);

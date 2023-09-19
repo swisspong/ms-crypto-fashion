@@ -68,7 +68,7 @@ export class CommentsService {
         )
       }
 
-      return result
+      return {message: "success"}
 
     } catch (error) {
       console.log(error)
