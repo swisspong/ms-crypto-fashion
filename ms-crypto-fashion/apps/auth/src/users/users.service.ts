@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, HttpStatus, Logger, Inject } from '@nestjs/common';
 import { PermissionDto, UpdateUserAdvancedDto } from './dto/update-user-advanced.dto';
 import { CreateAdminDto } from './dto/create-user-admin.dto';
 import { UsersRepository } from './users.repository';
@@ -7,11 +7,15 @@ import ShortUniqueId from 'short-unique-id';
 import { HashService } from '@app/common';
 import { RoleFormat } from '@app/common/enums';
 import { CreateMerchantData, DeleteMerchantData } from '@app/common/interfaces';
+import { ClientProxy } from '@nestjs/microservices';
+import { MERCHANT_DELETE_P, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
+import { lastValueFrom } from 'rxjs';
 @Injectable()
 export class UsersService {
   protected readonly logger = new Logger(UsersService.name);
   private readonly uid = new ShortUniqueId();
   constructor(
+    @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy,
     private readonly userRepository: UsersRepository,
     private readonly hashService: HashService
   ) { }
@@ -128,9 +132,12 @@ export class UsersService {
 
   async deleteMerchantIdInUser(data: DeleteMerchantData) {
     try {
-      this.logger.warn("delete_merchant", data)
+      this.logger.warn("update_merchant", data)
       const result = await this.userRepository.findAndUpdate({mcht_id: data.mcht_id}, {$set: {mcht_id: "", role: RoleFormat.USER}})
-      this.logger.warn("delete to merchant =>", result)
+      this.logger.warn("update to merchant =>", result)
+      await lastValueFrom(
+        this.productClient.emit(MERCHANT_DELETE_P, data)
+      )
     } catch (error) {
       this.logger.error(error)
     }

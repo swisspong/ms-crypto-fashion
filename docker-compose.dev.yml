@@ -156,6 +156,7 @@ services:
   #   image: rabbitmq
   #   ports:
   #     - "5672:5672"
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
@@ -165,6 +166,7 @@ services:
     volumes:
         - ./data/rabbitmq/data/:/var/lib/rabbitmq/
         - ./data/rabbitmq/log/:/var/log/rabbitmq
+ #https://github.com/UpSync-Dev/docker-compose-mongo-replica-set
   mongo1:
     image: mongo:5
     container_name: mongo1

@@ -57,25 +57,25 @@ export class PaymentsService {
       // option end date in merchant database
       const end_date_credit = `${year}-${month_}-${day}`
 
-      const data: UpdateChargeMerchant = {
-        amount: amount_convert,
-        end_date: end_date_credit,
-        mcht_id
-      }
-
-      await lastValueFrom(
-        this.productClient.emit(CHARGE_MONTH_EVENT, {
-          ...data
-        })
-      )
-
       await this.transactionMerchantRepository.create({
         tsmcht_id: `tamcht_${this.uid.stamp(15)}`,
         amount: amount_convert,
         mcht_id
       })
 
-      return charge
+      const data: UpdateChargeMerchant = {
+        amount: amount_convert,
+        end_date: end_date_credit,
+        mcht_id
+      }
+      
+      await lastValueFrom(
+        this.productClient.emit(CHARGE_MONTH_EVENT, {
+          ...data
+        })
+      )
+
+      return {message: "success"}
     } catch (error) {
       console.log(error)
       throw error

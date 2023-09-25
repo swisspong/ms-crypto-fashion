@@ -11,7 +11,8 @@ import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
 import { log } from 'console';
 import { RmqService } from '@app/common';
-import { CHARGE_MONTH_EVENT } from '@app/common/constants/products.constant';
+import { CHARGE_MONTH_EVENT, MERCHANT_DELETE_P } from '@app/common/constants/products.constant';
+import { DeleteMerchantData } from '@app/common/interfaces';
 @ApiTags('Merchant')
 @Controller('merchants')
 export class MerchantsController {
@@ -99,5 +100,10 @@ export class MerchantsController {
     this.rmqService.ack(context)
   }
 
+  @EventPattern(MERCHANT_DELETE_P)
+  async handleMerchantDelete(@Payload() data: DeleteMerchantData, @Ctx() context: RmqContext) {
+    await this.merchantsService.deleteMerchantEvent(data)
+    this.rmqService.ack(context)
+  }
 
 }
