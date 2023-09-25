@@ -17,3 +17,19 @@ export const postFullfillment = async (data: { orderId: string, body: IFullfillm
     );
 };
 
+export const merchantCancelOrder = async (orderId: string): Promise<void> => {
+    return await api.post('/orders/merchant/cancel', { order_id: orderId }).then(
+        (response) => response.data
+    );
+}
+export const merchantRefundOrder = async (orderId: string): Promise<void> => {
+    return await api.post('/orders/refund', { order_id: orderId }).then(
+        (response) => response.data
+    );
+}
+
+export const getOneOrderPolling = async (orderId: string): Promise<{ refetch: boolean }> => {
+    return await api.get(`/orders/${orderId}/merchant/polling`).then(
+        (response) => response.data
+    );
+};

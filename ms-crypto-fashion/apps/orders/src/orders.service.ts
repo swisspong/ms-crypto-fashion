@@ -245,7 +245,7 @@ export class OrdersService {
       const items = this.arrayService.getItems()
       for (let i = 0; i < items.length; i++) {
         const element = items[i];
-        if ((element.userId && element.userId === order.mcht_id) || (element.mchtId && element.mchtId === order.mcht_id)) {
+        if ((element.userId && element.userId === order.user_id) || (element.mchtId && element.mchtId === order.mcht_id)) {
           this.arrayService.setItem(i, { res: element.res, userId: element.userId, mchtId: order.mcht_id })
         }
       }
@@ -713,7 +713,20 @@ export class OrdersService {
 
   }
   async ordersPollingNew(userId: string | undefined, mchtId: string | undefined, res: Response) {
-    const orders = await this.ordersRepository.find({ user_id: userId, mcht_id: mchtId, $or: [{ payment_status: PaymentFormat.PENDING }, { payment_status: PaymentFormat.INPROGRESS }] })
+    // const orders = await this.ordersRepository.find({ user_id: userId, mcht_id: mchtId, $or: [{ payment_status: PaymentFormat.PENDING }, { payment_status: PaymentFormat.INPROGRESS }] })
+    const orders = await this.ordersRepository.find({
+      $and: [{
+        $or: [
+          { user_id: userId },
+          { mcht_id: mchtId },
+        ]
+      }, {
+        $or: [
+          { payment_status: PaymentFormat.PENDING },
+          { payment_status: PaymentFormat.INPROGRESS }
+        ]
+      }]
+    })
     if (orders.length <= 0) {
       res.json({ refetch: false })
     } else {
@@ -731,13 +744,41 @@ export class OrdersService {
     })
   }
   async orderPolling(orderId: string, userId: string | undefined, mchtId: string | undefined, res: Response) {
-    const orders = await this.ordersRepository.findOne({ order_id: orderId, user_id: userId, mcht_id: mchtId, $or: [{ payment_status: PaymentFormat.PENDING }, { payment_status: PaymentFormat.INPROGRESS }] })
+    // const testOrder = await this.ordersRepository.findOne({
+    //   $and: [{
+    //     $or: [
+    //       { order_id: orderId, mcht_id: mchtId },
+    //       { order_id: orderId, user_id: userId },
+    //     ]
+    //   }, {
+    //     $or: [
+    //       { payment_status: PaymentFormat.PENDING },
+    //       { payment_status: PaymentFormat.INPROGRESS }
+    //     ]
+    //   }]
+    // })
+    // const orders = await this.ordersRepository.findOne({ order_id: orderId, user_id: userId, mcht_id: mchtId, $or: [{ payment_status: PaymentFormat.PENDING }, { payment_status: PaymentFormat.INPROGRESS }] })
+    const orders = await this.ordersRepository.findOne({
+      $and: [{
+        $or: [
+          { order_id: orderId, mcht_id: mchtId },
+          { order_id: orderId, user_id: userId },
+        ]
+      }, {
+        $or: [
+          { payment_status: PaymentFormat.PENDING },
+          { payment_status: PaymentFormat.INPROGRESS }
+        ]
+      }]
+    })
+    this.logger.warn("test refetch", orders)
     if (!orders) {
       res.json({ refetch: false })
     } else {
       this.arrayService.addItem({ res, userId, mchtId })
       const value = await this.arrayListener.waitForItemSet((item) => {
         if (item.res === res && ((item.userId && userId && item.userId === userId) || (item.mchtId && mchtId && item.mchtId === mchtId))) {
+          this.logger.warn("true condition item seted ",item.userId,userId,item.userId && userId && item.userId === userId)
           return true
         }
         return false

@@ -19,7 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { PaginationState } from "@tanstack/react-table";
 import { Plus, PlusCircle, Podcast, Truck, Upload } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -43,11 +43,16 @@ import {
 import FullfillForm from "@/components/orders/fullfill-form";
 import AddressForm from "@/components/orders/address-form";
 import CustomerForm from "@/components/orders/customer-form";
-import { useGetMerchantOrderById } from "@/src/hooks/order/queries";
+import {
+  useGetMerchantOrderById,
+  useGetOneOrderPolling,
+} from "@/src/hooks/order/queries";
 import { useRouter } from "next/router";
 import moment from "moment";
 import { Badge } from "@/components/ui/badge";
 import { PaymentFormat, StatusFormat } from "@/src/types/enums/order";
+import ButtonCancelOrder from "@/components/orders/button-cancel-order";
+import ButtonRefundOrder from "@/components/orders/button-refund-order";
 const formSchema = z.object({
   name: z
     .string()
@@ -102,6 +107,15 @@ export default function EditOrder() {
   };
 
   const dataQuery = useGetMerchantOrderById(router.query.orderId as string);
+  const orderPolling = useGetOneOrderPolling(router.query.orderId as string);
+
+  useEffect(() => {
+    console.log(orderPolling.data);
+    if (orderPolling.isSuccess && orderPolling.data.refetch) {
+      dataQuery.refetch();
+      orderPolling.refetch();
+    }
+  }, [orderPolling.isSuccess, orderPolling.data?.refetch]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // if (!id) addHandler(values)
@@ -124,15 +138,18 @@ export default function EditOrder() {
                 <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
                   <CardTitle className="text-2xl">Details</CardTitle>
                   <div className="flex space-x-2">
-                    {dataQuery.data?.status !== StatusFormat.FULLFILLMENT ? (
-                      <Button variant={"destructive"} size={"sm"}>
-                        Cancel Order
-                      </Button>
+                    {dataQuery.data?.status !== StatusFormat.FULLFILLMENT &&
+                    dataQuery.data?.status !== StatusFormat.CANCEL ? (
+                      // <Button variant={"destructive"} size={"sm"}>
+                      //   Cancel Order
+                      // </Button>
+                      <ButtonCancelOrder />
                     ) : undefined}
                     {dataQuery.data?.payment_status !== PaymentFormat.REFUND ? (
-                      <Button variant={"outline"} size={"sm"}>
-                        Refund
-                      </Button>
+                      // <Button variant={"outline"} size={"sm"}>
+                      //   Refund
+                      // </Button>
+                      <ButtonRefundOrder />
                     ) : undefined}
                   </div>
                 </CardHeader>

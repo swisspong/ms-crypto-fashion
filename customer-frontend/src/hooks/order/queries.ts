@@ -1,4 +1,4 @@
-import { getMyOrderById, getMyOrders, getOrdersPolling } from "@/src/services/order.service";
+import { getMyOrderById, getMyOrders, getOrderByIdPolling, getOrdersPolling } from "@/src/services/order.service";
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 export const useMyOrders = (data: { page: number, per_page: number }) => {
     const queryClient = useQueryClient();
@@ -19,7 +19,13 @@ export const useGetOrderById = (orderId?: string) => {
 };
 export const useGetOrdersPolling = () => {
     return useQuery(["order-polling"], () => getOrdersPolling(), {
-        
+
+    });
+};
+
+export const useGetOrderByIdPolling = (orderId?: string) => {
+    return useQuery(["order-by-id-polling"], () => getOrderByIdPolling(orderId!), {
+        enabled: orderId ? true : false
     });
 };
 

@@ -121,6 +121,7 @@ export class PaymentsService {
 
   }
   async evnetRefund(data: IRefundEvent) {
+    console.log("refund receive",data)
     const userTxs = await this.transactionPurchaseRepository.find({ order_id: data.orderId })
     const isHasWithdraw = userTxs.some(tx => tx.type === TransactionFormat.WITHDRAW)
     const isHasRefund = userTxs.some(tx => tx.type === TransactionFormat.REFUND)

@@ -25,8 +25,19 @@ export const getMyOrderById = async (orderId: string): Promise<IOrderRow> => {
         (response) => response.data
     );
 };
-export const getOrdersPolling = async (): Promise<{refetch:boolean}> => {
+export const getOrdersPolling = async (): Promise<{ refetch: boolean }> => {
     return await api.get(`/orders/polling`).then(
         (response) => response.data
     );
 };
+
+export const getOrderByIdPolling = async (orderId: string): Promise<{ refetch: boolean }> => {
+    return await api.get(`/orders/${orderId}/polling`).then(
+        (response) => response.data
+    );
+};
+export const cancelOrder = async (orderId: string):Promise<void> => {
+    return await api.post('/orders/cancel', { order_id: orderId }).then(
+        (response) => response.data
+    );
+}
