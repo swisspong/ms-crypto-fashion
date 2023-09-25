@@ -87,23 +87,40 @@ export class Web3Service implements OnModuleInit {
 
   }
   async refund(data: IRefundEvent) {
-    const cryptoPath = path.join(__dirname, '../../../../../../../apps/payments/src/contracts/CryptoFashionTokenGoerli.json')
-    const configuration = JSON.parse(fs.readFileSync(cryptoPath, 'utf8'));
-    const provider = new ethers.InfuraWebSocketProvider('goerli', "b64de7c107a44261bb1b19536d7bed23",)
-    const CONTRACT_ADDRESS = this.configService.get<string>("CONTRACT_ADDRESS")
-    const CONTRACT_ABI = configuration;
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider)
-    this.logger.warn(this.configService.get<string>("PRIVATE_KEY"))
-    const signer = new ethers.Wallet(this.configService.get<string>("PRIVATE_KEY"), provider);
-    const tx = await signer.sendTransaction({
-      to: CONTRACT_ADDRESS,
-      data: (contract.methods as any)
-        .refund(
-          data.chrgId,
-          [data.orderId, data.amount, data.userId, data.mchtId]
-        )
-        .encodeABI(),
-    });
-    this.logger.warn("refund transaction =>", tx)
+    try {
+      const cryptoPath = path.join(__dirname, '../../../../../../../apps/payments/src/contracts/CryptoFashionTokenGoerli.json')
+      const configuration = JSON.parse(fs.readFileSync(cryptoPath, 'utf8'));
+      const CONTRACT_ABI = configuration;
+      const provider = new ethers.InfuraWebSocketProvider('goerli', "b64de7c107a44261bb1b19536d7bed23",)
+      const CONTRACT_ADDRESS = this.configService.get<string>("CONTRACT_ADDRESS")
+      const signer = new ethers.Wallet(this.configService.get<string>("PRIVATE_KEY"), provider);
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer)
+      this.logger.warn(this.configService.get<string>("PRIVATE_KEY"), CONTRACT_ADDRESS)
+      const order = {
+        orderId: data.orderId,
+        amount: data.amount, // Replace with the desired amount
+        userId: data.userId,
+        mchtId: data.mchtId,
+      };
+
+      const tx = await contract.refund(data.chrgId, order)
+      // await tx.wait();
+
+      this.logger.log('Transaction Hash:', tx.hash);
+      this.logger.log('Refund successful.');
+      // const tx = await signer.sendTransaction({
+      //   to: CONTRACT_ADDRESS,
+      //   data: (contract.methods as any)
+      //     .refund(
+      //       data.chrgId,
+      //       [data.orderId, data.amount, data.userId, data.mchtId]
+      //     )
+      //     .encodeABI(),
+      // });
+      // this.logger.warn("refund transaction =>", tx)
+    } catch (error) {
+      this.logger.error("web3 method error ", error)
+    }
+
   }
 }
