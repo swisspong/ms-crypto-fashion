@@ -134,8 +134,8 @@ services:
     env_file:
       - ./merchant-frontend/.env
     volumes:
-      - ./merchant-frontend:/usr/src/app
-      - /usr/src/app/node_modules
+      - ./merchant-frontend:/app
+      - /app/node_modules
   user-client:
     container_name: user-client
     restart: always

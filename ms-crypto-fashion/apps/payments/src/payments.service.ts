@@ -81,6 +81,9 @@ export class PaymentsService {
       throw error
     }
   }
+  async getPaymentCheck(){
+    return "check payments"
+  }
 
 
   async paidManyOrders(data: PaidOrderingEvent) {

@@ -18,7 +18,7 @@ import { FullfillmentDto } from './dto/fullfuillment.dto';
 
 import { PAYMENT_SERVICE, REFUND_CREDITCARD_EVENT } from '@app/common/constants/payment.constant';
 import axios from 'axios';
-import { ObserverArrayListenerService } from './observer-array-listener.service copy';
+import { ObserverArrayListenerService } from './observer-array-listener.service';
 import { ObserverArrayService } from './observer-array.service';
 import { Response } from 'express';
 import { IRefundEvent } from '@app/common/interfaces/payment.event.interface';

@@ -32,7 +32,7 @@ COPY . .
 # COPY --chown=node:node . .
 
 
-RUN npm run build auth
+# RUN npm run build auth
 
 FROM node:alpine as production
 
