@@ -30,12 +30,18 @@ import React from "react";
 import { useRouter } from "next/router";
 import { withoutUser } from "@/src/hooks/auth/auth-hook";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import GoogleButton from "@/components/google-button";
 const inter = Inter({ subsets: ["latin"] });
 const formSchema = z.object({
-  email: z.string().email().trim(),
+  email: z
+    .string({ required_error: "ต้องกรอก" })
+    .email({ message: "อีเมลไม่ถูกต้อง" })
+    .trim(),
   password: z
-    .string()
-    .min(4, { message: "Password must be at least 4 characters." }),
+    .string({ required_error: "ต้องกรอก" })
+    .min(4, { message: "ต้องมีตัวอักษรอย่างน้อย 4 ตัว" })
+    .trim(),
 });
 export default function Signin() {
   const router = useRouter();
@@ -55,11 +61,11 @@ export default function Signin() {
     <div className="min-h-screen h-full">
       <div className="border-t">
         <div className="h-full fixed inset-0 flex items-center justify-center">
-          <Card>
+          <Card className="max-w-[400px] w-full">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl">Signin with an account fdsfsfdsf</CardTitle>
+              <CardTitle className="text-2xl">เข้าสู่ระบบ</CardTitle>
               <CardDescription>
-                Enter your email below to signin
+                กรอกอีเมลของคุณด้านล่างเพื่อเข้าสู่ระบบ
               </CardDescription>
             </CardHeader>
             <Form {...form}>
@@ -67,10 +73,12 @@ export default function Signin() {
                 <CardContent className="grid gap-4">
                   <div className="grid grid-cols-2 gap-6">
                     <MetaMask />
-                    <Button variant="outline">
+                    
+                    {/* <Button variant="outline">
                       <Icons.google className="mr-2 h-4 w-4" />
                       Google
-                    </Button>
+                    </Button> */}
+                    <GoogleButton/>
                   </div>
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
@@ -78,7 +86,7 @@ export default function Signin() {
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
                       <span className="bg-background px-2 text-muted-foreground">
-                        Or continue with
+                        หรือดำเนินการต่อด้วย
                       </span>
                     </div>
                   </div>
@@ -88,11 +96,11 @@ export default function Signin() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email</FormLabel>
+                          <FormLabel>อีเมล</FormLabel>
                           <FormControl>
                             <Input
                               disabled={isLoading}
-                              placeholder="Email (required)"
+                              placeholder="อีเมล (ต้องกรอก)"
                               type="email"
                               {...field}
                             />
@@ -110,11 +118,11 @@ export default function Signin() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Password</FormLabel>
+                          <FormLabel>รหัสผ่าน</FormLabel>
                           <FormControl>
                             <Input
                               disabled={isLoading}
-                              placeholder="Password (required)"
+                              placeholder="รหัสผ่าน (ต้องกรอก)"
                               type="password"
                               {...field}
                             />
@@ -123,21 +131,23 @@ export default function Signin() {
                         </FormItem>
                       )}
                     />
-                    {/* <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="m@example.com" /> */}
                   </div>
-                  {/* <div className="grid gap-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input id="password" type="password" placeholder="" />
-                </div> */}
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="flex flex-col items-start">
                   <Button disabled={isLoading} type="submit" className="w-full">
                     {isLoading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : null}
-                    Signin with an account
+                    เข้าสู่ระบบด้วยบัญชี
                   </Button>
+                  <p className="pt-3 text-center text-sm text-muted-foreground">
+                    <Link
+                      href="/signup"
+                      className="underline underline-offset-4 hover:text-primary"
+                    >
+                      ไปที่หน้าสร้างบัญชี
+                    </Link>
+                  </p>
                 </CardFooter>
               </form>
             </Form>

@@ -32,7 +32,7 @@ const MerchantItem: FC<Props> = ({ merchant }) => {
         </div>
         <Link href={`merchants/${merchant.mcht_id}`}>
           <Button size={"sm"} variant={"link"}>
-            {`More`}
+            {`เพิ่มเติม`}
             <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>

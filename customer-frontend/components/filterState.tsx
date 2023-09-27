@@ -82,7 +82,7 @@ const FilterState: React.FC<FilterProps> = ({
         />
         {type && type === SearchType.MERCHANT ? (
           <>
-            <p className="text-xs font-semibold mt-3">Type Search:</p>
+            <p className="text-xs font-semibold mt-3">ประเภทการค้นหา:</p>
             <div className="flex flex-wrap gap-2 mt-2 items-center">
               <div className="flex items-center space-x-2 border p-2 rounded-md">
                 <Checkbox
@@ -99,7 +99,7 @@ const FilterState: React.FC<FilterProps> = ({
                   }}
                 />
                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Product
+                  สินค้า
                 </label>
               </div>
 
@@ -118,7 +118,7 @@ const FilterState: React.FC<FilterProps> = ({
                   }}
                 />
                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Store
+                  ร้านค้า
                 </label>
               </div>
             </div>
@@ -126,7 +126,9 @@ const FilterState: React.FC<FilterProps> = ({
         ) : undefined}
       </div>
       <div className="mb-8">
-        <h3 className="text-lg font-semibold">{name}</h3>
+        <h3 className="text-lg font-semibold">
+          {name === "Categories" ? "หมวดหมู่" : ""}
+        </h3>
         <hr className="my-4" />
         <div className="flex flex-wrap gap-2">
           {data.map((filter) => (

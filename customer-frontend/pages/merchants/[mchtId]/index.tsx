@@ -131,15 +131,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
+  
   // console.log(me);
-  if (me && (me as any).role !== "merchant") {
-    return {
-      redirect: {
-        destination: `${process.env.HOST_CUSTOMER}`,
-        permanent: false,
-      },
-    };
-  }
+  // if (me && (me as any).role !== "merchant") {
+  //   return {
+  //     redirect: {
+  //       destination: `${process.env.HOST_CUSTOMER}`,
+  //       permanent: false,
+  //     },
+  //   };
+  // }
+
+
+
+
   // await queryClient.prefetchQuery(
   //   ["my-products", { page: 1, per_page: 20 }],
   //   () => getMyStoreFront({ page: 1, per_page: 20, catIds: [] })

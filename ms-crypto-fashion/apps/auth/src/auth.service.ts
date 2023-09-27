@@ -43,7 +43,7 @@ export class AuthService {
       // res.cookie("token", accessToken)
       res.cookie("token", accessToken, {
         // secure: true, 
-        httpOnly: false, 
+        httpOnly: false,
         // sameSite: 'none',
         domain: 'example.com'
       })
@@ -71,7 +71,7 @@ export class AuthService {
       const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
       res.cookie("token", accessToken, {
         // secure: true, 
-        httpOnly: false, 
+        httpOnly: false,
         // sameSite: 'none',
         domain: 'example.com'
       })
@@ -97,7 +97,7 @@ export class AuthService {
       // res.cookie("token", accessToken)
       res.cookie("token", accessToken, {
         // secure: true, 
-        httpOnly: false, 
+        httpOnly: false,
         // sameSite: 'none',
         domain: 'example.com'
       })
@@ -122,7 +122,7 @@ export class AuthService {
         // res.cookie("token", accessToken)
         res.cookie("token", accessToken, {
           // secure: true, 
-          httpOnly: false, 
+          httpOnly: false,
           // sameSite: 'none',
           domain: 'example.com'
         })
@@ -205,9 +205,48 @@ export class AuthService {
   // }
 
   async signout(res: any) {
-    res.clearCookie("token", { domain: 'example.com'})
+    res.clearCookie("token", { domain: 'example.com' })
   }
 
+
+  async googleSignin(profile: any, res: Response) {
+    this.logger.log(profile)
+    const users = await this.usersRepository.find({ $or: [{ google_id: profile.id }, { email: profile.emails[0].value }] })
+    if (users.length <= 0) {
+      const newUser = await this.usersRepository.create({ user_id: `user_${this.uid.stamp(15)}`, email: profile.emails[0].value, google_id: profile.id,username:profile.displayName })
+      const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
+
+      // res.cookie("token", accessToken)
+      res.cookie("token", accessToken, {
+        // secure: true, 
+        httpOnly: false,
+        // sameSite: 'none',
+        domain: 'example.com'
+      })
+      res.redirect(`http://example.com`);
+      return
+    } else {
+      const user = users.find(user => user.google_id === profile.id && user.email === profile.emails[0].value)
+      if (!user) {
+        res.redirect(
+          `http://example.com/signin?error=${encodeURIComponent(
+            "Incorrect_Email"
+          )}`
+        );
+        return;
+      } else {
+        const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, permission: user.permission })
+        res.cookie("token", accessToken, {
+          // secure: true, 
+          httpOnly: false,
+          // sameSite: 'none',
+          domain: 'example.com'
+        })
+        res.redirect(`http://example.com`);
+        return
+      }
+    }
+  }
 
 
 

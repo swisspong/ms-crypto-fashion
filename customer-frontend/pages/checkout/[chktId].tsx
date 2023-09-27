@@ -23,6 +23,7 @@ import { useRouter } from "next/router";
 import { useMyAddress } from "@/src/hooks/address/queries";
 import AddressListDialog from "@/components/account/address-list-dialog";
 import RemoveCheckoutAlertDialog from "@/components/checkout/remove-checkout-alert-dialog";
+import Link from "next/link";
 
 const formSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -53,7 +54,7 @@ const CheckoutPage = () => {
       <Navbar />
       <Container>
         <div className="px-4 py-16 sm:px-6 lg:px-8 min-h-screen">
-          <h1 className="text-3xl font-bold text-black">Checkout</h1>
+          <h1 className="text-3xl font-bold text-black">เช็คเอาท์</h1>
           <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start gap-x-12">
             <div className="lg:col-span-7">
               {addressSelected ? (
@@ -105,7 +106,24 @@ const CheckoutPage = () => {
                     </p>
                   </CardContent>
                 </Card>
-              ) : undefined}
+              ) : (
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="text-lg font-medium">Address</h3>
+                        <p className="text-sm text-muted-foreground">
+                          This is how others will see you on the site.
+                        </p>
+                      </div>
+                      <Link href={"/account/address"}>
+                        <Button variant="outline">Add Address</Button>
+                      </Link>
+                      {/* <AddAddressForm /> */}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
               {/* <Card>
                 <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
                   <CardTitle className="text-lg">Address</CardTitle>
@@ -170,7 +188,7 @@ const CheckoutPage = () => {
         </div>
       </Container>
       <Footer />
-      <RemoveCheckoutAlertDialog data={getCheckout.data?.errorItems}/>
+      <RemoveCheckoutAlertDialog data={getCheckout.data?.errorItems} />
     </div>
   );
 };

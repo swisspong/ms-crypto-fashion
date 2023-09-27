@@ -13,6 +13,7 @@ import { AUTH_SERVICE } from '@app/common/constants';
 import { JwtStrategy } from '@app/common/strategy';
 import { PermissionModule } from './permission/permission.module';
 import { AddressModule } from './address/address.module';
+import { GoogleStrategy } from './shared/google.strategy';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { AddressModule } from './address/address.module';
   providers: [
     ...authProviders,
     AuthService,
-    JwtStrategy
+    JwtStrategy,
+    GoogleStrategy
   ],
 })
 export class AuthModule implements NestModule {

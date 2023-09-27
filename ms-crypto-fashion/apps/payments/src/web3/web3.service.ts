@@ -105,7 +105,6 @@ export class Web3Service implements OnModuleInit {
 
       const tx = await contract.refund(data.chrgId, order)
       // await tx.wait();
-
       this.logger.log('Transaction Hash:', tx.hash);
       this.logger.log('Refund successful.');
       // const tx = await signer.sendTransaction({

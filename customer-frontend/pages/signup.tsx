@@ -30,16 +30,21 @@ import { useRouter } from "next/router";
 import { useSignup } from "@/src/hooks/auth/mutations";
 import React from "react";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 const inter = Inter({ subsets: ["latin"] });
 const formSchema = z.object({
   username: z
-    .string()
-    .min(3, { message: "Sku must be at least 2 characters." }),
-  email: z.string().email().trim(),
-  // .min(2, { message: "Sku must be at least 2 characters." }),
+    .string({ required_error: "ต้องกรอก" })
+    .min(3, { message: "ต้องมีตัวอักษรอย่างน้อย 3 ตัว" })
+    .trim(),
+  email: z
+    .string({ required_error: "ต้องกรอก" })
+    .email({ message: "อีเมลไม่ถูกต้อง" })
+    .trim(),
   password: z
-    .string()
-    .min(4, { message: "Password must be at least 4 characters." }),
+    .string({ required_error: "ต้องกรอก" })
+    .min(4, { message: "ต้องมีตัวอักษรอย่างน้อย 4 ตัว" })
+    .trim(),
 });
 export default function Signup() {
   const router = useRouter();
@@ -56,14 +61,14 @@ export default function Signup() {
     if (isSuccess) router.push("/");
   }, [isSuccess]);
   return (
-    <div className="min-h-screen h-full">
+    <div className="min-h-screen h-full ">
       <div className="border-t">
         <div className="h-full fixed inset-0 flex items-center justify-center">
-          <Card>
+          <Card className="max-w-[400px] w-full">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl">Create an account</CardTitle>
+              <CardTitle className="text-2xl">สร้างบัญชี</CardTitle>
               <CardDescription>
-                Enter your email below to create your account
+                กรอกอีเมลของคุณด้านล่างเพื่อสร้างบัญชีของคุณ
               </CardDescription>
             </CardHeader>
             <Form {...form}>
@@ -71,7 +76,7 @@ export default function Signup() {
                 <CardContent className="grid gap-4">
                   <div className="grid grid-cols-2 gap-6">
                     <MetaMask />
-                    <Button variant="outline">
+                    <Button type="button" variant="outline">
                       <Icons.google className="mr-2 h-4 w-4" />
                       Google
                     </Button>
@@ -82,7 +87,7 @@ export default function Signup() {
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
                       <span className="bg-background px-2 text-muted-foreground">
-                        Or continue with
+                        หรือดำเนินการต่อด้วย
                       </span>
                     </div>
                   </div>
@@ -92,11 +97,11 @@ export default function Signup() {
                       name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Username</FormLabel>
+                          <FormLabel>ชื่อผู้ใช้</FormLabel>
                           <FormControl>
                             <Input
                               disabled={isLoading}
-                              placeholder="Username (required)"
+                              placeholder="ชื่อผู้ใช้ (ต้องกรอก)"
                               {...field}
                             />
                           </FormControl>
@@ -111,11 +116,11 @@ export default function Signup() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email</FormLabel>
+                          <FormLabel>อีเมล</FormLabel>
                           <FormControl>
                             <Input
                               disabled={isLoading}
-                              placeholder="Email (required)"
+                              placeholder="อีเมล (ต้องกรอก)"
                               type="email"
                               {...field}
                             />
@@ -124,8 +129,6 @@ export default function Signup() {
                         </FormItem>
                       )}
                     />
-                    {/* <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="m@example.com" /> */}
                   </div>
                   <div className="grid gap-2">
                     <FormField
@@ -133,11 +136,11 @@ export default function Signup() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Password</FormLabel>
+                          <FormLabel>รหัสผ่าน</FormLabel>
                           <FormControl>
                             <Input
                               disabled={isLoading}
-                              placeholder="Password (required)"
+                              placeholder="รหัสผ่าน (ต้องกรอก)"
                               type="password"
                               {...field}
                             />
@@ -150,13 +153,21 @@ export default function Signup() {
                   <Input id="email" type="email" placeholder="m@example.com" /> */}
                   </div>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="flex flex-col items-start">
                   <Button disabled={isLoading} type="submit" className="w-full">
                     {isLoading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : null}
-                    Create account
+                    สร้างบัญชี
                   </Button>
+                  <p className="pt-3 text-center text-sm text-muted-foreground">
+                    <Link
+                      href="/signin"
+                      className="underline underline-offset-4 hover:text-primary"
+                    >
+                      ไปที่หน้าเข้าสู่ระบบ
+                    </Link>
+                  </p>
                 </CardFooter>
               </form>
             </Form>

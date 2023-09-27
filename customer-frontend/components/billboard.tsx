@@ -38,7 +38,7 @@ const Billboard: React.FC<BillboardProps> = ({ name, info }) => {
             </div>
           ) : null}
           <div className="font-bold text-2xl sm:text-4xl lg:text-5xl sm:max-w-xl max-w-xs">
-            {info?.banner_title?info.banner_title:"Best shop in the wolrd."}
+            {info?.banner_title?info.banner_title:"ร้านค้าที่ดีที่สุดในโลก"}
           </div>
         </div>
       </div>

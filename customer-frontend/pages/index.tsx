@@ -91,11 +91,11 @@ export default function Home() {
                   onValueChange={(value) => setType(value)}
                 >
                   <TabsList>
-                    <TabsTrigger value="merchant">Store</TabsTrigger>
-                    <TabsTrigger value="product">Product</TabsTrigger>
+                    <TabsTrigger value="merchant">ร้านค้า</TabsTrigger>
+                    <TabsTrigger value="product">สินค้า</TabsTrigger>
                   </TabsList>
                   <TabsContent value="merchant">
-                    <h3 className="text-lg font-semibold">All Stores</h3>
+                    <h3 className="text-lg font-semibold">ร้านค้าทั้งหมด</h3>
                     <hr className="my-4" />
                     <MerchantList
                       type={type}
@@ -105,7 +105,7 @@ export default function Home() {
                     />
                   </TabsContent>
                   <TabsContent value="product">
-                    <h3 className="text-lg font-semibold">All Products</h3>
+                    <h3 className="text-lg font-semibold">สินค้าทั้งหมด</h3>
                     <hr className="my-4" />
                     <ProductList
                       typeSearch={type}

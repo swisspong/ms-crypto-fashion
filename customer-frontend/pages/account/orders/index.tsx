@@ -17,7 +17,15 @@ import { PaginationState } from "@tanstack/react-table";
 import { useRouter } from "next/router";
 import { columns } from "@/components/order/column";
 import { useGetOrdersPolling, useMyOrders } from "@/src/hooks/order/queries";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -29,10 +37,10 @@ const OrderListPage = () => {
   const [idToUpdate, setIdToUpdate] = useState<string>();
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [items, setItems] = useState<Item[] | undefined>(undefined)
-  const { mutate: commentsHandler, isLoading, isSuccess } = useCreateCommnt()
-  const [username, setUsername] = useState<string | undefined>(undefined)
-  const orderPolling = useGetOrdersPolling()
+  const [items, setItems] = useState<Item[] | undefined>(undefined);
+  const { mutate: commentsHandler, isLoading, isSuccess } = useCreateCommnt();
+  const [username, setUsername] = useState<string | undefined>(undefined);
+  const orderPolling = useGetOrdersPolling();
   const openDialogHandlerParam = (open: boolean) => {
     if (!open) {
       setIdHandler(undefined);
@@ -58,17 +66,17 @@ const OrderListPage = () => {
 
   // * set Data Item
   const setDataItems = (body: Item[]) => {
-    setItems(body)
-  }
+    setItems(body);
+  };
 
   // * comment handler
   const commentHandler = async (body: TComment[]) => {
     const payload: TCommentPayload = await {
       comments: body,
-      order_id: idToUpdate!
-    }
-    commentsHandler(payload)
-  }
+      order_id: idToUpdate!,
+    };
+    commentsHandler(payload);
+  };
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -91,14 +99,12 @@ const OrderListPage = () => {
   // }, [])
 
   useEffect(() => {
-    console.log(orderPolling.data)
+    console.log(orderPolling.data);
     if (orderPolling.isSuccess && orderPolling.data.refetch) {
-      dataQuery.refetch()
-      orderPolling.refetch()
+      dataQuery.refetch();
+      orderPolling.refetch();
     }
-
-
-  }, [orderPolling.isSuccess,orderPolling.data])
+  }, [orderPolling.isSuccess, orderPolling.data]);
   return (
     <div className="bg-white">
       <Navbar />
@@ -106,9 +112,9 @@ const OrderListPage = () => {
         <div className="px-4 sm:px-6 lg:px-8 min-h-screen">
           <div className="hidden space-y-6 p-10 pb-16 md:block">
             <div className="space-y-0.5">
-              <h2 className="text-2xl font-bold tracking-tight">Account</h2>
+              <h2 className="text-2xl font-bold tracking-tight">บัญชี</h2>
               <p className="text-muted-foreground">
-                Manage your account settings and set e-mail preferences.
+                จัดการการคำสั่งซื้อของคุณ
               </p>
             </div>
             <Separator className="my-6" />
@@ -133,7 +139,7 @@ const OrderListPage = () => {
                       openSheetHandler,
                       setIdHandler,
                       openDialogHandler,
-                      setDataItems
+                      setDataItems,
                     })}
                     data={dataQuery.data?.data ?? defaultData}
                     pagination={pagination}
@@ -149,7 +155,6 @@ const OrderListPage = () => {
           </div>
         </div>
 
-
         <FormCommentDialog
           data={items!}
           open={open}
@@ -158,7 +163,6 @@ const OrderListPage = () => {
           isLoading={isLoading}
           isSuccess={isLoading}
         />
-
       </Container>
       <Footer />
     </div>
