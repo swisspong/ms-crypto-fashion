@@ -67,7 +67,7 @@ export default function Edit() {
 
     return (
         <Layout>
-            <h2 className="text-xl mb-5 font-bold tracking-tight">Edit Product</h2>
+            <h2 className="text-xl mb-5 font-bold tracking-tight">แก้ไขร้านค้า</h2>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="container content-start flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-3 lg:px-0 gap-4">
@@ -75,7 +75,7 @@ export default function Edit() {
                             <div className="mb-10">
                                 <Card >
                                     <CardHeader>
-                                        <CardTitle>Details</CardTitle>
+                                        <CardTitle>กรอกรายละเอียด</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <FormField
@@ -83,10 +83,10 @@ export default function Edit() {
                                             name="store_name"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Store Name</FormLabel>
+                                                    <FormLabel>ชื่อร้านค้า</FormLabel>
                                                     <FormControl>
                                                         <Input
-                                                            placeholder="Enter name admin"
+                                                            placeholder="กรอกชื่อร้านค้า"
                                                             type="text"
                                                             autoCapitalize="none"
                                                             autoComplete="name"
@@ -105,10 +105,10 @@ export default function Edit() {
                                             name="banner_title"
                                             render={({ field }) => (
                                                 <FormItem className="mt-5">
-                                                    <FormLabel>Banner</FormLabel>
+                                                    <FormLabel>แบนเนอร์</FormLabel>
                                                     <FormControl>
                                                         <Textarea
-                                                            placeholder="Tell us a little about store yourself"
+                                                            placeholder="ช่วยเล่าให้ฟังเกี่ยวกับร้านค้า"
                                                             className="resize-none"
                                                             disabled={isLoading || defaultLoading}
                                                             {...field}
@@ -183,7 +183,7 @@ export default function Edit() {
                                     {isLoading   && (
                                         <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                     )}
-                                    Save Changes
+                                    บันทึกการเปลี่ยนแปลง
                                 </Button>
                             </Card>
                         </div>

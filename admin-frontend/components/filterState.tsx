@@ -16,7 +16,7 @@ const FilterSearchState: React.FC<FilterProps> = ({
     <>
       <div>
         <Input
-          placeholder="Filter search"
+          placeholder="กรอกสิ่งที่ต้องการค้นหา"
           onChange={(e) => setSerarch(e.target.value)}
         />
       </div>

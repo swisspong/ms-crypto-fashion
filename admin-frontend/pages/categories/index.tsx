@@ -78,13 +78,13 @@ export default function Category() {
                     <Link href={"categories/add"} passHref>
                         <Button size={"lg"}>
                             <PlusCircle className="mr-2 h-4 w-4" />
-                            {`Add Category`}
+                            เพิ่มหมวดหมู่สินค้า
                         </Button>
                     </Link>
                 </div>
             </div>
             <DataTable
-                title="Categories"
+                title="หมวดหมู่สินค้าภายในเว็บไซต์ทั้งหมด"
                 setPagination={setPagination}
                 columns={columns({ openSheetHandler, setIdHandler, openDialogHandler })}
                 data={dataQuery.data?.data ?? defaultData}

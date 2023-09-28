@@ -15,10 +15,10 @@ export default function Signin() {
 
                     <div className="flex flex-col space-y-2 mb-6 text-center">
                         <h1 className="text-2xl font-semibold tracking-tight">
-                            Sign in to Crypto fashion
+                            เข้าสู่ระบบ
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Enter your email and password below
+                            กรอกอีเมลและรหัสผ่านของคุณด้านล่างเพื่อเข้าสู่ระบบ
                         </p>
                     </div>
                     <AdminAuthForm />

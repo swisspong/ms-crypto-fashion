@@ -46,7 +46,7 @@ export default function Approve() {
     return (
         <Layout>
             <DataTable
-                title="All request open merchant"
+                title="คำขอเปิดร้านค้าทั้งหมด"
                 setPagination={setPagination}
                 columns={columns({setStatusHandler})}
                 data={dataQuery.data?.data ?? defaultData}

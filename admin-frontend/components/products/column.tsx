@@ -17,7 +17,7 @@ export const columns = ({
   const columns: ColumnDef<IProduct>[] = [
     {
       accessorKey: "image_urls",
-      header: () => <div>#PRODUCT</div>,
+      header: () => <div>#สินค้า</div>,
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
           <img
@@ -30,7 +30,7 @@ export const columns = ({
     },
     {
       accessorKey: "merchant",
-      header: () => <div>#MERCHANT</div>,
+      header: () => <div>#ร้านค้า</div>,
       cell: ({ row }) => (
         <div>{row.original.merchant[0].name}</div>
       ),
@@ -49,7 +49,7 @@ export const columns = ({
               }}
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Delete
+              ลบ
             </Button>
           </div>
         );

@@ -31,15 +31,15 @@ export const columns = ({
   const columns: ColumnDef<IMerchant>[] = [
     {
       accessorKey: "name",
-      header: () => <div>#MERCHANT</div>
+      header: () => <div>#ร้านค้า</div>
     },
     {
       accessorKey: "banner_title",
-      header: () => <div>#BANNER</div>,
+      header: () => <div>#แบนเนอร์</div>,
     },
     {
       accessorKey: "id_card_img",
-      header: () => <div>#IMAGE CARD</div>,
+      header: () => <div>#รูปบัตรประจำตัวประชาชน</div>,
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
           <Dialog>
@@ -65,11 +65,11 @@ export const columns = ({
     },
     {
       accessorKey: "first_name",
-      header: () => <div>#First Name</div>,
+      header: () => <div>#ชื่อ</div>,
     },
     {
       accessorKey: "last_name",
-      header: () => <div>#Last Name</div>,
+      header: () => <div>#นามสกุล</div>,
     },
     {
       id: "approved",
@@ -80,7 +80,7 @@ export const columns = ({
               e.stopPropagation();
               setStatusHandler(row.original.mcht_id as string,MerchantFormat.APPROVED);
             }}
-          >Approve</Button>
+          >อนุมัติ</Button>
         </div>
       )
     },
@@ -92,7 +92,7 @@ export const columns = ({
             e.stopPropagation();
             setStatusHandler(row.original.mcht_id as string,MerchantFormat.DISAPPROVAL);
           }}
-        >Reject</Button>
+        >ปฏิเสธ</Button>
       )
     }
   ]

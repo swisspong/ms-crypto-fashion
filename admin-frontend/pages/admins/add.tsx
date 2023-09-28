@@ -96,7 +96,7 @@ const Add = () => {
 
     return (
         <Layout>
-            <h2 className="text-xl font-bold tracking-tight mb-5">Add Admin</h2>
+            <h2 className="text-xl font-bold tracking-tight mb-5">เพิ่มแอดมิน (ผู้ดูแล)</h2>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="container content-start flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-3 lg:px-0 gap-4">
@@ -104,7 +104,7 @@ const Add = () => {
                             <div className="mb-10">
                                 <Card >
                                     <CardHeader>
-                                        <CardTitle>Details</CardTitle>
+                                        <CardTitle>กรอกรายละเอียด</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <FormField
@@ -115,7 +115,7 @@ const Add = () => {
                                                     <FormControl>
                                                         <Input
                                                             {...field}
-                                                            placeholder="Enter name admin"
+                                                            placeholder="กรอกชื่อแอดมิน (ต้องกรอก)"
                                                             type="text"
                                                             autoCapitalize="none"
                                                             autoComplete="name"
@@ -141,7 +141,7 @@ const Add = () => {
                                                     <FormControl>
                                                         <Input
                                                             {...field}
-                                                            placeholder="name@example.com"
+                                                            placeholder="กรอกอีเมล (ต้องกรอก)"
                                                             type="email"
                                                             autoCapitalize="none"
                                                             autoComplete="email"
@@ -163,7 +163,7 @@ const Add = () => {
                                                     <FormControl>
                                                         <Input
                                                             {...field}
-                                                            placeholder="password"
+                                                            placeholder="ตั้งรหัสผ่าน (ต้องกรอก)"
                                                             type="password"
                                                             autoCapitalize="none"
                                                             autoComplete="password"
@@ -181,7 +181,7 @@ const Add = () => {
 
                                 <Card className="mt-5" >
                                     <CardHeader>
-                                        <CardTitle>Permissions</CardTitle>
+                                        <CardTitle>สิทธิ์การอนุญาต</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         {
@@ -227,7 +227,7 @@ const Add = () => {
                                     {isLoading && (
                                         <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                     )}
-                                    Save Changes
+                                    บันทึก
                                 </Button>
                             </Card>
                         </div>

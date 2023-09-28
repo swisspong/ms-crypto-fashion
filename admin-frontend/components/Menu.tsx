@@ -76,9 +76,9 @@ export function Menu() {
       <div className="flex items-center  space-x-2 ">
         <SelectTheme />
         <MenubarMenu>
-          <MenubarTrigger className="cursor-pointer">Account</MenubarTrigger>
+          <MenubarTrigger className="cursor-pointer">บัญชีผู้ใช้</MenubarTrigger>
           <MenubarContent forceMount>
-            <MenubarLabel inset>Account</MenubarLabel>
+            <MenubarLabel inset>บัญชีผู้ใช้</MenubarLabel>
             <MenubarSeparator />
             <MenubarRadioGroup value={data?.username}>
               <MenubarRadioItem disabled={isLoading} value={data?.username ?? ''}>
@@ -99,7 +99,7 @@ export function Menu() {
               ) : (
                 <LogOut className="h-4 w-4 mr-2" />
               )}
-              Signout
+              ออกจากระบบ
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>

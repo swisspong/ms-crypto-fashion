@@ -12,7 +12,7 @@ interface Props {
 }
 
 export const RecentSales = ({ data }: Props) => {
- 
+
   return (
     <div className="space-y-8">
 
@@ -43,7 +43,7 @@ export const RecentSales = ({ data }: Props) => {
       ) : (
         <Alert>
           <AlertDescription>
-            We're sorry, but the requested information is currently unavailable. Please check back later or contact our support team for assistance.
+            ขออภัย แต่ข้อมูลที่ร้องขอไม่พร้อมใช้งานในขณะนี้ โปรดกลับมาตรวจสอบในภายหลัง
           </AlertDescription>
         </Alert>
       )

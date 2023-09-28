@@ -26,40 +26,40 @@ import {
   
   export const sidebarItems: SidebarProp = [
     {
-      name: "Dashboard",
+      name: "แผงควบคุม",
       href: `/`,
       icon: LayoutGrid,
     },{
-      name: "Admin",
+      name: "แอดมิน (ผู้ดูแลระบบ)",
       href: "/admins",
       icon: Lock
     },{
-      name: "Complaint",
+      name: "รายการคำร้องจากผู้ใช้",
       href: "/complaints",
       icon: FileText
     },
     {
-      name: "Comment",
+      name: "ความคิดเห็นจากผู้ใช้",
       href: `/comments`,
       icon: User2,
     },
     {
-      name: "Products",
+      name: "รายการสินค้า",
       href: `/products`,
       icon: ListOrdered,
     },
     {
-      name: "Category",
+      name: "รายการหมวดหมู่ภายในเว็บไซต์",
       href: "/categories",
       icon: PackageSearch
     },
     {
-      name: "Approves",
+      name: "อนุมัติร้านค้า",
       href: `/approves`,
       icon: FileCheck2
     },
     {
-      name: "Merchants",
+      name: "ผู้ขาย (ร้านค้า)",
       href: `/merchants`,
       icon: ShoppingBag
     }

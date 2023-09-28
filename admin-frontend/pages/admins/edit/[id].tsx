@@ -123,7 +123,7 @@ export default function Edit() {
 
     return (
         <Layout>
-            <h2 className="text-xl font-bold tracking-tight mb-5">Add Admin</h2>
+            <h2 className="text-xl font-bold tracking-tight mb-5">แก้ไขข้อมูลแอดมิน (ผู้ดูแล)</h2>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="container content-start flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-3 lg:px-0 gap-4">
@@ -131,7 +131,7 @@ export default function Edit() {
                             <div className="mb-10">
                                 <Card >
                                     <CardHeader>
-                                        <CardTitle>Details</CardTitle>
+                                        <CardTitle>กรอกรายละเอียด</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <FormField
@@ -142,7 +142,7 @@ export default function Edit() {
                                                     <FormControl>
                                                         <Input
                                                             {...field}
-                                                            placeholder="Enter name admin"
+                                                            placeholder="กรอกชื่อแอดมิน"
                                                             type="text"
                                                             autoCapitalize="none"
                                                             autoComplete="name"
@@ -168,7 +168,7 @@ export default function Edit() {
                                                     <FormControl>
                                                         <Input
                                                             {...field}
-                                                            placeholder="name@example.com"
+                                                            placeholder="กรอกอีเมล"
                                                             type="email"
                                                             autoCapitalize="none"
                                                             autoComplete="email"
@@ -188,7 +188,7 @@ export default function Edit() {
                                                 <FormItem className="mt-5">
                                                     <FormControl>
                                                         <Input
-                                                            placeholder="password"
+                                                            placeholder="ตั้งรหัสผ่านใหม่"
                                                             type="password"
                                                             autoCapitalize="none"
                                                             autoComplete="password"
@@ -206,7 +206,7 @@ export default function Edit() {
 
                                 <Card className="mt-5" >
                                     <CardHeader>
-                                        <CardTitle>Permissions</CardTitle>
+                                        <CardTitle>สิทธิ์การอนุญาต  </CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         {
@@ -251,7 +251,7 @@ export default function Edit() {
                                     {isLoading && (
                                         <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                     )}
-                                    Save Changes
+                                    บันทึกการเปลี่ยนแปลง
                                 </Button>
                             </Card>
                         </div>
