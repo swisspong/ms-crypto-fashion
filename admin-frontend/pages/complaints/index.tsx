@@ -69,7 +69,7 @@ export default function Complaint() {
     return (
         <Layout>
             <DataTable
-                title="All Report Complaint "
+                title="รายการคำร้องทั้งหมด"
                 setPagination={setPagination}
                 columns={columns({ openSheetHandler, setHandler, openDialogHandler })}
                 data={dataQuery.data?.data ?? defaultData}

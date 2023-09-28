@@ -27,15 +27,15 @@ interface columnProps {
     const columns: ColumnDef<IAdmin>[] = [
         {
             accessorKey: "username",
-            header: () => <div>#Admin</div>
+            header: () => <div>#ชื่อแอดมิน</div>
         },
         {
             accessorKey: "email",
-            header: () => <div>#Email</div>
+            header: () => <div>#อีเมล</div>
         },
         {
           accessorKey: 'permission',
-          header: () => <div>#Permissions</div>,
+          header: () => <div>#สิทธิ์การอนุญาต</div>,
           cell: ({row}) => {
             return (
               <div>
@@ -55,26 +55,26 @@ interface columnProps {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
+                      <span className="sr-only">เปิดเมนู</span>
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuLabel>การกระทำ</DropdownMenuLabel>
                     <DropdownMenuItem
                       onClick={(e) => {
                         e.stopPropagation();
                         navigator.clipboard.writeText(row.original.user_id.toString());
                       }}
                     >
-                      Copy ID
+                      คัดลอกไอดี
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
     
                     <Link href={`/admins/edit/${row.original.user_id}`} passHref>
                       <DropdownMenuItem>
                         <Edit className="w-4 h-4 mr-2" />
-                        Edit
+                        แก้ไข
                       </DropdownMenuItem>
                     </Link>
                     <DropdownMenuItem
@@ -85,7 +85,7 @@ interface columnProps {
                       }}
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
-                      Delete
+                      
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

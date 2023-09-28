@@ -64,7 +64,7 @@ export default function Edit() {
         <Layout>
             <div className="space-between flex items-center mb-4">
                 <div className="">
-                    <h1 className="text-xl font-bold tracking-tight">Add Category</h1>
+                    <h1 className="text-xl font-bold tracking-tight">แก้ไขหมวดหมู่สินค้าภายในเว็บไซต์</h1>
                 </div>
             </div>
             <Form {...form}>
@@ -73,7 +73,7 @@ export default function Edit() {
                         <div className="col-span-3 grid gap-4">
                             <Card>
                                 <CardHeader className="space-y-1">
-                                    <CardTitle className="text-2xl">Details</CardTitle>
+                                    <CardTitle className="text-2xl">กรอกรายละเอียด</CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid gap-4">
                                     <div className="grid gap-2">
@@ -82,9 +82,9 @@ export default function Edit() {
                                             name="name"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Name</FormLabel>
+                                                    <FormLabel>ชื่อหมวดหมู่</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Name (required)" disabled={isLoading} {...field} />
+                                                        <Input placeholder="ชื่อหมวดหมู่ (ต้องกรอก)" disabled={isLoading} {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -127,7 +127,7 @@ export default function Edit() {
                                         {isLoading && (
                                             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                                         )}
-                                        Save Changes
+                                        บันทึกการเปลี่ยนแปลง
                                     </Button>
                                 </CardHeader>
                             </Card>

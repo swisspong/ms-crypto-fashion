@@ -64,7 +64,7 @@ export default function Comment() {
     return (
         <Layout>
             <DataTable
-                title="All Comment"
+                title="ความคิดเห็นทั้งหมด"
                 setPagination={setPagination}
                 columns={columns({ openSheetHandler, setIdHandler, openDialogHandler })}
                 data={dataQuery.data?.data ?? defaultData}

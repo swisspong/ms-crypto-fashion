@@ -10,31 +10,32 @@ interface Props {
 
 export const Overview = ({ data }: Props) => {
   const monthNames = [
-    "Jan", "Feb", "Mar", "Apr",
-    "May", "Jun", "Jul", "Aug",
-    "Sep", "Oct", "Nov", "Dec"
+    "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.",
+    "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.",
+    "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
   ];
-  
+
+
   let curr = 0;
-  const line_data = data.length > 0? monthNames.map((month, index) => {
+  const line_data = data.length > 0 ? monthNames.map((month, index) => {
     let object = undefined
     if ((index + 1).toString() == data[curr].month as string) {
-       object = {
+      object = {
         name: month,
         totalOrders: data[curr].totalOrders,
         amountSales: data[curr].totalSales,
         amt: data[curr].totalSales
       }
-      if ( curr < (data.length-1)) curr++;
-      
+      if (curr < (data.length - 1)) curr++;
+
     }
-    return object ? object :{
+    return object ? object : {
       name: month,
       totalOrders: 0,
       amountSales: 0,
       amt: 0
     }
-  }): []
+  }) : []
 
   return (
     <ResponsiveContainer width="100%" height={350}>
@@ -56,8 +57,8 @@ export const Overview = ({ data }: Props) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Line type="monotone" name="amount orders" dataKey="amountSales" stroke="#8884d8" activeDot={{ r: 8 }} />
-        <Line type="monotone" name="total orders" dataKey="totalOrders" stroke="#82ca9d"  />
+        <Line type="monotone" name="คำสั่งซื้อทั้งหมด" dataKey="amountSales" stroke="#8884d8" activeDot={{ r: 8 }} />
+        <Line type="monotone" name="จำนวนคำสั่งซื้อ" dataKey="totalOrders" stroke="#82ca9d" />
       </LineChart>
     </ResponsiveContainer>
   )

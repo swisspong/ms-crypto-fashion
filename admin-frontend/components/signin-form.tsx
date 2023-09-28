@@ -61,10 +61,10 @@ export default function AdminAuthForm({ className, ...props }: AdminAuthFormProp
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="sr-only">Email</FormLabel>
+                    <FormLabel className="sr-only">อีเมล</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="name@example.com"
+                        placeholder="อีเมล (ต้องกรอก)"
                         type="email"
                         autoCapitalize="none"
                         autoComplete="email"
@@ -85,10 +85,10 @@ export default function AdminAuthForm({ className, ...props }: AdminAuthFormProp
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="sr-only">Password</FormLabel>
+                    <FormLabel className="sr-only">รหัสผ่าน</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="password"
+                        placeholder="รหัสผ่าน (ต้องกรอก)"
                         type="password"
                         autoCapitalize="none"
                         autoComplete="password"
@@ -106,7 +106,7 @@ export default function AdminAuthForm({ className, ...props }: AdminAuthFormProp
               {isLoading && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Sign In
+              เข้าสู่ระบบ
             </Button>
           </div>
         </form>

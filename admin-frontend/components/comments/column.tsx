@@ -17,25 +17,25 @@ export const columns = ({
   const columns: ColumnDef<TComment>[] = [
     {
       accessorKey: "user",
-      header: () => <div>#USER NAME</div>,
+      header: () => <div>#ผู้แสดงความคิดเห็น</div>,
       cell: ({ row }) => (
         <div>{row.original.user.username}</div>
       )
     },
     {
       accessorKey: "product",
-      header: () => <div>#PRODUCT NAME</div>,
+      header: () => <div>#ชื่อสินค้า</div>,
       cell: ({ row }) => (
         <div>{row.original.product.name}</div>
       )
     },
     {
       accessorKey: 'rating',
-      header: () => <div>#Rating </div>
+      header: () => <div>#การให้คะแนน</div>
     },
     {
       accessorKey: "text",
-      header: () => <div>#MESSAGE</div>
+      header: () => <div>#ความคิดเห็น</div>
     },
     {
       accessorKey: "delete",
@@ -46,7 +46,7 @@ export const columns = ({
           setIdHandler(row.original.comment_id as string);
           openDialogHandler();
         }}
-        >Delete</Button>
+        >ลบ</Button>
       )
     }
   ]

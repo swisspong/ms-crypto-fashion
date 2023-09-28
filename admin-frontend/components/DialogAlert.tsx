@@ -39,9 +39,9 @@ const DialogAlert: FC<Props> = ({
     <AlertDialog open={openDialog} onOpenChange={openDialogHandler}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>คุณแน่ใจหรือไม่?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undo. This will permanently {title_alert}.
+            คุณต้องการเปลี่ยนสถานะ "{title_alert}"
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

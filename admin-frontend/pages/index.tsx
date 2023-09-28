@@ -1,9 +1,8 @@
-import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import { Separator } from "@/components/ui/separator";
 import Layout from '@/components/Layout'
 import { withUser } from '@/src/hooks/auth/isAuth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Overview } from '@/components/overview';
 import { RecentSales } from '@/components/recent-sales';
 import { useGetDashboardMerchant } from '@/src/hooks/merchant/queries';
@@ -78,7 +77,7 @@ export default function Home() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Store Opening Requests
+              จำนวนคำขอเปิดร้านทั้งหมด
             </CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +101,7 @@ export default function Home() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Merchant Subscriptions
+              จำนวนผู้ขายที่เป็นสมาชิกทั้งหมด
             </CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +124,7 @@ export default function Home() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Amount Subscriptions</CardTitle>
+            <CardTitle className="text-sm font-medium">จำนวนเงินที่ได้จากการสมัครเปิดร้าน</CardTitle>
             <span className='h-4 w-4 text-muted-foreground'>฿</span>
           </CardHeader>
           <CardContent>
@@ -137,7 +136,7 @@ export default function Home() {
       <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Overview of trading within the website</CardTitle>
+            <CardTitle>ภาพรวมการซื้อขายภายในเว็บไซต์</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <Overview data={tradeData ?? []} />
@@ -145,7 +144,7 @@ export default function Home() {
         </Card>
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Recent Sales From Merchant</CardTitle>
+            <CardTitle>ยอดขายล่าสุดจากผู้ขาย</CardTitle>
           </CardHeader>
           <CardContent>
             <RecentSales data={saleData?.data ?? []} />
@@ -155,7 +154,7 @@ export default function Home() {
           <div className="flex items-center justify-between px-2 m-4">
 
             <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-              Page {pagination.pageIndex + 1} of{" "}
+              หน้า {pagination.pageIndex + 1} จาก {" "}
               {saleData?.total_page}
             </div>
             <div className="flex items-center space-x-2  ">
@@ -165,7 +164,7 @@ export default function Home() {
                 onClick={() => setPagination({ ...pagination, pageIndex: 0 })}
                 disabled={(!getCanPreviousPage())}
               >
-                <span className="sr-only">Go to first page</span>
+                <span className="sr-only">ไปหน้าแรก</span>
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
               <Button
@@ -174,7 +173,7 @@ export default function Home() {
                 onClick={() => previousPage()}
                 disabled={(!getCanPreviousPage())}
               >
-                <span className="sr-only">Go to previous page</span>
+                <span className="sr-only">กลับ</span>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <Button
@@ -183,7 +182,7 @@ export default function Home() {
                 onClick={() => nextPage()}
                 disabled={(!getCanNextPage())}
               >
-                <span className="sr-only">Go to next page</span>
+                <span className="sr-only">ถัดไป</span>
                 <ChevronRight className="h-4 w-4" />
               </Button>
               <Button
@@ -192,7 +191,7 @@ export default function Home() {
                 onClick={() => setPagination({ ...pagination, pageIndex: (saleData?.total_page ?? 1) - 1 })}
                 disabled={(!getCanNextPage())}
               >
-                <span className="sr-only">Go to last page</span>
+                <span className="sr-only">ไปหน้าสุดท้าย</span>
                 <ChevronsRight className="h-4 w-4" />
               </Button>
             </div>

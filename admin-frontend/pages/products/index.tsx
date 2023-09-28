@@ -74,7 +74,7 @@ export default function Product() {
             </div>
 
             <DataTable
-                title="All Products"
+                title="สินค้าทั้งหมด"
                 setPagination={setPagination}
                 columns={columns({ openSheetHandler, setIdHandler, openDialogHandler })}
                 data={dataQuery.data?.data ?? defaultData}

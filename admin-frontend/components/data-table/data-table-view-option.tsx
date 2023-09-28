@@ -30,11 +30,11 @@ export function DataTableViewOptions<TData>({
          className="hidden h-8 lg:flex"
         >
           <SlidersHorizontal className="mr-2 h-4 w-4" />
-          View
+          มุมมอง
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+        <DropdownMenuLabel>สลับมุมมอง</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()

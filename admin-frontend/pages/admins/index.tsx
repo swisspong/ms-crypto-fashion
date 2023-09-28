@@ -80,7 +80,7 @@ export default function Admin() {
                     <Link href="/admins/add">
                         <Button size={"lg"}>
                             <PlusCircle className="mr-2 h-4 w-4" />
-                            {`Add`}
+                            {`เพิ่มแอดมิน`}
                         </Button>
                     </Link>
 
@@ -88,7 +88,7 @@ export default function Admin() {
                 </div>
             </div>
             <DataTable
-                title="All Admin"
+                title="แอดมิน (ผู้ดูแล) ทั้งหมด"
                 setPagination={setPagination}
                 columns={columns({ openSheetHandler, setIdHandler, openDialogHandler })}
                 data={dataQuery.data?.data ?? defaultData}

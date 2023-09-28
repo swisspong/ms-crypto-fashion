@@ -68,7 +68,7 @@ export default function Merchant() {
     return (
         <Layout>
             <DataTable
-                title="All merchants"
+                title="ร้านค้าทั้งหมด"
                 setPagination={setPagination}
                 columns={columns({ openDialogHandler, setIdHandler, openSheetHandler })}
                 data={dataQuery.data?.data ?? defaultData}

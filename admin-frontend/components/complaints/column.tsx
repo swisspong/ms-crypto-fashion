@@ -19,18 +19,18 @@ export const columns = ({
 
         {
             accessorKey: "detail",
-            header: () => <div>#DETAIL</div>
+            header: () => <div>#รายละเอียด</div>
         },
         {
             accessorKey: "type",
-            header: () => <div>#TYPE</div>,
+            header: () => <div>#ประเภทคำร้อง</div>,
             cell: ({ row }) => (
                 <Badge variant={row.original.type.toLocaleUpperCase() === "MERCHANT" ? "secondary" : "zinc"}>{row.original.type}</Badge>
             )
         },
         {
             accessorKey: "status",
-            header: () => <div>#STATUS</div>,
+            header: () => <div>#สถานะ</div>,
             cell: ({ row }) => (
                 <Badge variant={row.original.status.toLocaleUpperCase() === "PENDING" ? "destructive" : row.original.status.toLocaleUpperCase() === "PROGRESS" ? "sky" : "green"}>{row.original.status}</Badge>
             )
@@ -39,6 +39,7 @@ export const columns = ({
             id: "action",
             cell: ({ row }) => {
                 const status = Object.values(ComplaintFormat)
+                const com = ComplaintFormat
                 return (
                     <div className="w-full flex flex-wrap justify-end" >
                         <Card className="pt-1 pb-1  text-center ">
@@ -50,7 +51,7 @@ export const columns = ({
                                 }}
                                     className="m-1"
                                     key={val}
-                                    variant="secondary">{val}</Button>
+                                    variant="secondary">{(val == com.PENDING? "รอดำเนินการ": val == com.PROGRESS? "กำลังดำเนินการ": val == com.RESOLVED? "แก้ไขเรียบร้อย": "ปิด")}</Button>
                             ))}
                         </Card>
                     </div>

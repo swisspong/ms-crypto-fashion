@@ -30,7 +30,7 @@ export const columns = ({
   const columns: ColumnDef<IMerchant>[] = [
     {
       accessorKey: "image_url",
-      header: () => <div>#Merchant</div>,
+      header: () => <div>#ร้านค้า</div>,
       cell: ({row}) => (
         <div className="flex items-center space-x-3">
           <img src={row.original.banner_url ??
@@ -41,11 +41,11 @@ export const columns = ({
     },
     {
       accessorKey: "banner_title",
-      header: () => <div>#Banner</div>
+      header: () => <div>#แบนเนอร์</div>
     },
     {
       accessorKey: "status",
-      header: () => <div>#STATUS</div>,
+      header: () => <div>#สถานะ</div>,
       cell: ({row}) => (
         <Badge variant="secondary">{row.original.status?? "No Status"}</Badge>
     )
@@ -58,26 +58,26 @@ export const columns = ({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">เปิดเมนู</span>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuLabel>การกระทำ</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
                     navigator.clipboard.writeText(row.original.mcht_id.toString());
                   }}
                 >
-                  Copy ID
+                  คัดลอกไอดี
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
 
                 <Link href={`merchants/edit/${row.original.mcht_id}`} passHref>
                   <DropdownMenuItem>
                     <Edit className="w-4 h-4 mr-2" />
-                    Edit
+                    แก้ไข
                   </DropdownMenuItem>
                 </Link>
                 <DropdownMenuItem
@@ -88,7 +88,7 @@ export const columns = ({
                   }}
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
+                  ลบ
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
