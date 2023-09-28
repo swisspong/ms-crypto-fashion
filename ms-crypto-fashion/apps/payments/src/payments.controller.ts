@@ -27,7 +27,12 @@ export class PaymentsController {
     return this.paymentsService.openShopCreditCard(merchantId, CreditCardPaymentDto);
   }
   
-
+  @Get("merchant/report")
+  @Roles(RoleFormat.MERCHANT)
+  merchantReprot(@GetUser("merchant") merchantId: string){
+    return this.paymentsService.merchantReportTotal(merchantId)
+  }
+  
 
   @EventPattern(PAID_ORDERING_EVENT)
   async handlerOrdering(@Payload() data: PaidOrderingEvent, @Ctx() context: RmqContext) {

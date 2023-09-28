@@ -68,20 +68,20 @@ export class PaymentsService {
         end_date: end_date_credit,
         mcht_id
       }
-      
+
       await lastValueFrom(
         this.productClient.emit(CHARGE_MONTH_EVENT, {
           ...data
         })
       )
 
-      return {message: "success"}
+      return { message: "success" }
     } catch (error) {
       console.log(error)
       throw error
     }
   }
-  async getPaymentCheck(){
+  async getPaymentCheck() {
     return "check payments"
   }
 
@@ -121,7 +121,7 @@ export class PaymentsService {
 
   }
   async evnetRefund(data: IRefundEvent) {
-    console.log("refund receive",data)
+    console.log("refund receive", data)
     const userTxs = await this.transactionPurchaseRepository.find({ order_id: data.orderId })
     const isHasWithdraw = userTxs.some(tx => tx.type === TransactionFormat.WITHDRAW)
     const isHasRefund = userTxs.some(tx => tx.type === TransactionFormat.REFUND)
@@ -363,4 +363,22 @@ export class PaymentsService {
 
   //   }
   // }
+  async merchantReportTotal(mchtId: string) {
+    const aggregate = await this.transactionPurchaseRepository.aggregate([
+      {
+        $match: {
+          mcht_id: mchtId  // Match documents with the specified merchant ID
+        }
+      },
+      {
+        $group: {
+          _id: '$type',  // Group by transaction type (deposit or withdraw)
+          totalAmount: { $sum: '$amount' }  // Calculate the sum of the 'amount' field
+        }
+      }
+    ])
+    return {
+      data: aggregate
+    }
+  }
 }

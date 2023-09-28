@@ -778,7 +778,7 @@ export class OrdersService {
       this.arrayService.addItem({ res, userId, mchtId })
       const value = await this.arrayListener.waitForItemSet((item) => {
         if (item.res === res && ((item.userId && userId && item.userId === userId) || (item.mchtId && mchtId && item.mchtId === mchtId))) {
-          this.logger.warn("true condition item seted ",item.userId,userId,item.userId && userId && item.userId === userId)
+          this.logger.warn("true condition item seted ", item.userId, userId, item.userId && userId && item.userId === userId)
           return true
         }
         return false
@@ -790,6 +790,49 @@ export class OrdersService {
     })
   }
 
+  async merchantOrderTradeByMonth(mchtId: string) {
+    try {
+      const currentYear = new Date().getFullYear();
 
+      const amountOrderMonth = await this.ordersRepository.aggregate([
+        {
+          $match: {
+            mcht_id:mchtId,
+            createdAt: {
+              $gte: new Date(currentYear, 0, 1),
+              $lt: new Date(currentYear + 1, 0, 1)
+            }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              month: { $month: "$createdAt" }
+            },
+            totalSales: { $sum: "$total" },
+            totalOrders: { $sum: 1 }
+          }
+        },
+        {
+          $sort: {
+            "_id.month": 1
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            month: "$_id.month",
+            totalSales: 1,
+            totalOrders: 1
+          }
+        }
+      ])
+
+
+      return amountOrderMonth
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 }

@@ -358,6 +358,11 @@ export class OrdersController {
   allOrderTradeByMonth() {
     return this.ordersService.getOrderTradeByMonth()
   }
+  @Roles(RoleFormat.MERCHANT)
+  @Get('merchant/dashboard/trade')
+  merchantOrderStatistic(@GetUser('merchant') mchtId: string) {
+    return this.ordersService.merchantOrderTradeByMonth(mchtId)
+  }
 
   // TODO: recent sales from merchant
   @Roles(RoleFormat.ADMIN)
