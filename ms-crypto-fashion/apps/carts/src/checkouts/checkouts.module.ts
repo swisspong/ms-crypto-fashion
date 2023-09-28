@@ -8,6 +8,8 @@ import { DatabaseModule, RmqModule } from '@app/common';
 import { CheckoutsRepository } from './checkouts.repository';
 import { ORDER_SERVICE } from '@app/common/constants/order.constant';
 import { ProductsUtilModule } from '@app/common/utils/products/products-util.module';
+import { ProductsValidator } from '@app/common/utils/products/products-validator';
+import { CartItemsValidator } from '@app/common/utils/carts/cart-items-validator';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { ProductsUtilModule } from '@app/common/utils/products/products-util.mod
     ProductsUtilModule
   ],
   controllers: [CheckoutsController],
-  providers: [CheckoutsService, CheckoutsRepository],
+  providers: [CheckoutsService, CheckoutsRepository, ProductsValidator, CartItemsValidator],
   exports: [CheckoutsRepository]
 })
 export class CheckoutsModule { }

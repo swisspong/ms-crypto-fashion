@@ -13,6 +13,8 @@ import { CheckoutsModule } from './checkouts/checkouts.module';
 import { PRODUCTS_SERVICE, PRODUCTS_TCP } from '@app/common/constants/products.constant';
 import { ProductsUtilModule } from '@app/common/utils/products/products-util.module';
 import { ORDER_SERVICE } from '@app/common/constants/order.constant';
+import { ProductsValidator } from '@app/common/utils/products/products-validator';
+import { CartItemsValidator } from '@app/common/utils/carts/cart-items-validator';
 
 @Module({
   imports: [
@@ -46,7 +48,9 @@ import { ORDER_SERVICE } from '@app/common/constants/order.constant';
     ...authProviders,
     CartsService,
     CartsRepository,
-    JwtStrategy
+    JwtStrategy,
+    ProductsValidator,
+    CartItemsValidator
   ],
   exports: [CartsRepository]
 })

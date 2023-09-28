@@ -1,6 +1,7 @@
 import { AbstractDocument } from "@app/common";
 import { MerchantStatus } from "@app/common/enums";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Product } from "apps/products/src/schemas/product.schema";
 
 
 
@@ -44,35 +45,35 @@ class Variant {
     stock: number;
     image_url?: string
 }
-export class Product {
+// export class Product {
 
-    prod_id: string;
-
-
-    name: string;
-
-    available?: boolean
+//     prod_id: string;
 
 
+//     name: string;
 
-    stock: number;
-
-    price: number;
-
-
-    image_urls: string[]
+//     available?: boolean
 
 
 
-    merchant: Merchant
+//     stock: number;
+
+//     price: number;
 
 
-    groups: VariantGroup[]
+//     image_urls: string[]
 
-    variants: Variant[]
 
-    payment_methods: string[]
-}
+
+//     merchant: Merchant
+
+
+//     groups: VariantGroup[]
+
+//     variants: Variant[]
+
+//     payment_methods: string[]
+// }
 
 
 export class CheckoutItem {
