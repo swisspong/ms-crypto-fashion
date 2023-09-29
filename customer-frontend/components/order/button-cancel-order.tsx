@@ -36,7 +36,7 @@ const ButtonCancelOrder = () => {
       variant={"destructive"}
       size={"sm"}
     >
-      Cancel Order
+      ยกเลิกคำสั่งซื้อ
     </Button>
   );
 };

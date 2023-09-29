@@ -34,7 +34,7 @@ export const columns = ({
   const columns: ColumnDef<IOrderRow>[] = [
     {
       accessorKey: "image",
-      header: () => <div>ORDER</div>,
+      header: () => <div>คำสั่งซื้อ</div>,
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
           <img
@@ -47,7 +47,7 @@ export const columns = ({
     },
     {
       accessorKey: "created_at",
-      header: () => <div>DATE/TIME</div>,
+      header: () => <div>วัน/เวลา</div>,
       cell: ({ row }) => (
         <div>
           <div>{moment(row.original.createdAt).format("MMM DD, YYYY")}</div>
@@ -57,7 +57,7 @@ export const columns = ({
     },
     {
       accessorKey: "status",
-      header: () => <div>STATUS</div>,
+      header: () => <div>สถานะ</div>,
       cell: ({ row }) => (
         <div className="flex justify-start items-center">
           <Badge
@@ -96,7 +96,7 @@ export const columns = ({
 
     {
       accessorKey: "amount",
-      header: () => <div>AMOUNT</div>,
+      header: () => <div>ยอดชำระ</div>,
       cell: ({ row }) => <div>${row.original.total.toFixed(2)}</div>,
     },
     {
@@ -110,7 +110,6 @@ export const columns = ({
                 const items = row.original.items
                 const seenIds = new Set();
                 const data: Item[] = []
-                console.log(row.original.reviewStatus )
                 const filteredItems = await items.filter((item) => {
                   if (seenIds.has(item.prod_id)) {
                     return false; // ไม่รวม item ที่ซ้ำกันในผลลัพธ์
@@ -126,7 +125,7 @@ export const columns = ({
                 setIdHandler(row.original.order_id as string);
                 openSheetHandler();
               }} variant="default" key={row.original.order_id}>
-                Comment
+                แสดงความคิดเห็น
               </Button>
             ) : (<></>)}
           </div>

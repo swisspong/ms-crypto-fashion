@@ -93,13 +93,12 @@ export function ProfileForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>ชื่อผู้ใช้</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="ชื่อผู้ใช้ที่ต้องการเปลี่ยนแปลง" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
+                นี่คือชื่อที่แสดงต่อสาธารณะของคุณ อาจเป็นชื่อจริงหรือนามแฝงของคุณ
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -110,12 +109,12 @@ export function ProfileForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>อีเมล</FormLabel>
               <FormControl>
-                <Input placeholder="Email" {...field} />
+                <Input placeholder="อีเมลที่ต้องการเปลี่ยนแปลง" {...field} />
               </FormControl>
               <FormDescription>
-                You can manage verified email addresses in your
+                คุณสามารถจัดการที่อยู่อีเมล
               </FormDescription>
               <FormMessage />
             </FormItem>

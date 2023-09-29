@@ -97,30 +97,17 @@ const UserNav = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard className="mr-2 h-4 w-4" />
-            <span>Billing</span>
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-          </DropdownMenuItem>
+          
           <DropdownMenuItem onClick={() => router.push("/account")}>
             <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+            <span>ตั้งค่า</span>
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => router.push("http://merchant.example.com/")}
           >
             <Store className="mr-2 h-4 w-4" />
-            <span>Store</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            <span>New Team</span>
+            <span>ร้านค้า</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
@@ -133,7 +120,7 @@ const UserNav = () => {
           ) : (
             <LogOut className="mr-2 h-4 w-4" />
           )}
-          <span>Log out</span>
+          <span>ออกจากระบบ</span>
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>

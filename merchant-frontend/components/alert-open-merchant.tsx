@@ -78,7 +78,7 @@ const AlertOpentMerchant = () => {
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Start opening a shop</DialogTitle>
+          <DialogTitle>เริ่มเปิดร้านค้า</DialogTitle>
           <DialogDescription>
             Start opening a shop to create products. If it's ready to sell, you
             have to pay monthly.
