@@ -63,26 +63,26 @@ const AddressItem: FC<Props> = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only">เปิดเมนู</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuLabel>การกระทำ</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => {
                 setUpdateHandler(data)
                 openEditHandler()
               }}>
                 <Edit className="w-4 h-4 mr-2" />
-                Edit
+                แก้ไข
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
                 setIdHandler(data.addr_id)
                 openDeleteHandler()
               }}>
                 <Trash2 className="w-4 h-4 mr-2" />
-                Delete
+                ลบ
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -35,7 +35,7 @@ const AddressList = () => {
     <div>
       <div className="grid grid-cols-2 gap-4">
         {addresses.data?.map((address) => (
-          <AddressItem
+          <AddressItem key={address.addr_id}
             setUpdateHandler={(data: IAddress) => {
               setUpdateData(data)
             }}

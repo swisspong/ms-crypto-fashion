@@ -78,9 +78,9 @@ export function EditAddressForm({ open, openHandler, data, isLoading, isSuccess,
     <Dialog open={open} onOpenChange={(e) => openHandler(e)}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Address</DialogTitle>
+          <DialogTitle>แก้ไขที่อยู่</DialogTitle>
           <DialogDescription>
-            Make changes to your address here. Click save when you're done.
+            ทําการเปลี่ยนแปลงที่อยู่ของคุณที่นี่ คลิกบันทึกเมื่อคุณทําเสร็จแล้ว
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -92,13 +92,13 @@ export function EditAddressForm({ open, openHandler, data, isLoading, isSuccess,
                   name="recipient"
                   render={({ field }) => (
                     <FormItem className="w-full grid grid-cols-4 items-center  gap-4">
-                      <FormLabel className="text-right">Recipient</FormLabel>
+                      <FormLabel className="text-right">ผู้รับ</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           className="col-span-3"
                           // disabled={isLoading}
-                          placeholder="Recipient (required)"
+                          placeholder="ชื่อผู้รับ"
                           type="text"
                           disabled={isLoading}
                         />
@@ -114,12 +114,12 @@ export function EditAddressForm({ open, openHandler, data, isLoading, isSuccess,
                   name="tel_number"
                   render={({ field }) => (
                     <FormItem className="w-full grid grid-cols-4 items-center  gap-4">
-                      <FormLabel className="text-right">Tel</FormLabel>
+                      <FormLabel className="text-right">โทรศัพท์</FormLabel>
                       <FormControl>
                         <Input
                           className="col-span-3"
                           // disabled={isLoading}
-                          placeholder="Tel number (required)"
+                          placeholder="เบอร์โทร"
                           type="tel"
                           {...field}
                           disabled={isLoading}
@@ -136,7 +136,7 @@ export function EditAddressForm({ open, openHandler, data, isLoading, isSuccess,
                   name="address"
                   render={({ field }) => (
                     <FormItem className="w-full grid grid-cols-4 items-center  gap-4">
-                      <FormLabel className="text-right">Address</FormLabel>
+                      <FormLabel className="text-right">รายละเอียดที่อยู่</FormLabel>
                       <FormControl>
                         <Textarea className="col-span-3" {...field} disabled={isLoading} />
                       </FormControl>
@@ -151,11 +151,11 @@ export function EditAddressForm({ open, openHandler, data, isLoading, isSuccess,
                   name="post_code"
                   render={({ field }) => (
                     <FormItem className="w-full grid grid-cols-4 items-center  gap-4">
-                      <FormLabel className="text-right">Post code</FormLabel>
+                      <FormLabel className="text-right">รหัสไปรษณีย์</FormLabel>
                       <FormControl>
                         <Input
                           className="col-span-3"
-                          placeholder="Post code (required)"
+                          placeholder="เลขรหัสไปรษณีย์"
                           type="text"
                           {...field}
                           disabled={isLoading}
@@ -168,7 +168,7 @@ export function EditAddressForm({ open, openHandler, data, isLoading, isSuccess,
               </div>
             </div>
             <DialogFooter>
-              <Button disabled={isLoading} type="submit">Save changes</Button>
+              <Button disabled={isLoading} type="submit">บันทึกการเปลี่ยนแปลง</Button>
             </DialogFooter>
           </form>
         </Form>

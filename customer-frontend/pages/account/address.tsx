@@ -36,9 +36,9 @@ const AddressPage = () => {
         <div className="px-4 sm:px-6 lg:px-8 min-h-screen">
           <div className="hidden space-y-6 p-10 pb-16 md:block">
             <div className="space-y-0.5">
-              <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
+              <h2 className="text-2xl font-bold tracking-tight">ที่อยู่</h2>
               <p className="text-muted-foreground">
-                Manage your account settings and set e-mail preferences.
+                จัดการการตั้งค่าที่อยู่ของคุณ
               </p>
             </div>
             <Separator className="my-6" />
@@ -51,9 +51,9 @@ const AddressPage = () => {
                 <div className="space-y-6">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="text-lg font-medium">Address</h3>
+                      <h3 className="text-lg font-medium">จัดการที่อยู่</h3>
                       <p className="text-sm text-muted-foreground">
-                        This is how others will see you on the site.
+                        คุณสามารถบันทึกหลายที่อยู่
                       </p>
                     </div>
                     <AddAddressForm />

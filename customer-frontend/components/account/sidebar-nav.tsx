@@ -14,15 +14,15 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
 }
 const sidebarNavItems = [
   {
-    title: "Profile",
+    title: "บัญชี",
     href: "/account",
   },
   {
-    title: "Address",
+    title: "ที่อยู่",
     href: "/account/address",
   },
   {
-    title: "Order",
+    title: "รายการคำสั่งซื้อ",
     href: "/account/orders",
   },
 ];

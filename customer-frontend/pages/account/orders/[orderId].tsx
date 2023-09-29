@@ -79,7 +79,7 @@ export default function Order() {
           <div className="space-between flex items-center mb-4">
             <div className="">
               <h1 className="text-xl font-bold tracking-tight">
-                Order #{dataQuery.data?.order_id}
+                หมายเลขคำสั่งซื้อ #{dataQuery.data?.order_id}
               </h1>
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function Order() {
             <div className="col-span-3 grid gap-4">
               <Card>
                 <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
-                  <CardTitle className="text-2xl">Details</CardTitle>
+                  <CardTitle className="text-2xl">รายละเอียด</CardTitle>
                   <div className="flex space-x-2">
                     {dataQuery.data?.status !== StatusFormat.FULLFILLMENT &&
                     dataQuery.data?.status !== StatusFormat.CANCEL ? (
@@ -108,7 +108,7 @@ export default function Order() {
                 <CardContent className="grid gap-4">
                   <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex justify-between items-center p-3">
                     <div className="flex-col">
-                      <p className="text-xs">REFERENCE</p>
+                      <p className="text-xs">อ้างอิง</p>
                       <p className="text-sm">{dataQuery.data?.order_id}</p>
                     </div>
                     <div className="flex-col items-end">

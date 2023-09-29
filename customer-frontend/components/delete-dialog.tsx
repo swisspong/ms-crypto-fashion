@@ -37,13 +37,13 @@ const DeleteDialog: FC<Props> = ({
     <AlertDialog open={open} onOpenChange={openHandler}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>คุณแน่ใจหรือไม่?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undo. This will permanently delete.
+            การดําเนินการนี้ไม่สามารถยกเลิกได้ การดําเนินการนี้จะลบอย่างถาวร
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>ยกเลิก</AlertDialogCancel>
           <Button
             onClick={() => {
               //   openDialogHandler(true);
@@ -54,7 +54,7 @@ const DeleteDialog: FC<Props> = ({
             {isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : null}
-            Continue
+            ดำเนินการต่อ
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

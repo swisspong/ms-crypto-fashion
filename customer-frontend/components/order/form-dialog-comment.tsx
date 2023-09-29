@@ -132,7 +132,7 @@ const FormCommentDialog: FC<Props> = ({
                     <div>{item.name}</div>
                   </div>
 
-                  <p className="mb-2">Please give your rating:</p>
+                  <p className="mb-2">กรุณาให้คะแนนของคุณ:</p>
                   <Rating
                     onChange={(newRating) =>
                       handleRatingChange({ productId: item.prod_id, rating: newRating })
@@ -140,13 +140,12 @@ const FormCommentDialog: FC<Props> = ({
                   />
                   {productRatings[item.prod_id] > 0 && (
                     <p className="mt-2">
-                      You rated the product with {productRatings[item.prod_id]}{" "}
-                      {productRatings[item.prod_id] === 1 ? "star" : "stars"}.
+                      คุณให้คะแนนสินค้า {productRatings[item.prod_id]} ดาว
                     </p>
                   )}
 
                   {productRatings[item.prod_id] > 0 && (
-                    <Textarea name={item.prod_id} className="mt-4" placeholder="Type your message here." onChange={handleInputChange} />
+                    <Textarea name={item.prod_id} className="mt-4" placeholder="พิมพ์ข้อความของคุณที่นี่" onChange={handleInputChange} />
                   )}
                 </div>
 

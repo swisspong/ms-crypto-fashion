@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 
 import { useEffect, useMemo, useState } from "react";
 
@@ -112,7 +112,7 @@ const OrderListPage = () => {
         <div className="px-4 sm:px-6 lg:px-8 min-h-screen">
           <div className="hidden space-y-6 p-10 pb-16 md:block">
             <div className="space-y-0.5">
-              <h2 className="text-2xl font-bold tracking-tight">บัญชี</h2>
+              <h2 className="text-2xl font-bold tracking-tight">รายการคำสั่งซื้อ</h2>
               <p className="text-muted-foreground">
                 จัดการการคำสั่งซื้อของคุณ
               </p>
@@ -125,15 +125,15 @@ const OrderListPage = () => {
               <div className="flex-1 lg:max-w-4xl">
                 {" "}
                 <div className="space-y-6">
-                  <div>
+                  {/* <div>
                     <h3 className="text-lg font-medium">Orders</h3>
                     <p className="text-sm text-muted-foreground">
                       This is how others will see you on the site.
                     </p>
                   </div>
-                  <Separator />
+                  <Separator /> */}
                   <DataTable
-                    title="Orders"
+                    title="รายการคำสั่งซื้อทั้งหมด"
                     setPagination={setPagination}
                     columns={columns({
                       openSheetHandler,
