@@ -3,8 +3,6 @@ import { DataTable } from "@/components/data-table";
 import DialogDelete from "@/components/dialog-delete";
 import { columns } from "@/components/products/column";
 import { Button } from "@/components/ui/button";
-// import RoleForm from "@/components/roles/role-form";
-import { Separator } from "@/components/ui/separator";
 import { useRemoveProduct } from "@/src/hooks/product/mutations";
 import { useProducts } from "@/src/hooks/product/queries";
 import { PaginationState } from "@tanstack/react-table";
@@ -67,7 +65,7 @@ export default function Role() {
           <Link href={"products/add"} passHref>
             <Button size={"lg"}>
               <PlusCircle className="mr-2 h-4 w-4" />
-              {`Add Product`}
+              เพิ่มสินค้า
             </Button>
           </Link>
          
@@ -75,7 +73,7 @@ export default function Role() {
       </div>
       {/* <Separator className="my-4" /> */}
       <DataTable
-        title="Products"
+        title="สินค้าทั้งหมด"
         setPagination={setPagination}
         columns={columns({ openSheetHandler, setIdHandler, openDialogHandler })}
         //data={dataQuery.data?.data ?? defaultData}

@@ -91,7 +91,7 @@ export default function Order() {
                   <CardTitle className="text-2xl">รายละเอียด</CardTitle>
                   <div className="flex space-x-2">
                     {dataQuery.data?.status !== StatusFormat.FULLFILLMENT &&
-                    dataQuery.data?.status !== StatusFormat.CANCEL ? (
+                      dataQuery.data?.status !== StatusFormat.CANCEL ? (
                       // <Button variant={"destructive"} size={"sm"}>
                       //   Cancel Order
                       // </Button>
@@ -112,7 +112,7 @@ export default function Order() {
                       <p className="text-sm">{dataQuery.data?.order_id}</p>
                     </div>
                     <div className="flex-col items-end">
-                      <p className="text-xs text-end">PLACED</p>
+                      <p className="text-xs text-end">วัน/เวลา</p>
                       <p className="text-sm">
                         {moment(dataQuery?.data?.createdAt).format(
                           "MM/DD/YYYY"
@@ -123,7 +123,7 @@ export default function Order() {
                   </div>
                   <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex justify-between items-center p-3">
                     <div className="flex-col">
-                      <p className="text-xs">Merchant</p>
+                      <p className="text-xs">ร้านค้า</p>
                       <div className="flex items-center space-x-2">
                         <Store size={15} />
                         <p className="text-sm">{dataQuery.data?.mcht_name}</p>
@@ -134,10 +134,10 @@ export default function Order() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="">PRODUCT</TableHead>
-                          <TableHead>QTY</TableHead>
-                          <TableHead>PRICE</TableHead>
-                          <TableHead className="text-right">AMOUNT</TableHead>
+                          <TableHead className="">สินค้า</TableHead>
+                          <TableHead>จำนวน</TableHead>
+                          <TableHead>ราคา</TableHead>
+                          <TableHead className="text-right">ราคารวม</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -180,7 +180,7 @@ export default function Order() {
                       <TableBody>
                         <TableRow>
                           <TableCell className="font-medium">
-                            <div>{"Subtotal"}</div>
+                            <div>{"ราคารวม"}</div>
                           </TableCell>
                           <TableCell></TableCell>
                           <TableCell className="text-right">
@@ -189,7 +189,7 @@ export default function Order() {
                         </TableRow>
                         <TableRow>
                           <TableCell className="font-medium">
-                            <div>{"Shipping"}</div>
+                            <div>{"ราคาจัดส่ง"}</div>
                           </TableCell>
                           <TableCell></TableCell>
                           <TableCell className="text-right">
@@ -198,7 +198,7 @@ export default function Order() {
                         </TableRow>
                         <TableRow>
                           <TableCell className="font-medium">
-                            <div>{"Total paid"}</div>
+                            <div>{"สรุปราคา"}</div>
                           </TableCell>
                           <TableCell></TableCell>
                           <TableCell className="text-right">
@@ -213,13 +213,13 @@ export default function Order() {
               {!dataQuery.data?.shipping_carier ? (
                 <Card>
                   <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
-                    <CardTitle className="text-2xl">Shipment</CardTitle>
+                    <CardTitle className="text-2xl">การจัดส่ง</CardTitle>
                   </CardHeader>
                   <CardContent className="grid gap-4">
                     <Alert variant={"destructive"}>
                       <Terminal className="h-4 w-4" />
                       <AlertTitle className="text-center">
-                        Not Shipping
+                        ยังไม่จัดส่ง
                       </AlertTitle>
                     </Alert>
                   </CardContent>
@@ -227,7 +227,7 @@ export default function Order() {
               ) : (
                 <Card>
                   <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
-                    <CardTitle className="text-2xl">Shipment</CardTitle>
+                    <CardTitle className="text-2xl">การจัดส่ง</CardTitle>
                   </CardHeader>
                   <CardContent className="grid gap-4">
                     <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex p-3 flex-col space-y-4">
@@ -236,7 +236,7 @@ export default function Order() {
                           <Truck className="w-8 h-8" />
                         </div>
                         <div className="flex-col items-end">
-                          <p className="text-xs text-end">DATE SHIPPED</p>
+                          <p className="text-xs text-end">วัน/เวลา จัดส่ง</p>
                           <p className="text-sm">
                             {" "}
                             {moment(dataQuery?.data?.shipped_at).format(
@@ -263,7 +263,7 @@ export default function Order() {
                               .join(" ")}
                           </p>
                           <p className="text-sm">
-                            TRACKING #{dataQuery.data?.tracking}
+                            หมายเลขติดตาม #{dataQuery.data?.tracking}
                           </p>
                         </div>
                       </div>
@@ -321,13 +321,13 @@ export default function Order() {
                         </TableRow> */}
                     <TableRow>
                       <TableCell className="font-medium">
-                        <div>{"Fullfillment"}</div>
+                        <div>{"สถานะร้านค้า"}</div>
                       </TableCell>
                       <TableCell></TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end items-center">
                           {dataQuery.data?.status ===
-                          StatusFormat.FULLFILLMENT ? (
+                            StatusFormat.FULLFILLMENT ? (
                             <Badge className="bg-[#adfa1d] text-foreground hover:bg-[#adfa1d]">
                               {dataQuery.data.status.toUpperCase()}
                             </Badge>
@@ -341,13 +341,13 @@ export default function Order() {
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium">
-                        <div>{"Payment"}</div>
+                        <div>{"สถานะการชำระเงิน "}</div>
                       </TableCell>
                       <TableCell></TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end items-center">
                           {dataQuery.data?.payment_status ===
-                          PaymentFormat.PAID ? (
+                            PaymentFormat.PAID ? (
                             <Badge className="bg-[#adfa1d] text-foreground hover:bg-[#adfa1d]">
                               {dataQuery.data.payment_status.toUpperCase()}
                             </Badge>
@@ -390,7 +390,7 @@ export default function Order() {
                   </div> */}
               <Card>
                 <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
-                  <CardTitle className="text-lg">Address</CardTitle>
+                  <CardTitle className="text-lg">ที่อยู่</CardTitle>
                 </CardHeader>
                 <CardContent className="">
                   <div className="flex space-x-2">

@@ -31,7 +31,7 @@ export const columns = ({
   const columns: ColumnDef<IOrderRow>[] = [
     {
       accessorKey: "image",
-      header: () => <div>ORDER</div>,
+      header: () => <div>รายการคำสั่งซื้อ</div>,
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
           <img
@@ -44,7 +44,7 @@ export const columns = ({
     },
     {
       accessorKey: "created_at",
-      header: () => <div>DATE/TIME</div>,
+      header: () => <div>วัน/เวลา</div>,
       cell: ({ row }) => (
         <div>
           <div>{moment(row.original.createdAt).format("MMM DD, YYYY")}</div>
@@ -54,7 +54,7 @@ export const columns = ({
     },
     {
       accessorKey: "status",
-      header: () => <div>STATUS</div>,
+      header: () => <div>สถานะ</div>,
       cell: ({ row }) => (
         <div className="flex justify-start items-center">
            <Badge
@@ -94,7 +94,7 @@ export const columns = ({
 
     {
       accessorKey: "amount",
-      header: () => <div>AMOUNT</div>,
+      header: () => <div>ยอดชำระ</div>,
       cell: ({ row }) => <div>฿{row.original.total.toFixed(2)}</div>,
     },
     {
@@ -105,12 +105,12 @@ export const columns = ({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">เปิดเมนู</span>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuLabel>การกระทำ</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
@@ -119,14 +119,14 @@ export const columns = ({
                     );
                   }}
                 >
-                  Copy ID
+                  คัดลอกไอดี
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
 
                 <Link href={`orders/edit/${row.original.order_id}`} passHref>
                   <DropdownMenuItem>
                     <Edit className="w-4 h-4 mr-2" />
-                    Edit
+                    แก้ไข
                   </DropdownMenuItem>
                 </Link>
                 <DropdownMenuItem
@@ -137,7 +137,7 @@ export const columns = ({
                   }}
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
+                  ลบ
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

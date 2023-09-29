@@ -41,85 +41,81 @@ export default function Subscription() {
       <Separator className="my-4" />
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle>Subscription every month with 300 bath</CardTitle>
-          <CardDescription>Step to open store.</CardDescription>
+          <CardTitle>สมัครเปิดร้านค้าทุกเดือนด้วยเงิน 300 บาท</CardTitle>
+          <CardDescription>ขั้นตอนการเปิดร้านค้า</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-1">
           <div
-            className={`-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all ${
-              dataQuery.data?.status === MerchantFormat.CLOSED ||
-              dataQuery.data?.status === MerchantFormat.DISAPPROVAL
+            className={`-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all ${dataQuery.data?.status === MerchantFormat.CLOSED ||
+                dataQuery.data?.status === MerchantFormat.DISAPPROVAL
                 ? "bg-accent"
                 : ""
-            } hover:bg-accent hover:text-accent-foreground`}
+              } hover:bg-accent hover:text-accent-foreground`}
           >
             {/* <Tally1 /> */}
             <Bell className="mt-px h-5 w-5" />
             <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">First</p>
+              <p className="text-sm font-medium leading-none">ขั้นตอนที่ 1</p>
               <p className="text-sm text-muted-foreground">
-                First step: Manage your product
+                ขั้นตอนที่ 1: จัดการสินค้าของคุณ
               </p>
             </div>
             {dataQuery.data?.status === MerchantFormat.CLOSED ? (
-              <Badge>You are here</Badge>
+              <Badge>ขั้นตอนปัจจุบัน</Badge>
             ) : dataQuery.data?.status ===
               MerchantFormat.DISAPPROVAL ? (
-              <Badge>Send Credential Again</Badge>
+              <Badge>ส่งข้อมูลรับรองตัวตนอีกครั้ง</Badge>
             ) : undefined}
           </div>
           <div className="-mx-2 flex items-start space-x-4 rounded-md  p-2 text-accent-foreground transition-all">
             <AtSign className="mt-px h-5 w-5" />
             <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Second</p>
+              <p className="text-sm font-medium leading-none">ขั้นตอนที่ 2</p>
               <p className="text-sm text-muted-foreground">
-                Second step: Click button open store.
+                ขั้นตอนที่ 2: กดปุ่ม "เปิดร้าน"
               </p>
             </div>
           </div>
           <div
-            className={`-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all ${
-              dataQuery.data?.status === MerchantFormat.IN_PROGRESS
+            className={`-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all ${dataQuery.data?.status === MerchantFormat.IN_PROGRESS
                 ? "bg-accent"
                 : ""
-            } hover:bg-accent hover:text-accent-foreground`}
+              } hover:bg-accent hover:text-accent-foreground`}
           >
             <BellOff className="mt-px h-5 w-5" />
             <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Third</p>
+              <p className="text-sm font-medium leading-none">ขั้นตอนที่ 3</p>
               <p className="text-sm text-muted-foreground">
-                Third step: Wait for admin validate your store is fashion store.
+                ขั้นตอนที่ 3: รอให้ผู้ดูแลระบบตรวจสอบว่าร้านค้าของคุณเป็นร้านแฟชั่น
               </p>
             </div>
             {dataQuery.data?.status === MerchantFormat.IN_PROGRESS ? (
-              <Badge>In progress</Badge>
+              <Badge>กำลังดำเนินการ</Badge>
             ) : undefined}
           </div>
           <div
-            className={`-mx-2 flex items-start space-x-4 rounded-md p-2 ${
-              dataQuery.data?.status === MerchantFormat.APPROVED ||
-              dataQuery.data?.status === MerchantFormat.OPENED
+            className={`-mx-2 flex items-start space-x-4 rounded-md p-2 ${dataQuery.data?.status === MerchantFormat.APPROVED ||
+                dataQuery.data?.status === MerchantFormat.OPENED
                 ? "bg-accent"
                 : ""
-            } transition-all hover:bg-accent hover:text-accent-foreground`}
+              } transition-all hover:bg-accent hover:text-accent-foreground`}
           >
             <BellOff className="mt-px h-5 w-5" />
             <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Fourth</p>
+              <p className="text-sm font-medium leading-none">ขั้นตอนที่ 4</p>
               <p className="text-sm text-muted-foreground">
-                Fourth step: If validate success this button will show price and
-                you can click this button to pay for sale.
+              ขั้นตอนที่ 4: หากตรวจสอบสำเร็จ ปุ่มจะแสดงราคาและคุณสามารถคลิกปุ่มชำระค่าสมัครเปิดร้านเพื่อขายได้
               </p>
             </div>
             {dataQuery.data?.status === MerchantFormat.APPROVED ||
-            dataQuery.data?.status === MerchantFormat.OPENED ? (
-              <Badge>You are here</Badge>
+              dataQuery.data?.status === MerchantFormat.OPENED ? (
+              <Badge>ขั้นตอนปัจจุบัน</Badge>
             ) : undefined}
           </div>
         </CardContent>
         <CardFooter>
           {dataQuery.data?.status === MerchantFormat.CLOSED ||
-          dataQuery.data?.status === MerchantFormat.DISAPPROVAL ? (
+            dataQuery.data?.status === MerchantFormat.DISAPPROVAL ? (
             <OpenStoreDialog />
           ) : dataQuery.data?.status === MerchantFormat.APPROVED ? (
             <PaymentSubscriptionDialog />

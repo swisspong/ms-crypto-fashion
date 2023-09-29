@@ -112,7 +112,7 @@ export default function EditCategory() {
     data: {
       data: [
         {
-          id: "cat_test_id",
+          _id: "",
           image:
             "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80",
           amount: 20,
@@ -144,7 +144,7 @@ export default function EditCategory() {
     <Layout>
       <div className="space-between flex items-center mb-4">
         <div className="">
-          <h1 className="text-xl font-bold tracking-tight">Edit Category</h1>
+          <h1 className="text-xl font-bold tracking-tight">แก้ไขหมวดหมู่สินค้าภายในร้านค้า</h1>
         </div>
       </div>
       <Form {...form}>
@@ -153,7 +153,7 @@ export default function EditCategory() {
             <div className="col-span-3 grid gap-4">
               <Card>
                 <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl">Details</CardTitle>
+                  <CardTitle className="text-2xl">กรอกรายละเอียด</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                   <div className="grid gap-2">
@@ -162,10 +162,10 @@ export default function EditCategory() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Name</FormLabel>
+                          <FormLabel>หมวดหมู่</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Name (required)"
+                              placeholder="ชื่อหมวดหมู่"
                               disabled={isLoading}
                               {...field}
                             />
@@ -230,7 +230,7 @@ export default function EditCategory() {
                     {isLoading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : null}
-                    Save Changes
+                    บันทึกการเปลี่ยนแปลง
                   </Button>
                 </CardHeader>
               </Card>

@@ -7,14 +7,14 @@ const AlertInfoMerchant = () => {
   return (
     <Alert className="mb-2">
       <Terminal className="h-4 w-4" />
-      <AlertTitle>Heads up!</AlertTitle>
+      <AlertTitle>ข้อมูลเบื้องต้น!</AlertTitle>
       <AlertDescription>
-        Start opening a shop to create products. If ready to sell, then go to{" "}
+      เริ่มเปิดร้านเพื่อสร้างสรรค์สินค้า ถ้าพร้อมขายให้กด{" "}
         <Link
           href={"/subscription"}
           className="text-muted-foreground underline"
         >
-          subscription
+          สมัครเป็นผู้ขาย
         </Link>
       </AlertDescription>
     </Alert>

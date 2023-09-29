@@ -26,32 +26,32 @@ type SidebarProp = {
 // const prefix = "";
 export const sidebarItems: SidebarProp = [
   {
-    name: "Dashboard",
+    name: "แผงควบคุม",
     href: `/`,
     icon: LayoutGrid,
   },
   {
-    name: "Orders",
+    name: "รายการคำสั่งซื้อ",
     href: `/orders`,
     icon: User2,
   },
   {
-    name: "Categories",
+    name: "หมวดหมู่สินค้าภายในร้านค้า",
     href: `/categories`,
     icon: User2,
   },
   {
-    name: "Products",
+    name: "สินค้า",
     href: `/products`,
     icon: ListOrdered,
   },
   {
-    name: "Subscription",
+    name: "สมัครเปิดร้านค้า",
     href: `/subscription`,
     icon: ListOrdered,
   },
   {
-    name: "Setting",
+    name: "ตั้งค่าบัญชีร้านค้า",
     href: `/setting`,
     icon: Settings,
   },
@@ -92,7 +92,7 @@ export function Sidebar({ className }: SidebarProps) {
                 className="w-full justify-start"
               >
                 <LayoutTemplate className="mr-2 h-4 w-4" />
-                Storefront
+                หน้าร้านค้า
               </Button>
             </Link>
           </div>

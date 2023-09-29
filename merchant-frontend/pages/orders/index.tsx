@@ -79,19 +79,9 @@ export default function Orders() {
 
   return (
     <Layout>
-      <div className="space-between flex items-center mb-4">
-        <div className="ml-auto">
-          <Link href={"orders/add"} passHref>
-            <Button size={"lg"}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              {`Add Order`}
-            </Button>
-          </Link>
-        </div>
-      </div>
-
+      
       <DataTable
-        title="Orders"
+        title="รายการคำสั่งซื้อทั้งหมด"
         setPagination={setPagination}
         columns={columns({ openSheetHandler, setIdHandler, openDialogHandler })}
         data={dataQuery.data?.data ?? defaultData}

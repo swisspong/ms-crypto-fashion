@@ -70,9 +70,9 @@ const FileUploadArr: FC<Props> = ({ image_url = [], onChange, remove }) => {
         ) : (
           <>
             <Upload className="h-10 w-10 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold">No asset added</h3>
+            <h3 className="mt-4 text-lg font-semibold">ยังไม่มีการเพิ่มเนื้อหา</h3>
             <p className="mb-4 mt-2 text-sm text-muted-foreground">
-              You have not added any asset. Add one below.
+            คุณยังไม่ได้เพิ่มเนื้อหาใดๆ เพิ่มหนึ่งรายการด้านล่าง
             </p>
           </>
         )}
@@ -84,7 +84,7 @@ const FileUploadArr: FC<Props> = ({ image_url = [], onChange, remove }) => {
             onClick={() => fileRef.current?.click()}
           >
             <Plus className="mr-2 h-4 w-4" />
-            Add Asset
+            เพิ่มเนื้อหา  
           </Button>
           <Input
             className="hidden"

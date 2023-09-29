@@ -52,9 +52,9 @@ const AddressListDialog: FC<Props> = ({ selected, setAddressSelected }) => {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
-            <DialogTitle>Address information</DialogTitle>
+            <DialogTitle>ข้อมูลที่อยู่</DialogTitle>
             <DialogDescription>
-              Select your address here. Click save when you're done.
+              เลือกที่อยู่ของคุณที่นี่ คลิกบันทึกเมื่อคุณทำเสร็จแล้ว
             </DialogDescription>
           </DialogHeader>
           <div className="h-96">
@@ -89,7 +89,7 @@ const AddressListDialog: FC<Props> = ({ selected, setAddressSelected }) => {
         openHandler={(open) => setOpenEdit(open)}
       />
       <DeleteDialog
-        deleteHandler={() => {}}
+        deleteHandler={() => { }}
         isLoading={false}
         isSuccess={false}
         open={openDelete}

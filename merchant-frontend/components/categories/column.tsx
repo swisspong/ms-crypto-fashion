@@ -26,7 +26,7 @@ export const columns = ({
   const columns: ColumnDef<ICategoryRow>[] = [
     {
       accessorKey: "image",
-      header: () => <div>IMAGE</div>,
+      header: () => <div>รูปภาพ</div>,
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
           <img
@@ -45,7 +45,7 @@ export const columns = ({
     // },
     {
       accessorKey: "name",
-      header: () => <div>CATEGORY</div>,
+      header: () => <div>ชื่อหมวดหมู่</div>,
     },
     {
       id: "actions",
@@ -55,26 +55,26 @@ export const columns = ({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">เปิดเมนู</span>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuLabel>การกระทำ</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
                     navigator.clipboard.writeText(row.original.cat_id.toString());
                   }}
                 >
-                  Copy ID
+                  คัดลอกไอดี
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
 
                 <Link href={`categories/${row.original.cat_id}`} passHref>
                   <DropdownMenuItem>
                     <Edit className="w-4 h-4 mr-2" />
-                    Edit
+                    แก้ไข
                   </DropdownMenuItem>
                 </Link>
                 <DropdownMenuItem
@@ -85,7 +85,7 @@ export const columns = ({
                   }}
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
+                  ลบ
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -97,7 +97,7 @@ export default function AddCategory() {
     <Layout>
       <div className="space-between flex items-center mb-4">
         <div className="">
-          <h1 className="text-xl font-bold tracking-tight">Add Category</h1>
+          <h1 className="text-xl font-bold tracking-tight">เพิ่มหมวดหมู่สินค้าภายในร้านค้า</h1>
         </div>
       </div>
       <Form {...form}>
@@ -106,7 +106,7 @@ export default function AddCategory() {
             <div className="col-span-3 grid gap-4">
               <Card>
                 <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl">Details</CardTitle>
+                  <CardTitle className="text-2xl">กรอกรายละเอียด</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                   <div className="grid gap-2">
@@ -115,10 +115,10 @@ export default function AddCategory() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Name</FormLabel>
+                          <FormLabel>หมวดหมู่</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Name (required)"
+                              placeholder="ชื่อหมวดหมู่ (ต้องกรอก)"
                               disabled={isLoading}
                               {...field}
                             />
@@ -183,7 +183,7 @@ export default function AddCategory() {
                     {isLoading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : null}
-                    Save Changes
+                    บันทึก
                   </Button>
                 </CardHeader>
               </Card>

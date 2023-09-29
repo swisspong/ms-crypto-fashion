@@ -73,9 +73,9 @@ export function Menu() {
         <SelectTheme />
 
         <MenubarMenu>
-          <MenubarTrigger className="cursor-pointer">Account</MenubarTrigger>
+          <MenubarTrigger className="cursor-pointer">บัญชี</MenubarTrigger>
           <MenubarContent forceMount>
-            <MenubarLabel inset>Account</MenubarLabel>
+            <MenubarLabel inset>บัญชี</MenubarLabel>
             <MenubarSeparator />
             <MenubarRadioGroup value={`merchant`}>
               <MenubarRadioItem value={`merchant`}>
@@ -84,7 +84,7 @@ export function Menu() {
             </MenubarRadioGroup>
             <MenubarSeparator />
             <MenubarItem onClick={() => mutate()} disabled={logoutLoading}>
-              Signout
+              ออกจากระบบ
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>

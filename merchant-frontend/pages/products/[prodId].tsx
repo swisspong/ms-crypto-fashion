@@ -53,11 +53,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 const items = [
   {
     id: "credit",
-    label: "Pay with credit card",
+    label: "ชำระด้วย credit card",
   },
   {
     id: "wallet",
-    label: "Pay with metamask wallet",
+    label: "ชำระด้วย metamask wallet",
   },
 ] as const;
 const formSchema = z.object({
@@ -189,15 +189,15 @@ export default function EditProduct() {
     <Layout>
       <div className="space-between flex items-center mb-4">
         <div className="">
-          <h1 className="text-xl font-bold tracking-tight">Edit Product</h1>
+          <h1 className="text-xl font-bold tracking-tight">แก้ไขข้อมูลสินค้า</h1>
         </div>
       </div>
 
       <Tabs defaultValue="product">
         <div className="space-between flex items-center">
           <TabsList>
-            <TabsTrigger value="product">Product</TabsTrigger>
-            <TabsTrigger value="variants">Variants</TabsTrigger>
+            <TabsTrigger value="product">สินค้า</TabsTrigger>
+            <TabsTrigger value="variants">ส่วนเสริม</TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="product" className="border-none p-0 outline-none">
@@ -207,7 +207,7 @@ export default function EditProduct() {
                 <div className="col-span-3 grid gap-4">
                   <Card>
                     <CardHeader className="space-y-1">
-                      <CardTitle className="text-2xl">Details</CardTitle>
+                      <CardTitle className="text-2xl">รายละเอียด</CardTitle>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2 col-span-2">
@@ -216,11 +216,11 @@ export default function EditProduct() {
                           name="name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Name</FormLabel>
+                              <FormLabel>สินค้า</FormLabel>
                               <FormControl>
                                 <Input
                                   disabled={isLoading}
-                                  placeholder="Name (required)"
+                                  placeholder="ชื่อสินค้า"
                                   {...field}
                                 />
                               </FormControl>
@@ -239,7 +239,7 @@ export default function EditProduct() {
                               <FormControl>
                                 <Input
                                   disabled={isLoading}
-                                  placeholder="SKU (required)"
+                                  placeholder="SKU"
                                   {...field}
                                 />
                               </FormControl>
@@ -254,7 +254,7 @@ export default function EditProduct() {
                           name="stock"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Stock</FormLabel>
+                              <FormLabel>จำนวนสินค้า</FormLabel>
                               <FormControl>
                                 <Input
                                   type="number"
@@ -282,7 +282,7 @@ export default function EditProduct() {
                           name="price"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Price</FormLabel>
+                              <FormLabel>ราคา</FormLabel>
                               <FormControl>
                                 <Input
                                   type="number"
@@ -309,11 +309,11 @@ export default function EditProduct() {
                           name="description"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Description</FormLabel>
+                              <FormLabel>รายละเอียดสินค้า</FormLabel>
                               <FormControl>
                                 <Textarea
                                   disabled={isLoading}
-                                  placeholder="Tell us a little bit about your category"
+                                  placeholder="บอกเราสักเล็กน้อยเกี่ยวกับสินค้าของคุณ"
                                   className="resize-none"
                                   {...field}
                                 />
@@ -327,7 +327,7 @@ export default function EditProduct() {
                   </Card>
                   <Card>
                     <CardHeader className="space-y-1">
-                      <CardTitle className="text-2xl">Payment method</CardTitle>
+                      <CardTitle className="text-2xl">วิธีการชำระเงิน</CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                       <div className="grid gap-2">
@@ -384,7 +384,7 @@ export default function EditProduct() {
                   </Card>
                   <Card>
                     <CardHeader className="space-y-1">
-                      <CardTitle className="text-2xl">Asset</CardTitle>
+                      <CardTitle className="text-2xl">เนื้อหารูปภาพสินค้า</CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                       <div className="grid gap-2">
@@ -393,7 +393,6 @@ export default function EditProduct() {
                           name="image_urls"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Image</FormLabel>
                               <FormControl>
                                 <FileUploadArr
                                   onChange={field.onChange}
@@ -421,7 +420,7 @@ export default function EditProduct() {
                         {isLoading ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : null}
-                        Save Changes
+                        บันทึกการเปลี่ยนแปลง
                       </Button>
                       <FormField
                         control={form.control}
@@ -437,7 +436,7 @@ export default function EditProduct() {
                                 />
 
                                 <FormLabel className="items-center">
-                                  Available
+                                {field.value === true ? "เปิดขายสินค้า" : "ปิดการขายสินค้า"}
                                 </FormLabel>
                               </div>
                             </FormControl>
@@ -479,7 +478,7 @@ export default function EditProduct() {
                         name="categories"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Category Main</FormLabel>
+                            <FormLabel>หมวดหมู่สินค้าภายในเว็บไซต์</FormLabel>
                             <Select
                               value="init"
                               onValueChange={(val) => {
@@ -498,12 +497,12 @@ export default function EditProduct() {
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select a category" />
+                                  <SelectValue placeholder="เลือกหมวดหมู่สินค้า" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
                                 <SelectItem value={"init"}>
-                                  Select a category
+                                  เลือกหมวดหมู่สินค้า
                                 </SelectItem>
                                 {dataQeury.data?.data
                                   .filter((item) => {
@@ -563,7 +562,7 @@ export default function EditProduct() {
                         name="categories"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Category</FormLabel>
+                            <FormLabel>หมวดหมู่สินค้าภายในร้านค้า</FormLabel>
                             <Select
                               //onValueChange={field.onChange}
                               onValueChange={(val) => {
@@ -583,12 +582,12 @@ export default function EditProduct() {
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select a category" />
+                                  <SelectValue placeholder="เลือกหมวดหมู่สินค้า" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
                                 <SelectItem value={"init"}>
-                                  Select a category
+                                  เลือกหมวดหมู่สินค้า
                                 </SelectItem>
                                 {categories?.data
                                   .filter((item) => {

@@ -71,7 +71,7 @@ export function PaymentMethod({ data, address }: Props) {
   useEffect(() => {
     if (checkoutOrderMutate.isSuccess) {
       if (checkoutOrderMutate.data.chkt) {
-        
+
       } else {
 
         router.replace("/account/orders");
@@ -120,9 +120,9 @@ export function PaymentMethod({ data, address }: Props) {
   ) : (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle>Payment Method</CardTitle>
+        <CardTitle>วิธีการชำระเงิน</CardTitle>
         <CardDescription>
-          Add a new payment method to your account.
+          เลือกวิธีการชำระเงินของคุณ
         </CardDescription>
       </CardHeader>
 
@@ -180,11 +180,11 @@ export function PaymentMethod({ data, address }: Props) {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>ชื่อ</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder="Name"
+                        placeholder="ชื่อภายในบัตร (ต้องกรอก)"
                         disabled={tokenLoading}
                       />
                     </FormControl>
@@ -201,7 +201,7 @@ export function PaymentMethod({ data, address }: Props) {
                 name="number"
                 render={({ field }) => (
                   <FormItem className="">
-                    <FormLabel>Card Number</FormLabel>
+                    <FormLabel>หมายเลขบัตร</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -220,31 +220,27 @@ export function PaymentMethod({ data, address }: Props) {
                   control={form.control}
                   name="expiration_month"
                   render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel>Expires</FormLabel>
-                      <Select
-                        disabled={tokenLoading}
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                    <FormItem className="grid gap-2">
+                      <FormLabel>เดือนหมดอายุบัตร</FormLabel>
+                      <Select disabled={ tokenLoading} onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger id="month">
-                            <SelectValue placeholder="Month" />
+                            <SelectValue placeholder="เลือกเดือน" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="1">January(1)</SelectItem>
-                          <SelectItem value="2">February(2)</SelectItem>
-                          <SelectItem value="3">March(3)</SelectItem>
-                          <SelectItem value="4">April(4)</SelectItem>
-                          <SelectItem value="5">May(5)</SelectItem>
-                          <SelectItem value="6">June(6)</SelectItem>
-                          <SelectItem value="7">July(7)</SelectItem>
-                          <SelectItem value="8">August(8)</SelectItem>
-                          <SelectItem value="9">September(9)</SelectItem>
-                          <SelectItem value="10">October(10)</SelectItem>
-                          <SelectItem value="11">November(11)</SelectItem>
-                          <SelectItem value="12">December(12)</SelectItem>
+                          <SelectItem value="1">มกราคม(1)</SelectItem>
+                          <SelectItem value="2">กุมภาพันธ์ (2)</SelectItem>
+                          <SelectItem value="3">มีนาคม(3)</SelectItem>
+                          <SelectItem value="4">เมษายน(4)</SelectItem>
+                          <SelectItem value="5">พฤษภาคม(5)</SelectItem>
+                          <SelectItem value="6">มิถุนายน (6)</SelectItem>
+                          <SelectItem value="7">กรกฎาคม (7)</SelectItem>
+                          <SelectItem value="8">สิงหาคม(8)</SelectItem>
+                          <SelectItem value="9">กันยายน(9)</SelectItem>
+                          <SelectItem value="10">ตุลาคม (10)</SelectItem>
+                          <SelectItem value="11">พฤศจิกายน (11)</SelectItem>
+                          <SelectItem value="12">ธันวาคม(12)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -257,27 +253,25 @@ export function PaymentMethod({ data, address }: Props) {
                   control={form.control}
                   name="expiration_year"
                   render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel>Year</FormLabel>
-                      <Select
-                        disabled={tokenLoading}
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                    <FormItem className="grid gap-2">
+                      <FormLabel>ปีหมดอายุบัตร</FormLabel>
+                      <Select disabled={ tokenLoading} onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger id="year">
-                            <SelectValue placeholder="Year" />
+                            <SelectValue placeholder="เลือกปี" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Array.from({ length: 15 }, (_, i) => (
-                            <SelectItem
-                              key={i}
-                              value={`${new Date().getFullYear() + i}`}
-                            >
-                              {new Date().getFullYear() + i}
-                            </SelectItem>
-                          ))}
+                          {Array.from({ length: 10 }, (_, i) => {
+                            const currentYear = new Date().getFullYear() + i;
+                            const buddhistYear = currentYear + 543; // แปลงเป็นพ.ศ.
+
+                            return (
+                              <SelectItem key={i} value={`${currentYear}`}>
+                                {`${buddhistYear} / ${currentYear}`}
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -312,7 +306,7 @@ export function PaymentMethod({ data, address }: Props) {
               type="submit"
               disabled={data?.items.some((item) => item.message) || !address}
             >
-              Continue
+              ดำเนินการต่อ
             </Button>
           </CardFooter>
         </form>

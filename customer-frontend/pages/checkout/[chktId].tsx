@@ -111,13 +111,13 @@ const CheckoutPage = () => {
                   <CardContent className="pt-6">
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="text-lg font-medium">Address</h3>
+                        <h3 className="text-lg font-medium">ที่อยู่</h3>
                         <p className="text-sm text-muted-foreground">
-                          This is how others will see you on the site.
+                          เพิ่มที่อยู่ของคุณเพื่อดำเนินการชำระเงินให้สำเร็จ
                         </p>
                       </div>
                       <Link href={"/account/address"}>
-                        <Button variant="outline">Add Address</Button>
+                        <Button variant="outline">เพิ่มที่อยู่</Button>
                       </Link>
                       {/* <AddAddressForm /> */}
                     </div>
@@ -143,7 +143,7 @@ const CheckoutPage = () => {
               </Card> */}
               {getCheckout.data?.items?.length === 0 && (
                 <p className="text-neutral-500 flex justify-center">
-                  No items added to cart.
+                  ไม่มีสินค้าเพิ่มลงในรถเข็น
                 </p>
               )}
               {getCheckout.data?.items?.map((item) => (
@@ -158,12 +158,12 @@ const CheckoutPage = () => {
             <div className="lg:col-span-5">
               <div className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6  lg:mt-0 lg:p-8">
                 <h2 className="text-lg font-medium text-gray-900">
-                  Order summary
+                  สรุปการสั่งซื้อ
                 </h2>
                 <div className="mt-6 space-y-4">
                   <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                     <div className="text-base font-medium text-gray-900">
-                      Order total quantity
+                      จำนวนสั่งซื้อรวม
                     </div>
                     <div className="font-semibold">
                       {getCheckout.data?.total_quantity}
@@ -171,7 +171,7 @@ const CheckoutPage = () => {
                   </div>
                   <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                     <div className="text-base font-medium text-gray-900">
-                      Order total
+                      ยอดรายการสั่งซื้อรวม
                     </div>
                     <Currency value={getCheckout.data?.total} />
                   </div>

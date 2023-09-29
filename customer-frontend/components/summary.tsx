@@ -33,11 +33,11 @@ const Summary: FC<Props> = ({
   };
   return (
     <div className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
-      <h2 className="text-lg font-medium text-gray-900">Items summary</h2>
+      <h2 className="text-lg font-medium text-gray-900">สรุปรายการในรถเข็น</h2>
       <div className="mt-6 space-y-4">
         <div className="border-t border-gray-200 space-y-4 pt-4">
           <div className="text-base font-medium text-gray-900 ">
-            Payment method
+            วิธีการชำระเงิน
           </div>
           <div className="items-top flex space-x-2">
             <Checkbox
@@ -52,7 +52,7 @@ const Summary: FC<Props> = ({
                 htmlFor="normal"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                Pay with credit card
+                ชำระเงินด้วย credit card
               </label>
               {/* <p className="text-sm text-muted-foreground">
             You agree to our Terms of Service and Privacy Policy.
@@ -72,7 +72,7 @@ const Summary: FC<Props> = ({
                 htmlFor="wallet"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                Pay with metamask wallet
+                ชำระเงินด้วย metamask wallet
               </label>
               {/* <p className="text-sm text-muted-foreground">
             You agree to our Terms of Service and Privacy Policy.
@@ -83,7 +83,7 @@ const Summary: FC<Props> = ({
       </div>
       <div className="mt-6 space-y-4">
         <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-          <div className="text-base font-medium text-gray-900">Items total</div>
+          <div className="text-base font-medium text-gray-900">รายการทั้งหมด</div>
           <Currency
             value={data
               ?.filter((item) =>
@@ -115,7 +115,7 @@ const Summary: FC<Props> = ({
         }
         className="w-full mt-6"
       >
-        Checkout
+        เช็คเอาท์
       </Button>
     </div>
   );

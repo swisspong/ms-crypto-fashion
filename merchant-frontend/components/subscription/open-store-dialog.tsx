@@ -56,13 +56,13 @@ const OpenStoreDialog = () => {
       {!credentialMutate.isSuccess && (
         <Dialog >
           <DialogTrigger asChild>
-            <Button className="w-full">Open Store</Button>
+            <Button className="w-full">เปิดร้าน</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[625px]">
             <DialogHeader>
-              <DialogTitle>Credential open store</DialogTitle>
+              <DialogTitle>คำร้องเปิดร้านค้า</DialogTitle>
               <DialogDescription>
-                Make changes to your credential here. Click save when you're done.
+                กรอกข้อมูลรับรองตัวตนเพื่อยืนยันร้านค้า กดบันทึกเมื่อกรอกข้อมูลเสร็จสิ้น 
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -74,9 +74,9 @@ const OpenStoreDialog = () => {
                       name="first_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>First name</FormLabel>
+                          <FormLabel>ชื่อ</FormLabel>
                           <FormControl>
-                            <Input placeholder="First name (required)" {...field} />
+                            <Input placeholder="ชื่อ (ต้องกรอก)" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -89,9 +89,9 @@ const OpenStoreDialog = () => {
                       name="last_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Last name</FormLabel>
+                          <FormLabel>นามสกุล</FormLabel>
                           <FormControl>
-                            <Input placeholder="Last name (required)" {...field} />
+                            <Input placeholder="นามสกุล (ต้องกรอก)" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -104,7 +104,7 @@ const OpenStoreDialog = () => {
                       name="image_url"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>ID card image</FormLabel>
+                          <FormLabel>รูปบัตรประจำตัวประชาชน</FormLabel>
                           <FormControl>
                             <FileUploadOne
                               onChange={field.onChange}
@@ -120,7 +120,7 @@ const OpenStoreDialog = () => {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Save changes</Button>
+                  <Button type="submit">บันทึก</Button>
                 </DialogFooter>
               </form>
             </Form>

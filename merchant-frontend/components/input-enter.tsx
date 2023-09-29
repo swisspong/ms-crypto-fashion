@@ -74,7 +74,7 @@ const InputEnter: FC<Props> = ({ cb, control, index }) => {
       ))}
       <input
         className="outline-none placeholder:text-muted-foreground bg-transparent text-sm"
-        placeholder="Option (required)"
+        placeholder="ชื่อตัวเลือก (ต้องกรอก)"
         onKeyDown={handleKeyDown}
         onChange={(e) => setValue(e.target.value)}
         value={value}

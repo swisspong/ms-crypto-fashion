@@ -42,12 +42,12 @@ const CartPage = () => {
       <Navbar />
       <Container>
         <div className="px-4 py-16 sm:px-6 lg:px-8 min-h-screen">
-          <h1 className="text-3xl font-bold text-black">Shopping Cart</h1>
+          <h1 className="text-3xl font-bold text-black">รถเข็น</h1>
           <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start gap-x-12">
             <div className="lg:col-span-7">
               {data?.items?.length === 0 && (
                 <p className="text-neutral-500 flex justify-center">
-                  No items added to cart.
+                  ไม่มีสินค้าเพิ่มลงในรถเข็น
                 </p>
               )}
               {data
