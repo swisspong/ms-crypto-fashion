@@ -116,7 +116,7 @@ const SelectListNew: FC<SelectProps> = ({
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue
-                      placeholder={`Select a ${
+                      placeholder={`เลือก ${
                         // groups.find(
                         //   (group) => group.vgrp_id === fieldItem.vrnt_id
                         // )?.group_name

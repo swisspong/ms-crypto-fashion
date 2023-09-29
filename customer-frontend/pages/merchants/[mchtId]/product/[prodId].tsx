@@ -104,8 +104,8 @@ const ProductStorefrontPage = () => {
     if (compSuccess) setOpen(false)
   }, [compSuccess])
 
-  
-  
+
+
   return (
     <div className="bg-white">
       <Navbar />
@@ -136,35 +136,35 @@ const ProductStorefrontPage = () => {
                 <Dialog open={open}>
                   <Button variant="ghost" size="sm" onClick={() => {
                     setOpen(true)
-                  }} className="text-xs text-muted-foreground">Report</Button>
+                  }} className="text-xs text-muted-foreground">รายงาน</Button>
                   <DialogContent>
                     <form onSubmit={handlerComplaintSubmit}>
                       <DialogHeader>
-                        <DialogTitle>Report product</DialogTitle>
+                        <DialogTitle>รายงาน</DialogTitle>
                         <DialogDescription>
-                          Describe the problem of the product
+                          อธิบายปัญหาของสินค้าหรือร้านค้า
                         </DialogDescription>
                       </DialogHeader>
                       <div className="mt-4">
                         <Select onValueChange={handleSelect}>
                           <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select type report" />
+                            <SelectValue placeholder="เลือกประเภทการรายงาน" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value={TypeFormat.MERCHANT}>{TypeFormat.MERCHANT}</SelectItem>
-                            <SelectItem value={TypeFormat.PRODUCT}>{TypeFormat.PRODUCT}</SelectItem>
+                            <SelectItem value={TypeFormat.MERCHANT}>ร้านค้า</SelectItem>
+                            <SelectItem value={TypeFormat.PRODUCT}>สินค้า</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="report">Detail</Label>
-                          <Textarea onChange={handlerComplainChange} placeholder="Type your message here." />
+                          <Label htmlFor="report">รายละเอียด</Label>
+                          <Textarea onChange={handlerComplainChange} placeholder="กรุณาอธิบายปัญหาเพื่อให้เราทราบ" />
                         </div>
                       </div>
                       <DialogFooter>
-                        <Button type="button" onClick={() => { setOpen(false) }}>Close</Button>
-                        <Button variant="destructive" type="submit">Report</Button>
+                        <Button type="button" onClick={() => { setOpen(false) }}>ปิด</Button>
+                        <Button variant="destructive" type="submit">รายงาน</Button>
                       </DialogFooter>
                     </form>
                   </DialogContent>
@@ -197,7 +197,7 @@ const ProductStorefrontPage = () => {
             </div>
           </div>
           <hr className="my-10" />
-          <h4 className="text-lg font-bold leading-none">Comments</h4>
+          <h4 className="text-lg font-bold leading-none">ความคิดเห็น</h4>
           {commentData?.map((comment) => {
             // console.log(comment.created_at)
             const commentDate = new Date(comment.created_at);
@@ -211,7 +211,7 @@ const ProductStorefrontPage = () => {
             return (
               <>
                 <div className="bg-white p-4 rounded-lg shadow-xl mb-4">
-                  
+
                   {[1, 2, 3, 4, 5].map((value) => (
                     <button
                       key={value}
@@ -229,13 +229,13 @@ const ProductStorefrontPage = () => {
                   {me?.mcht_id === undefined ? (<></>) : me.mcht_id !== (router.query.mchtId as string) ? (<></>) : comment.message === undefined ? (<>
                     <Popover >
                       <PopoverTrigger asChild className="m-4">
-                        <Button variant="ghost"><MessageCircle className="mr-3" /> reply to comment.</Button>
+                        <Button variant="ghost"><MessageCircle className="mr-3" />ตอบกลับความคิดเห็น.</Button>
                       </PopoverTrigger>
                       <PopoverContent className=" sm:w-60 md:w-98   " >
                         <div className="grid gap-4">
                           <div className="space-y-2">
                             <p className="text-sm text-muted-foreground">
-                              Reply to customer comments.
+                              ตอบกลับความคิดเห็นลูกค้า
                             </p>
                           </div>
                           <form onSubmit={handleReplySubmit}>
@@ -250,7 +250,7 @@ const ProductStorefrontPage = () => {
                               </div>
                             </div>
                             <div className="text-right">
-                              <Button className="mt-3" type="submit">Reply</Button>
+                              <Button className="mt-3" type="submit">ตอบกลับ</Button>
                             </div>
                           </form>
                         </div>

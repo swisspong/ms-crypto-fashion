@@ -98,7 +98,7 @@ const Info: React.FC<InfoProps> = ({
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success("Add to cart success.");
+      toast.success("เพิ่มลงตะกร้าสำเร็จ");
     }
   }, [isSuccess]);
 
@@ -326,7 +326,7 @@ const Info: React.FC<InfoProps> = ({
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>{group.name}</SelectLabel>
-                  <SelectItem value="">Please select</SelectItem>
+                  <SelectItem value="">กรุณาเลือก</SelectItem>
                   {group.options.map((option) => (
                     <SelectItem
                       disabled={
@@ -399,7 +399,7 @@ const Info: React.FC<InfoProps> = ({
           </div>
         ))}
         <div className="flex items-center gap-x-4">
-          <h3 className="font-semibold text-black">Quantity:</h3>
+          <h3 className="font-semibold text-black">จำนวนสินค้า:</h3>
           <Input
             type="number"
             max={
@@ -436,14 +436,14 @@ const Info: React.FC<InfoProps> = ({
           disabled={disableButtonHandler()}
           className="flex items-center gap-x-2"
         >
-          Add To Cart
+          เพิ่มเข้าตะกร้า
           <ShoppingCart size={20} />
         </Button>
       </div>
       <hr className="my-10" />
       <div className="mt-10  gap-x-3">
         <h3 className="font-semibold text-xl text-black underline">
-          Description
+          รายละเอียดสินค้า
         </h3>
         <p className="mt-2 text-muted-foreground">{data?.description}</p>
         {/* <Button className="flex items-center gap-x-2">

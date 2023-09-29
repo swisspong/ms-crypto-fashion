@@ -40,7 +40,7 @@ const CartItem: React.FC<CartItemProps> = ({
   const editMutate = useEditItemCart();
   useEffect(() => {
     if (isSuccess) {
-      toast.success("Remove item success!");
+      toast.success("ลบรายการสำเร็จ!");
     }
   }, [isSuccess]);
   return (
@@ -222,7 +222,7 @@ const CartItem: React.FC<CartItemProps> = ({
                 <Minus className="h-4 w-4 cursor-pointer" />
               </Button>
               <div className=" border rounded-md p-2">
-                in stock{" "}
+                สินค้าในคลัง{" "}
                 {data.vrnt_id
                   ? data.product.variants.find(
                       (vrnt) => vrnt.vrnt_id === data.vrnt_id
@@ -235,7 +235,7 @@ const CartItem: React.FC<CartItemProps> = ({
             <span>= {data.product.price * data.quantity}</span> */}
             </div>
             <div className="flex  space-x-2 py-1">
-              <span className="font-medium">Payment:</span>
+              <span className="font-medium">การชำระเงิน:</span>
               {data.product.payment_methods.map((payment) =>
                 payment === PaymentMethodFormat.CREDIT ? (
                   <CreditCard />

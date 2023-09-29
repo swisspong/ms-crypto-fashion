@@ -86,7 +86,7 @@ const FormCommentDialog: FC<Props> = ({
       prod_id,
     }));
 
-    // commentHandler(reviews)
+    commentHandler(reviews)
 
 
   }
@@ -153,10 +153,10 @@ const FormCommentDialog: FC<Props> = ({
             ))}
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
             <Button type="submit" disabled={isRating || isLoading}>{isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}Save changes</Button>
+            ) : null}แสดงความคิดเห็น</Button>
 
           </AlertDialogFooter>
         </form>

@@ -80,8 +80,7 @@ const AlertOpentMerchant = () => {
         <DialogHeader>
           <DialogTitle>เริ่มเปิดร้านค้า</DialogTitle>
           <DialogDescription>
-            Start opening a shop to create products. If it's ready to sell, you
-            have to pay monthly.
+            เริ่มเปิดร้านเพื่อสร้างสรรค์สินค้า ถ้าพร้อมขายแล้วต้องจ่ายรายเดือน
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -92,11 +91,11 @@ const AlertOpentMerchant = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Shop name</FormLabel>
+                    <FormLabel>ร้านค้า</FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        placeholder="Shop name (required)"
+                        placeholder="ชื่อร้านค้า (ต้องกรอก)"
                         {...field}
                       />
                     </FormControl>
@@ -109,11 +108,11 @@ const AlertOpentMerchant = () => {
                 name="banner_title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Shop title</FormLabel>
+                    <FormLabel>สโลแกน</FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        placeholder="Shop title (required)"
+                        placeholder="บรรยายร้านค้าของคุณให้เรารู้ (ต้องกรอก)"
                         {...field}
                       />
                     </FormControl>
@@ -128,13 +127,13 @@ const AlertOpentMerchant = () => {
                 variant={"outline"}
                 onClick={() => router.back()}
               >
-                Cancel
+                ยกเลิก
               </Button>
               <Button disabled={isLoading} type="submit">
                 {isLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
-                Save changes
+                บันทึก
               </Button>
             </DialogFooter>
           </form>

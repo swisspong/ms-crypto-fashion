@@ -134,7 +134,7 @@ const VariantAllForm = () => {
 
   useEffect(() => {
     if (upsertSuccess) {
-      toast.success("Save data successfully");
+      toast.success("บันทึกข้อมูลเรียบร้อยแล้ว");
       refetch();
     }
   }, [upsertSuccess]);
@@ -283,7 +283,7 @@ const VariantAllForm = () => {
               <CardHeader className="space-y-1 flex justify-between">
                 <div className="flex justify-between">
                   <p className="font-semibold tracking-tight text-2xl">
-                    Groups
+                    กลุ่มสินค้า
                   </p>
                   <Button
                     size={"sm"}
@@ -297,7 +297,7 @@ const VariantAllForm = () => {
                     }
                   >
                     <PlusCircle className="mr-2 h-4 w-4" />
-                    {`Add Group`}
+                    {`เพิ่มกลุ่มสินค้า`}
                   </Button>
                 </div>
               </CardHeader>
@@ -333,10 +333,10 @@ const VariantAllForm = () => {
                         name={`groups.${index}.name`}
                         render={({ field, fieldState }) => (
                           <FormItem>
-                            <FormLabel>Group</FormLabel>
+                            <FormLabel>กลุ่มสินค้า</FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Group (required)"
+                                placeholder="ชื่อกลุ่มสินค้า (ต้องกรอก)"
                                 {...field}
                               />
                             </FormControl>
@@ -357,7 +357,7 @@ const VariantAllForm = () => {
                     <div className="grid gap-2" key={item.id}>
                       <div className="space-y-2">
                         <span className="text-sm font-medium leading-none">
-                          Options
+                          ตัวเลือก
                         </span>
                         <div className="flex w-full space-x-2">
                           <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-2 flex gap-1 flex-wrap grow">
@@ -434,7 +434,7 @@ const VariantAllForm = () => {
               <CardHeader className="space-y-1 flex justify-between">
                 <div className="flex justify-between">
                   <p className="font-semibold tracking-tight text-2xl">
-                    Variants
+                    ส่วนเสริมรูปแบบ
                   </p>
                   <Button
                     size={"sm"}
@@ -455,7 +455,7 @@ const VariantAllForm = () => {
                     }
                   >
                     <PlusCircle className="mr-2 h-4 w-4" />
-                    {`Add Variant`}
+                    {`เพิ่มรูปแบบ`}
                   </Button>
                 </div>
               </CardHeader>
@@ -488,7 +488,7 @@ const VariantAllForm = () => {
                     <div className="grid col-span-2 gap-2">
                       <div className="space-y-2">
                         <span className="text-sm font-medium leading-none">
-                          Varaint
+                          ส่วนเสริมรูปแบบ
                         </span>
                         <div className="flex w-full space-x-2">
                           <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-2 flex gap-1 flex-wrap grow">
@@ -509,11 +509,11 @@ const VariantAllForm = () => {
                         //name={`groups.${index}.name`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Price Plus</FormLabel>
+                            <FormLabel>ราคา</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
-                                placeholder="Price (required)"
+                                placeholder="จำนวนราคา (ต้องกรอก)"
                                 {...field}
                                 onChange={(e) =>
                                   field.onChange(
@@ -536,11 +536,11 @@ const VariantAllForm = () => {
                             //name={`groups.${index}.name`}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Quantity</FormLabel>
+                                <FormLabel>จำนวนสินค้า</FormLabel>
                                 <FormControl>
                                   <Input
                                     type={"number"}
-                                    placeholder="Quantity optional"
+                                    placeholder="จำนวนสินค้า"
                                     {...field}
                                     onChange={(e) =>
                                       field.onChange(
@@ -560,12 +560,12 @@ const VariantAllForm = () => {
                               variant="ghost"
                               className="h-8 w-8 p-0 self-center"
                             >
-                              <span className="sr-only">Open menu</span>
+                              <span className="sr-only">เปิดเมนู</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuLabel>การกระทำ</DropdownMenuLabel>
                             {field.vrnt_id ? (
                               <DropdownMenuItem
                                 disabled={form.formState.isDirty}
@@ -581,7 +581,7 @@ const VariantAllForm = () => {
                                   }
                                 }}
                               >
-                                Advanced
+                                เพิ่มขั้นสูง
                               </DropdownMenuItem>
                             ) : null}
 
@@ -595,7 +595,7 @@ const VariantAllForm = () => {
                               }}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
+                              ลบ
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -657,11 +657,11 @@ const VariantAllForm = () => {
                         setIds([]);
                       }}
                     >
-                      Cancel
+                      ยกเลิก
                     </Button>
                   ) : null}
                   <Button type="submit" className="">
-                    Save Changes
+                    บันทึก
                   </Button>
                 </div>
               </CardFooter>

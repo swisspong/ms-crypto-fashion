@@ -66,16 +66,16 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
             </div>
           </div>
         ) : // <div id={url} className="relative w-full h-full bg-black">
-        //   <img  src={url} className="col-span-1 rounded-md" />
-        //   <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5 top-0">
-        //     <div className="flex gap-x-6 justify-center">
-        //       <Button>
-        //         <Expand size={20} className="text-gray-600" />
-        //       </Button>
-        //     </div>
-        //   </div>
-        // </div>
-        null}
+          //   <img  src={url} className="col-span-1 rounded-md" />
+          //   <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5 top-0">
+          //     <div className="flex gap-x-6 justify-center">
+          //       <Button>
+          //         <Expand size={20} className="text-gray-600" />
+          //       </Button>
+          //     </div>
+          //   </div>
+          // </div>
+          null}
       </div>
       <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center py-4">
         {image_url ? (
@@ -83,9 +83,9 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
         ) : (
           <>
             <Upload className="h-10 w-10 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold">No asset added</h3>
+            <h3 className="mt-4 text-lg font-semibold">ยังไม่มีการเพิ่มเนื้อหา</h3>
             <p className="mb-4 mt-2 text-sm text-muted-foreground">
-              You have not added any asset. Add one below.
+              คุณยังไม่ได้เพิ่มเนื้อหาใดๆ เพิ่มหนึ่งรายการด้านล่าง
             </p>
           </>
         )}
@@ -97,7 +97,7 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
             onClick={() => fileRef.current?.click()}
           >
             <Plus className="mr-2 h-4 w-4" />
-            Add Asset
+            เพิ่มเนื้อหา
           </Button>
           <Input
             className="hidden"
@@ -107,7 +107,7 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
             // disabled={isLoading}
             accept="image/png, image/gif, image/jpeg"
             onChange={handleChange}
-            // onChange={handleFileChange}
+          // onChange={handleFileChange}
           />
         </label>
       </div>

@@ -50,11 +50,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 const items = [
   {
     id: "credit",
-    label: "Pay with credit card",
+    label: "ชำระด้วย credit card",
   },
   {
     id: "wallet",
-    label: "Pay with metamask wallet",
+    label: "ชำระด้วย metamask wallet",
   },
 ] as const;
 const formSchema = z.object({
@@ -77,10 +77,10 @@ const formSchema = z.object({
     .min(1, { message: "Must have at least 1 image" }),
   categories: z
     .array(z.object({ cat_id: z.string() })),
-    // .min(1, { message: "Must have at least 1 category" }),
+  // .min(1, { message: "Must have at least 1 category" }),
   categories_web: z
     .array(z.object({ cat_id: z.string() })),
-    // .min(1, { message: "Must have at least 1 category" }),
+  // .min(1, { message: "Must have at least 1 category" }),
   available: z.boolean(),
   payment_methods: z
     .array(z.string())
@@ -161,16 +161,16 @@ export default function AddProduct() {
     <Layout>
       <div className="space-between flex items-center mb-4">
         <div className="">
-          <h1 className="text-xl font-bold tracking-tight">Add Product</h1>
+          <h1 className="text-xl font-bold tracking-tight">เพิ่มสินค้า</h1>
         </div>
       </div>
 
       <Tabs defaultValue="product">
         <div className="space-between flex items-center">
           <TabsList>
-            <TabsTrigger value="product">Product</TabsTrigger>
+            <TabsTrigger value="product">สินค้า</TabsTrigger>
             <TabsTrigger value="podcasts" disabled>
-              Variants
+              ส่วนเสริม
             </TabsTrigger>
           </TabsList>
         </div>
@@ -181,7 +181,7 @@ export default function AddProduct() {
                 <div className="col-span-3 grid gap-4">
                   <Card>
                     <CardHeader className="space-y-1">
-                      <CardTitle className="text-2xl">Details</CardTitle>
+                      <CardTitle className="text-2xl">รายละเอียด</CardTitle>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2 col-span-2">
@@ -190,10 +190,10 @@ export default function AddProduct() {
                           name="name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Name</FormLabel>
+                              <FormLabel>สินค้า</FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="Name (required)"
+                                  placeholder="ชื่อสินค้า (ต้องกรอก)"
                                   disabled={isLoading}
                                   {...field}
                                 />
@@ -209,10 +209,10 @@ export default function AddProduct() {
                           name="sku"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Sku</FormLabel>
+                              <FormLabel>SKU</FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="SKU (required)"
+                                  placeholder="SKU (ต้องกรอก)"
                                   disabled={isLoading}
                                   {...field}
                                 />
@@ -228,7 +228,7 @@ export default function AddProduct() {
                           name="stock"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Stock</FormLabel>
+                              <FormLabel>จำนวนสินค้า</FormLabel>
                               <FormControl>
                                 <Input
                                   type="number"
@@ -239,7 +239,7 @@ export default function AddProduct() {
                                       Number(allowOnlyNumber(e.target.value))
                                     )
                                   }
-                                  // disabled={addLoading || updateLoading}
+                                // disabled={addLoading || updateLoading}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -253,7 +253,7 @@ export default function AddProduct() {
                           name="price"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Price</FormLabel>
+                              <FormLabel>ราคา</FormLabel>
                               <FormControl>
                                 <Input
                                   type="number"
@@ -277,10 +277,10 @@ export default function AddProduct() {
                           name="description"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Description</FormLabel>
+                              <FormLabel>รายละเอียดสินค้า</FormLabel>
                               <FormControl>
                                 <Textarea
-                                  placeholder="Tell us a little bit about your category"
+                                  placeholder="บอกเราสักเล็กน้อยเกี่ยวกับสินค้าของคุณ"
                                   className="resize-none"
                                   disabled={isLoading}
                                   {...field}
@@ -295,7 +295,7 @@ export default function AddProduct() {
                   </Card>
                   <Card>
                     <CardHeader className="space-y-1">
-                      <CardTitle className="text-2xl">Payment method</CardTitle>
+                      <CardTitle className="text-2xl">วิธีการชำระเงิน</CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                       <div className="grid gap-2">
@@ -323,15 +323,15 @@ export default function AddProduct() {
                                             onCheckedChange={(checked) => {
                                               return checked
                                                 ? field.onChange([
-                                                    ...field.value,
-                                                    item.id,
-                                                  ])
+                                                  ...field.value,
+                                                  item.id,
+                                                ])
                                                 : field.onChange(
-                                                    field.value?.filter(
-                                                      (value) =>
-                                                        value !== item.id
-                                                    )
-                                                  );
+                                                  field.value?.filter(
+                                                    (value) =>
+                                                      value !== item.id
+                                                  )
+                                                );
                                             }}
                                           />
                                         </FormControl>
@@ -352,7 +352,7 @@ export default function AddProduct() {
                   </Card>
                   <Card>
                     <CardHeader className="space-y-1">
-                      <CardTitle className="text-2xl">Asset</CardTitle>
+                      <CardTitle className="text-2xl">เนื้อหารูปภาพสินค้า</CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                       <div className="grid gap-2">
@@ -361,7 +361,6 @@ export default function AddProduct() {
                           name="image_urls"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Image</FormLabel>
                               <FormControl>
                                 <FileUploadArr
                                   onChange={field.onChange}
@@ -389,7 +388,7 @@ export default function AddProduct() {
                         {isLoading ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : null}
-                        Save Changes
+                        บันทึก
                       </Button>
                       <FormField
                         control={form.control}
@@ -405,7 +404,7 @@ export default function AddProduct() {
                                 />
 
                                 <FormLabel className="items-center">
-                                  Available
+                                  {field.value === true ? "เปิดขายสินค้า" : "ปิดการขายสินค้า"}
                                 </FormLabel>
                               </div>
                             </FormControl>
@@ -418,7 +417,7 @@ export default function AddProduct() {
                     <CardHeader>
                       <div
                         className="flex gap-2 flex-wrap justify-evenly"
-                        //className="grid grid-cols-5 gap-2"
+                      //className="grid grid-cols-5 gap-2"
                       >
                         {catFields.map((field, index) => (
                           <Badge
@@ -447,7 +446,7 @@ export default function AddProduct() {
                         name="categories"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Category Main</FormLabel>
+                            <FormLabel>หมวดหมู่สินค้าภายในเว็บไซต์</FormLabel>
                             <Select
                               value="init"
                               onValueChange={(val) => {
@@ -466,12 +465,12 @@ export default function AddProduct() {
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select a category" />
+                                  <SelectValue placeholder="เลือกหมวดหมู่สินค้า" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
                                 <SelectItem value={"init"}>
-                                  Select a category
+                                  เลือกหมวดหมู่สินค้า
                                 </SelectItem>
                                 {dataQeury.data?.data
                                   .filter((item) => {
@@ -502,7 +501,7 @@ export default function AddProduct() {
                     <CardHeader>
                       <div
                         className="flex gap-2 flex-wrap justify-evenly"
-                        //className="grid grid-cols-5 gap-2"
+                      //className="grid grid-cols-5 gap-2"
                       >
                         {fields.map((field, index) => (
                           <Badge
@@ -531,7 +530,7 @@ export default function AddProduct() {
                         name="categories"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Category</FormLabel>
+                            <FormLabel>หมวดหมู่สินค้าภายในร้านค้า</FormLabel>
                             <Select
                               value="init"
                               onValueChange={(val) => {
@@ -550,12 +549,12 @@ export default function AddProduct() {
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select a category" />
+                                  <SelectValue placeholder="เลือกหมวดหมู่สินค้า" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
                                 <SelectItem value={"init"}>
-                                  Select a category
+                                  เลือกหมวดหมู่สินค้า
                                 </SelectItem>
                                 {categories?.data
                                   .filter((item) => {

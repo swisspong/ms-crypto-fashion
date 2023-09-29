@@ -150,7 +150,7 @@ const AdvancedVariantForm: FC<Props> = ({ openHandler, open, id }) => {
     if (mutateSuccess) {
       refetch();
       openHandler(false);
-      toast.success("Save data successfully");
+      toast.success("บันทึกข้อมูลเรียบร้อยแล้ว");
     }
   }, [mutateSuccess]);
 
@@ -195,9 +195,9 @@ const AdvancedVariantForm: FC<Props> = ({ openHandler, open, id }) => {
       <SheetContent position={"right"} size="content" className="p-0">
         <ScrollArea className="h-full w-full rounded-md border p-6">
           <SheetHeader>
-            <SheetTitle>{`Advance Variant `}</SheetTitle>
+            <SheetTitle>{`จัดการรูปแบบสินค้าขั้นสูง `}</SheetTitle>
             <SheetDescription>
-              {`Make changes to your variant here. Click save when you're done.`}
+              {`ทำการเปลี่ยนแปลงรูปแบบสินค้าของคุณที่นี่ คลิกบันทึกเมื่อคุณทำเสร็จแล้ว`}
             </SheetDescription>
           </SheetHeader>
           <Form {...form}>
@@ -248,7 +248,7 @@ const AdvancedVariantForm: FC<Props> = ({ openHandler, open, id }) => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Group{" "}
+                        กลุ่มสินค้า{" "}
                         {
                           data?.groups.find(
                             (group) => group.vgrp_id === fieldItem.vgrp_id
@@ -296,7 +296,7 @@ const AdvancedVariantForm: FC<Props> = ({ openHandler, open, id }) => {
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>ราคา</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Price"
@@ -315,7 +315,7 @@ const AdvancedVariantForm: FC<Props> = ({ openHandler, open, id }) => {
                 name="stock"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Stock</FormLabel>
+                    <FormLabel>จำนวนสินค้า</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Stock"
@@ -382,7 +382,7 @@ const AdvancedVariantForm: FC<Props> = ({ openHandler, open, id }) => {
                 name="image_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Image</FormLabel>
+                    <FormLabel>รูปภาพ</FormLabel>
                     <FormControl>
                       <FileUploadOne
                         onChange={field.onChange}
