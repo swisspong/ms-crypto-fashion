@@ -139,13 +139,15 @@ export default function EditOrder() {
                   <CardTitle className="text-2xl">Details</CardTitle>
                   <div className="flex space-x-2">
                     {dataQuery.data?.status !== StatusFormat.FULLFILLMENT &&
+                    dataQuery.data?.status !== StatusFormat.RECEIVED &&
                     dataQuery.data?.status !== StatusFormat.CANCEL ? (
                       // <Button variant={"destructive"} size={"sm"}>
                       //   Cancel Order
                       // </Button>
                       <ButtonCancelOrder />
                     ) : undefined}
-                    {dataQuery.data?.payment_status !== PaymentFormat.REFUND ? (
+                    {dataQuery.data?.payment_status !== PaymentFormat.REFUND &&
+                    dataQuery.data?.status !== StatusFormat.RECEIVED ? (
                       // <Button variant={"outline"} size={"sm"}>
                       //   Refund
                       // </Button>
@@ -678,7 +680,8 @@ export default function EditOrder() {
                       <TableCell className="text-right">
                         <div className="flex justify-end items-center">
                           {dataQuery.data?.status ===
-                          StatusFormat.FULLFILLMENT ? (
+                            StatusFormat.FULLFILLMENT ||
+                          dataQuery.data?.status === StatusFormat.RECEIVED ? (
                             <Badge className="bg-[#adfa1d] text-foreground hover:bg-[#adfa1d]">
                               {dataQuery.data.status.toUpperCase()}
                             </Badge>

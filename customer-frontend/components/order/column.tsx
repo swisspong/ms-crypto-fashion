@@ -22,13 +22,13 @@ interface columnProps {
   setIdHandler: (id: string | undefined) => void;
   openSheetHandler: () => void;
   openDialogHandler: () => void;
-  setDataItems: (body: Item[]) => void
+  setDataItems: (body: Item[]) => void;
 }
 export const columns = ({
   setIdHandler,
   openSheetHandler,
   openDialogHandler,
-  setDataItems
+  setDataItems,
 }: columnProps) => {
   const router = useRouter();
   const columns: ColumnDef<IOrderRow>[] = [
@@ -61,27 +61,35 @@ export const columns = ({
       cell: ({ row }) => (
         <div className="flex justify-start items-center">
           <Badge
-            className={`${row.original.payment_status === PaymentFormat.PAID
-              ? "bg-[#adfa1d]"
-              : "bg-red-400"
-              } rounded-e-none border border-r text-black hover:${row.original.payment_status === PaymentFormat.PAID
+            className={`${
+              row.original.payment_status === PaymentFormat.PAID
                 ? "bg-[#adfa1d]"
                 : "bg-red-400"
-              }`}
+            } rounded-e-none border border-r text-black hover:${
+              row.original.payment_status === PaymentFormat.PAID
+                ? "bg-[#adfa1d]"
+                : "bg-red-400"
+            }`}
           >
             {row.original.payment_status.toUpperCase()}
           </Badge>
           <Badge
-            className={`${row.original.status === StatusFormat.FULLFILLMENT
-              ? "bg-[#adfa1d]"
-              : "bg-red-400"
-              } rounded-s-none border border-l hover:${row.original.status === StatusFormat.FULLFILLMENT
+            className={`${
+              row.original.status === StatusFormat.FULLFILLMENT ||
+              row.original.status === StatusFormat.RECEIVED
                 ? "bg-[#adfa1d]"
                 : "bg-red-400"
-              }  ${row.original.status === StatusFormat.FULLFILLMENT
+            } rounded-s-none border border-l hover:${
+              row.original.status === StatusFormat.FULLFILLMENT ||
+              row.original.status === StatusFormat.RECEIVED
+                ? "bg-[#adfa1d]"
+                : "bg-red-400"
+            }  ${
+              row.original.status === StatusFormat.FULLFILLMENT ||
+              row.original.status === StatusFormat.RECEIVED
                 ? "text-black"
                 : ""
-              }`}
+            }`}
           >
             {row.original.status.toUpperCase()}
           </Badge>
@@ -105,34 +113,39 @@ export const columns = ({
         return (
           <div className="text-reght">
             {row.original.reviewStatus !== ReviewFormat.REVIEWED ? (
-              <Button onClick={async (e) => {
-                e.stopPropagation();
-                const items = row.original.items
-                const seenIds = new Set();
-                const data: Item[] = []
-                const filteredItems = await items.filter((item) => {
-                  if (seenIds.has(item.prod_id)) {
-                    return false; // ไม่รวม item ที่ซ้ำกันในผลลัพธ์
-                  }
-                  seenIds.add(item.prod_id);
-                  data.push(item)
-                  return true;
-                });
+              <Button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  const items = row.original.items;
+                  const seenIds = new Set();
+                  const data: Item[] = [];
+                  const filteredItems = await items.filter((item) => {
+                    if (seenIds.has(item.prod_id)) {
+                      return false; // ไม่รวม item ที่ซ้ำกันในผลลัพธ์
+                    }
+                    seenIds.add(item.prod_id);
+                    data.push(item);
+                    return true;
+                  });
 
-                // console.log(filteredItems)
-                
-                await setDataItems(data)
-                setIdHandler(row.original.order_id as string);
-                openSheetHandler();
-              }} variant="default" key={row.original.order_id}>
+                  // console.log(filteredItems)
+
+                  await setDataItems(data);
+                  setIdHandler(row.original.order_id as string);
+                  openSheetHandler();
+                }}
+                variant="default"
+                key={row.original.order_id}
+              >
                 แสดงความคิดเห็น
               </Button>
-            ) : (<></>)}
+            ) : (
+              <></>
+            )}
           </div>
-        )
-      }
-    }
-    ,
+        );
+      },
+    },
     {
       id: "actions",
       cell: ({ row }) => {

@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
-import { GetUser, GetUserId, Roles } from '@app/common/decorators';
+import { GetUser, GetUserId, Public, Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
 import { CreditCardPaymentDto } from './dto/payment-credit-card.dto';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
@@ -9,6 +9,8 @@ import { RmqService } from '@app/common';
 import { IReceivedOrder, IRefundEvent, PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
 import { IOrderStatusRefundEvent } from '@app/common/interfaces/order-event.interface';
 import { Web3Service } from './web3/web3.service';
+import { WithdrawDto } from './dto/create-recipient.dto';
+
 
 
 @Controller('payments')
@@ -19,22 +21,39 @@ export class PaymentsController {
     private readonly paymentsService: PaymentsService,
     private readonly rmqService: RmqService
   ) { }
-
-
+  @Public()
+  @Get()
+  check() {
+    return this.paymentsService.healthCheck()
+  }
   @Roles(RoleFormat.MERCHANT)
   @Post("credit")
   createCreditCard(@GetUser("merchant") merchantId: string, @Body() CreditCardPaymentDto: CreditCardPaymentDto) {
     return this.paymentsService.openShopCreditCard(merchantId, CreditCardPaymentDto);
   }
-  
+  @Post("withdraw")
+  createRecipient(@GetUser("merchant") merchantId: string, @GetUserId() userId: string, @Body() dto: WithdrawDto) {
+    return this.paymentsService.withdraw(merchantId, userId, dto)
+  }
+
+
   @Get("merchant/report")
   @Roles(RoleFormat.MERCHANT)
-  merchantReprot(@GetUser("merchant") merchantId: string){
+  merchantReprot(@GetUser("merchant") merchantId: string) {
     return this.paymentsService.merchantReportTotal(merchantId)
   }
-  
+  @Get("merchant/statistic")
+  @Roles(RoleFormat.MERCHANT)
+  merchantStatistic(@GetUser("merchant") mchtId: string) {
+    return this.paymentsService.merchantStatisticByMonth(mchtId)
+  }
+  @Roles(RoleFormat.MERCHANT)
+  @Get('recipient/:recpId')
+  recipientInfo(@Param("recpId") recpId: string, @GetUser("merchant") mchtId: string) {
+    return this.paymentsService.getAccountDetail(recpId)
+  }
   @EventPattern(RECEIVED_ORDER_EVENT)
-  async handlerReceivedOrder(@Payload() data:IReceivedOrder , @Ctx() context: RmqContext) {
+  async handlerReceivedOrder(@Payload() data: IReceivedOrder, @Ctx() context: RmqContext) {
     this.logger.warn("Received from cron order", data)
     await this.paymentsService.receivedOrder(data)
     this.rmqService.ack(context);

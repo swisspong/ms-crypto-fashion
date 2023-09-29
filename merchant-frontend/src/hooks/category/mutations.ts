@@ -10,9 +10,12 @@ export const useAddCategory = () => {
             onMutate: async (info) => {
                 // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
                 await queryClient.cancelQueries(["categories"]);
+         
 
                 // Snapshot the previous value
                 const previousInfos = queryClient.getQueryData(["categories"]);
+            
+
 
                 return { previousInfos };
             },
@@ -38,10 +41,10 @@ export const useEditCategory = () => {
             // When mutate is called:
             onMutate: async (info) => {
                 // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-                await queryClient.cancelQueries(["categories"]);
+                await queryClient.cancelQueries(["category"]);
 
                 // Snapshot the previous value
-                const previousInfos = queryClient.getQueryData(["categories"]);
+                const previousInfos = queryClient.getQueryData(["category"]);
 
                 return { previousInfos };
             },
@@ -49,12 +52,12 @@ export const useEditCategory = () => {
             onError: (err: any, variables, context) => {
                 // displayError(err.response?.data?.message)
                 if (context?.previousInfos) {
-                    queryClient.setQueryData(["categories"], context.previousInfos);
+                    queryClient.setQueryData(["category"], context.previousInfos);
                 }
             },
 
             onSettled: () => {
-                queryClient.invalidateQueries(["categories"]);
+                queryClient.invalidateQueries(["category"]);
             },
         }
     );

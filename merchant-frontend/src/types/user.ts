@@ -31,5 +31,6 @@ export interface IMerchantRes {
     last_name:string
     createdAt: string
     updatedAt: string
+    recp_id?:string;
     __v: number
 }

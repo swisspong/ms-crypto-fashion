@@ -47,6 +47,7 @@ import { Badge } from "@/components/ui/badge";
 import { PaymentFormat, StatusFormat } from "@/src/types/enums/order";
 import ButtonCancelOrder from "@/components/order/button-cancel-order";
 import { useEffect } from "react";
+import { useReceiveOrder } from "@/src/hooks/order/mutations";
 const formSchema = z.object({
   name: z
     .string()
@@ -64,6 +65,7 @@ export default function Order() {
   const router = useRouter();
   const dataQuery = useGetOrderById(router.query.orderId as string);
   const orderPolling = useGetOrderByIdPolling(router.query.orderId as string);
+  const receiveOrder = useReceiveOrder();
   useEffect(() => {
     if (orderPolling.isSuccess && orderPolling.data.refetch) {
       dataQuery.refetch();
@@ -90,19 +92,30 @@ export default function Order() {
                 <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
                   <CardTitle className="text-2xl">รายละเอียด</CardTitle>
                   <div className="flex space-x-2">
-                    {dataQuery.data?.status !== StatusFormat.FULLFILLMENT &&
+                    {dataQuery.data?.status === StatusFormat.FULLFILLMENT &&
+                    dataQuery.data?.payment_status === PaymentFormat.PAID ? (
+                      <Button
+                        size={"sm"}
+                        disabled={
+                          receiveOrder.isLoading || receiveOrder.isSuccess
+                        }
+                        onClick={() =>
+                          receiveOrder.mutate(router.query.orderId as string)
+                        }
+                      >
+                        รับสินค้าแล้ว
+                      </Button>
+                    ) : undefined}
+
+                    {dataQuery.data?.status !== StatusFormat.RECEIVED &&
+                    dataQuery.data?.status !== StatusFormat.FULLFILLMENT &&
                     dataQuery.data?.status !== StatusFormat.CANCEL ? (
                       // <Button variant={"destructive"} size={"sm"}>
                       //   Cancel Order
                       // </Button>
                       <ButtonCancelOrder />
                     ) : undefined}
-                    {/* <Button variant={"destructive"} size={"sm"}>
-                          Cancel Order
-                        </Button> */}
-                    {/* <Button variant={"outline"} size={"sm"}>
-                          Refund
-                        </Button> */}
+                   
                   </div>
                 </CardHeader>
                 <CardContent className="grid gap-4">
@@ -327,7 +340,8 @@ export default function Order() {
                       <TableCell className="text-right">
                         <div className="flex justify-end items-center">
                           {dataQuery.data?.status ===
-                          StatusFormat.FULLFILLMENT ? (
+                          StatusFormat.FULLFILLMENT || dataQuery.data?.status ===
+                          StatusFormat.RECEIVED ? (
                             <Badge className="bg-[#adfa1d] text-foreground hover:bg-[#adfa1d]">
                               {dataQuery.data.status.toUpperCase()}
                             </Badge>

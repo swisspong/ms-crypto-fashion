@@ -13,6 +13,7 @@ import { log } from 'console';
 import { RmqService } from '@app/common';
 import { CHARGE_MONTH_EVENT, MERCHANT_DELETE_P } from '@app/common/constants/products.constant';
 import { DeleteMerchantData } from '@app/common/interfaces';
+import { CreateRecipientDto } from './dto/create-recipient.dto';
 @ApiTags('Merchant')
 @Controller('merchants')
 export class MerchantsController {
@@ -29,6 +30,12 @@ export class MerchantsController {
   @Post("/credential")
   createCredential(@GetUser("merchant") merchantId: string, @Body() dto: CredentialMerchantDto) {
     return this.merchantsService.createCredential(merchantId, dto);
+  }
+  @Roles(RoleFormat.MERCHANT)
+  @Post("account")
+  addAccount(@GetUser("merchant") mchtId: string, @Body() dto: CreateRecipientDto) {
+    return this.merchantsService.createRecipient(mchtId,dto)
+
   }
   @Roles(RoleFormat.MERCHANT)
   @Get("/credential")

@@ -11,6 +11,11 @@ export const credentialMerchant = async (body: ICredentialPayload): Promise<void
         (response) => response.data
     );
 };
+export const merchantAddAccount = async (body: IAccountPayload): Promise<void> => {
+    await api.post(`/merchants/account`, body).then(
+        (response) => response.data
+    );
+};
 export const editMerchantProfile = async (body: IMerchantProfilePayload): Promise<void> => {
     await api.patch(`/merchants/profile`, body).then(
         (response) => response.data
@@ -22,6 +27,7 @@ export const getMerchantCredential = async (): Promise<IMerchantRes> => {
         (response) => response.data
     );
 };
+
 
 export const getMerchantById = async (mchtId: string): Promise<IMerchantRes> => {
     return await api.get(`/merchants/${mchtId}`).then(

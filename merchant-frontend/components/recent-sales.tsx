@@ -4,12 +4,43 @@
 //     AvatarImage,
 //   } from "@/registry/new-york/ui/avatar"
 
+import { useMerchantOrders } from "@/src/hooks/order/queries";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import NoResults from "./no-result";
 
 export function RecentSales() {
+  const dataQuery = useMerchantOrders({
+    page: 1,
+    per_page: 5,
+  });
   return (
     <div className="space-y-8">
-      <div className="flex items-center">
+      {dataQuery.data?.data && dataQuery.data.total <= 0 ? (
+        <NoResults />
+      ) : undefined}
+      {dataQuery.data?.data.map((order) => (
+        <div className="flex items-center">
+          <Avatar className="h-9 w-9">
+            <AvatarImage src="/avatars/01.png" alt="Avatar" />
+            <AvatarFallback>
+              {order.recipient
+                .split(" ")
+                .map((word) => word.substring(0, 1).toUpperCase())
+                .splice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="ml-4 space-y-1">
+            <p className="text-sm font-medium leading-none">
+              {order.recipient}
+            </p>
+            {/* <p className="text-sm text-muted-foreground">
+              olivia.martin@email.com
+            </p> */}
+          </div>
+          <div className="ml-auto font-medium">+฿{order.total.toFixed(2)}</div>
+        </div>
+      ))}
+      {/* <div className="flex items-center">
         <Avatar className="h-9 w-9">
           <AvatarImage src="/avatars/01.png" alt="Avatar" />
           <AvatarFallback>OM</AvatarFallback>
@@ -67,7 +98,7 @@ export function RecentSales() {
           <p className="text-sm text-muted-foreground">sofia.davis@email.com</p>
         </div>
         <div className="ml-auto font-medium">+$39.00</div>
-      </div>
+      </div> */}
     </div>
   );
 }

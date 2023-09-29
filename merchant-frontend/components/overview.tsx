@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { usePaymentStatistic } from "@/src/hooks/payment/queries";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 const data = [
   {
@@ -51,12 +52,23 @@ const data = [
     name: "Dec",
     total: Math.floor(Math.random() * 5000) + 1000,
   },
-]
+];
 
 export function Overview() {
+  const dataQuery = usePaymentStatistic();
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={data}>
+      <BarChart
+        data={data.map((item, index) => {
+          const month = dataQuery.data?.data.find(
+            (data) => data.month === index + 1
+          );
+          return {
+            name: item.name,
+            total: month?.totalSales ?? 0,
+          };
+        })}
+      >
         <XAxis
           dataKey="name"
           stroke="#888888"
@@ -69,10 +81,10 @@ export function Overview() {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `$${value}`}
+          tickFormatter={(value) => `฿${value}`}
         />
         <Bar dataKey="total" fill="#adfa1d" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
-  )
+  );
 }

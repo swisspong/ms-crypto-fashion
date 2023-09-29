@@ -57,7 +57,7 @@ export const columns = ({
       header: () => <div>STATUS</div>,
       cell: ({ row }) => (
         <div className="flex justify-start items-center">
-           <Badge
+          <Badge
             className={`${
               row.original.payment_status === PaymentFormat.PAID
                 ? "bg-[#adfa1d]"
@@ -72,15 +72,18 @@ export const columns = ({
           </Badge>
           <Badge
             className={`${
-              row.original.status === StatusFormat.FULLFILLMENT
+              row.original.status === StatusFormat.FULLFILLMENT ||
+              row.original.status === StatusFormat.RECEIVED
                 ? "bg-[#adfa1d]"
                 : "bg-red-400"
             } rounded-s-none border border-l hover:${
-              row.original.status === StatusFormat.FULLFILLMENT
+              row.original.status === StatusFormat.FULLFILLMENT ||
+              row.original.status === StatusFormat.RECEIVED
                 ? "bg-[#adfa1d]"
                 : "bg-red-400"
             } ${
-              row.original.status === StatusFormat.FULLFILLMENT
+              row.original.status === StatusFormat.FULLFILLMENT ||
+              row.original.status === StatusFormat.RECEIVED
                 ? "text-black"
                 : ""
             }`}

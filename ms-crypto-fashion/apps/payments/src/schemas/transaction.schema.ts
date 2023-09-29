@@ -13,8 +13,8 @@ export enum TransactionFormat {
 export class TransactionPurchase extends AbstractDocument {
     @Prop({ required: true, unique: true })
     tx_id: string;
-    @Prop({ required: true })
-    order_id: string;
+    @Prop({  })
+    order_id?: string;
     @Prop({ required: true })
     user_id: string;
     @Prop({ required: true })

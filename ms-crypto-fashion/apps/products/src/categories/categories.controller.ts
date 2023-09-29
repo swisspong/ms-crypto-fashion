@@ -29,8 +29,8 @@ export class CategoriesController {
     return this.categoriesService.findAllByMerchantId(id, filter);
   }
   @Roles(RoleFormat.MERCHANT)
-  @Get('/owner/:id')
-  findOneByOwner(@Param('id') id: string, @GetUser('merchant') merchantId: string) {
+  @Get('/owner/:catId')
+  findOneByOwner(@Param('catId') id: string, @GetUser('merchant') merchantId: string) {
     return this.categoriesService.findOneByOwner(id, merchantId);
   }
   @Roles(RoleFormat.MERCHANT)

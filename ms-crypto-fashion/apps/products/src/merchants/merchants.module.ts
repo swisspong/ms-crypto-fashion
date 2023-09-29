@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from 'apps/auth/src/auth.module';
 import { AUTH_SERVICE } from '@app/common/constants';
 import { ProductsModule } from '../products.module';
+import { OmiseService } from './omise.service';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProductsModule } from '../products.module';
   providers: [
     MerchantsService,
     MerchantsRepository,
+    OmiseService
   ],
   exports: [MerchantsRepository]
 })

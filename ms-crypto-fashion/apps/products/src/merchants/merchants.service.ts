@@ -14,6 +14,8 @@ import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
 import { StatusFormat } from 'apps/orders/src/schemas/order.schema';
+import { CreateRecipientDto } from './dto/create-recipient.dto';
+import { OmiseService } from './omise.service';
 interface StatusTotal {
     _id: MerchantStatus;
     count: number
@@ -25,7 +27,8 @@ export class MerchantsService {
     constructor(
         @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
         private readonly jwtUtilsService: JwtUtilsService,
-        private readonly merchantsRepository: MerchantsRepository
+        private readonly merchantsRepository: MerchantsRepository,
+        private readonly omiseService: OmiseService
     ) { }
     private readonly uid = new ShortUniqueId()
     async createStarterMerchant(userId: string, role: string, merchant: string | undefined, permission: string[], createMerchantDto: CreateMerchantDto, res: any) {
@@ -198,13 +201,13 @@ export class MerchantsService {
                 mcht_id
             }
 
-             await lastValueFrom(
+            await lastValueFrom(
                 this.authClient.emit(DELETE_MERCHANT_EVENT, {
                     ...data
                 })
             )
-            
-            return {message: "success"}
+
+            return { message: "success" }
             // const result = await this.merchantsRepository.findOneAndDelete({ mcht_id })
             // return result
         } catch (error) {
@@ -283,11 +286,16 @@ export class MerchantsService {
 
     async deleteMerchantEvent(data: DeleteMerchantData) {
         try {
-            const {mcht_id} = data
-            await this.merchantsRepository.findOneAndDelete({mcht_id})
+            const { mcht_id } = data
+            await this.merchantsRepository.findOneAndDelete({ mcht_id })
             this.logger.warn("delete merchant")
         } catch (error) {
             throw error
         }
+    }
+    async createRecipient(mchtId: string, data: CreateRecipientDto) {
+        const recp = await this.omiseService.createRecipient(data)
+        await this.merchantsRepository.findAndUpdate({ mcht_id:mchtId}, {$set:{recp_id:recp.id}})
+        return { message: "success" }
     }
 }

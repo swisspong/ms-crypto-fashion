@@ -36,8 +36,14 @@ export const getOrderByIdPolling = async (orderId: string): Promise<{ refetch: b
         (response) => response.data
     );
 };
-export const cancelOrder = async (orderId: string):Promise<void> => {
+export const cancelOrder = async (orderId: string): Promise<void> => {
     return await api.post('/orders/cancel', { order_id: orderId }).then(
+        (response) => response.data
+    );
+}
+
+export const receiveOrderReq = async (orderId: string): Promise<void> => {
+    return await api.post(`/orders/${orderId}/receive`, null).then(
         (response) => response.data
     );
 }

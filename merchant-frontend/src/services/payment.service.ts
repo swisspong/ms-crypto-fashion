@@ -13,7 +13,7 @@ export const postOmiseToken = async (body: ICreateOmiseToken): Promise<ICreateOm
 
         return { id }
     } catch (error) {
-        return {id: '', message: error}
+        return { id: '', message: error }
     }
 };
 
@@ -22,3 +22,26 @@ export const postCreditCard = async (body: ICreateCreditCard): Promise<void> => 
         (response) => response.data
     );
 }
+export const postWithdraw = async (body: IWithdrawPayload): Promise<void> => {
+    return await api.post(`payments/withdraw`, body).then(
+        (response) => response.data
+    );
+}
+
+
+
+export const getPayementReport = async (): Promise<IPaymentReportRes> => {
+    return await api.get(`/payments/merchant/report`).then(
+        (response) => response.data
+    );
+};
+export const getPayementStatistic = async (): Promise<IPaymentStatisticRes> => {
+    return await api.get(`/payments/merchant/statistic`).then(
+        (response) => response.data
+    );
+};
+export const getPayementRecipient = async (recpId: string): Promise<IRecipientRes> => {
+    return await api.get(`/payments/recipient/${recpId}`).then(
+        (response) => response.data
+    );
+};

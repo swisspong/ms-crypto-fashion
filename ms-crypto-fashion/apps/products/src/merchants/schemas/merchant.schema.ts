@@ -28,6 +28,8 @@ export class Merchant extends AbstractDocument {
     id_card_img?: string;
     @Prop({ type: Date })
     end_date?: Date
+    @Prop({ type: String })
+    recp_id?:string
 
 }
 

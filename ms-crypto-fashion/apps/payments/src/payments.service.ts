@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import * as Omise from 'omise';
 import { CreditCardPaymentDto } from './dto/payment-credit-card.dto';
 import { lastValueFrom } from 'rxjs';
@@ -16,9 +16,12 @@ import { TransactionMerchantRepository } from './transaction-merchant.repository
 import { Web3Service } from './web3/web3.service';
 import { TransactionTemporaryRepository } from './transaction-temporary.repository';
 
+import { WithdrawDto } from './dto/create-recipient.dto';
+
 
 @Injectable()
 export class PaymentsService {
+  private readonly logger = new Logger(PaymentsService.name)
   private readonly uid = new ShortUniqueId()
   private readonly omise: Omise.IOmise = Omise({
     publicKey: process.env.OMISE_PUBLIC_KEY,
@@ -30,9 +33,13 @@ export class PaymentsService {
     private readonly transactionMerchantRepository: TransactionMerchantRepository,
     private readonly transactionTemporaryRepository: TransactionTemporaryRepository,
     private readonly web3Service: Web3Service,
+
     @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy,
     @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy
   ) { }
+  async healthCheck() {
+    return { message: "success" }
+  }
 
   async receivedOrder(data: IReceivedOrder) {
     const { orderId, userId } = data
@@ -42,11 +49,11 @@ export class PaymentsService {
       if (!tx) {
         await this.transactionPurchaseRepository.create({
           amount: txTmp.amount,
-          mcht_id: tx.mcht_id,
-          order_id: tx.order_id,
-          payment_method: tx.payment_method,
+          mcht_id: txTmp.mcht_id,
+          order_id: txTmp.order_id,
+          payment_method: txTmp.payment_method,
           type: TransactionFormat.DEPOSIT,
-          user_id: tx.user_id,
+          user_id: txTmp.user_id,
           tx_id: `tx_${this.uid.stamp(15)}`
         })
       }
@@ -433,6 +440,60 @@ export class PaymentsService {
 
   //   }
   // }
+  async withdraw(mchtId: string, userId: string, payload: WithdrawDto) {
+    try {
+      const aggregate = await this.transactionPurchaseRepository.aggregate([
+        {
+          $match: {
+            mcht_id: mchtId,
+            // user_id: userId // Match documents with the specified merchant ID
+          }
+        },
+        {
+          $group: {
+            _id: '$type',  // Group by transaction type (deposit or withdraw)
+            totalAmount: { $sum: '$amount' }  // Calculate the sum of the 'amount' field
+          }
+        }
+      ])
+      if (aggregate.length <= 0) throw new BadRequestException("Insufficient balance")
+      const totalDeposit = aggregate.find(item => item._id === TransactionFormat.DEPOSIT)?.totalAmount ?? 0
+      const totalWithdraw = aggregate.find(item => item._id === TransactionFormat.WITHDRAW)?.totalAmount ?? 0
+      const amount = totalDeposit - totalWithdraw - 50
+      if (payload.amount > amount) throw new BadRequestException("Insufficient balance")
+      const transfer = await this.omise.transfers.create({
+        amount: payload.amount * 100,
+        recipient: payload.recp_id,
+      });
+      this.logger.log(transfer)
+      await this.transactionPurchaseRepository.create({
+        tx_id: `tx_${this.uid.stamp(15)}`,
+        amount: payload.amount,
+        mcht_id: mchtId,
+        payment_method: PaymentMethodFormat.CREDIT,
+        type: TransactionFormat.WITHDRAW,
+        user_id: userId
+      })
+      return { message: "success" }
+      // const transfer = await this.omise.transfers.create({
+      //   amount: payload.amount * 100,
+      //   recipient: payload.recp_id,
+      // });
+      // this.logger.log(transfer)
+      // await this.transactionPurchaseRepository.create({
+      //   tx_id: `tx_${this.uid.stamp(15)}`,
+      //   amount: 3,
+      //   mcht_id: mchtId,
+      //   payment_method: PaymentMethodFormat.CREDIT,
+      //   type: TransactionFormat.WITHDRAW,
+      //   user_id: userId
+      // })
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+
+  }
   async merchantReportTotal(mchtId: string) {
     const aggregate = await this.transactionPurchaseRepository.aggregate([
       {
@@ -450,5 +511,57 @@ export class PaymentsService {
     return {
       data: aggregate
     }
+  }
+
+  async merchantStatisticByMonth(mchtId: string) {
+    try {
+      const currentYear = new Date().getFullYear();
+
+      const amountOrderMonth = await this.transactionPurchaseRepository.aggregate([
+        {
+          $match: {
+            mcht_id: mchtId,
+            type: "deposit",
+            createdAt: {
+              $gte: new Date(currentYear, 0, 1),
+              $lt: new Date(currentYear + 1, 0, 1)
+            }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              month: { $month: "$createdAt" }
+            },
+            totalSales: { $sum: "$amount" },
+            totalOrders: { $sum: 1 }
+          }
+        },
+        {
+          $sort: {
+            "_id.month": 1
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            month: "$_id.month",
+            totalSales: 1,
+            totalOrders: 1
+          }
+        }
+      ])
+
+
+      return {
+        data: amountOrderMonth
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async getAccountDetail(recpId: string) {
+    const result = this.omise.recipients.retrieve(recpId)
+    return result
   }
 }

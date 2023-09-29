@@ -13,3 +13,14 @@ interface IMerchantProfilePayload extends IMerchantStartPayload {
     last_name: string;
     banner_url: string
 }
+
+
+interface IAccountPayload {
+
+    name: string
+    email: string
+    "bank_account[brand]": string
+    "bank_account[number]": string
+    "bank_account[name]": string
+
+}

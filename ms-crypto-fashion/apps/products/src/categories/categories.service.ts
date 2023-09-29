@@ -209,7 +209,7 @@ export class CategoriesService {
 
 
     async findOneByOwner(id: string, merchantId: string) {
-        const category = await this.categoriesRepository.findOne({ cat_id: id, merchant: new Types.ObjectId(merchantId) })
+        const category = await this.categoriesRepository.findOne({ cat_id: id, mcht_id:merchantId })
         return category
     }
 

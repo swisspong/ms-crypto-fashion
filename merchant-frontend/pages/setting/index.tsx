@@ -54,6 +54,7 @@ import { postAssetBanner } from "@/src/services/asset.service";
 import { useEditMerchantProfile } from "@/src/hooks/merchant/mutations";
 import { useUserInfo } from "@/src/hooks/user/queries";
 import { toast } from "react-toastify";
+import { useGetMerchantCredential } from "@/src/hooks/merchant/queries";
 const formSchema = z.object({
   name: z
     .string()
@@ -80,6 +81,7 @@ export default function SettingPage() {
     router.query.prodId as string
   );
   const userQuery = useUserInfo();
+  const merchantQuery = useGetMerchantCredential();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {},
@@ -97,11 +99,11 @@ export default function SettingPage() {
   useEffect(() => {
     if (userQuery.isSuccess) {
       form.reset({
-        banner_title: userQuery.data.merchant.banner_title,
-        banner_url: userQuery.data.merchant.banner_url,
-        first_name: userQuery.data.merchant.first_name,
-        last_name: userQuery.data.merchant.last_name,
-        name: userQuery.data.merchant.name,
+        banner_title: merchantQuery.data?.banner_title,
+        banner_url: merchantQuery.data?.banner_url,
+        first_name: merchantQuery.data?.first_name,
+        last_name: merchantQuery.data?.last_name,
+        name: merchantQuery.data?.name,
       });
     }
   }, [userQuery.isSuccess]);
