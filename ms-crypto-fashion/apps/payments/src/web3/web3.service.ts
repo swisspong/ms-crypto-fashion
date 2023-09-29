@@ -12,6 +12,7 @@ import { PaymentMethodFormat } from '@app/common/enums';
 import { TransactionFormat } from '../schemas/transaction.schema';
 import ShortUniqueId from 'short-unique-id';
 import { IRefundEvent } from '@app/common/interfaces/payment.event.interface';
+import { TransactionTemporaryRepository } from '../transaction-temporary.repository';
 // import { OrdersRepository } from 'src/orders/orders.repository';
 // import { PaymentFormat } from 'src/orders/schemas/order.schema';
 
@@ -23,6 +24,7 @@ export class Web3Service implements OnModuleInit {
   constructor(
     private configService: ConfigService,
     private readonly transactionPurchaseRepository: TransactionPurchaseRepository,
+    private readonly transactionTemporaryRepository: TransactionTemporaryRepository,
     @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy
   ) { }
   onModuleInit() {
@@ -47,17 +49,27 @@ export class Web3Service implements OnModuleInit {
     // contract.listeners("PaymentDone")
     contract.on('PaymentDone', async (tx, amount, orderId, userId, mchtId, timestamp) => {
       this.logger.log(tx, amount, orderId, userId, mchtId, timestamp)
-      await this.transactionPurchaseRepository.create(
-        {
-          tx_id: `tx_${this.uid.stamp(15)}`,
-          amount: Number(amount),
-          type: TransactionFormat.DEPOSIT,
-          order_id: orderId,
-          payment_method: PaymentMethodFormat.WALLET,
-          user_id: userId,
-          mcht_id: mchtId
-        }
-      )
+      // await this.transactionPurchaseRepository.create(
+      //   {
+      //     tx_id: `tx_${this.uid.stamp(15)}`,
+      //     amount: Number(amount),
+      //     type: TransactionFormat.DEPOSIT,
+      //     order_id: orderId,
+      //     payment_method: PaymentMethodFormat.WALLET,
+      //     user_id: userId,
+      //     mcht_id: mchtId
+      //   }
+      // )
+      await this.transactionTemporaryRepository.create({
+
+        tx_id: `tx_${this.uid.stamp(15)}`,
+        amount: Number(amount),
+        order_id: orderId,
+        payment_method: PaymentMethodFormat.WALLET,
+        user_id: userId,
+        mcht_id: mchtId
+
+      })
       const payload: IUpdateOrderStatusEventPayload = {
         user_id: userId,
         orderIds: [orderId],
@@ -68,17 +80,19 @@ export class Web3Service implements OnModuleInit {
     })
     contract.on('RefundDone', async (tx, amount, orderId, userId, mchtId, timestamp) => {
       this.logger.log(tx, amount, orderId, userId, mchtId, timestamp)
-      await this.transactionPurchaseRepository.create(
-        {
-          tx_id: `tx_${this.uid.stamp(15)}`,
-          amount: Number(amount),
-          type: TransactionFormat.REFUND,
-          order_id: orderId,
-          payment_method: PaymentMethodFormat.WALLET,
-          user_id: userId,
-          mcht_id: mchtId
-        }
-      )
+      await this.transactionPurchaseRepository.findOneAndDelete({ order_id: orderId })
+      await this.transactionTemporaryRepository.findOneAndDelete({ order_id: orderId })
+      // await this.transactionPurchaseRepository.create(
+      //   {
+      //     tx_id: `tx_${this.uid.stamp(15)}`,
+      //     amount: Number(amount),
+      //     type: TransactionFormat.REFUND,
+      //     order_id: orderId,
+      //     payment_method: PaymentMethodFormat.WALLET,
+      //     user_id: userId,
+      //     mcht_id: mchtId
+      //   }
+      // )
       const payload: IOrderStatusRefundEvent = {
         orderId: orderId
       }

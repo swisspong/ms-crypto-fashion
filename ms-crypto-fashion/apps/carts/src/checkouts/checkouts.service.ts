@@ -24,7 +24,7 @@ export class CheckoutsService {
     constructor(
         private readonly cartsRepository: CartsRepository,
         private readonly checkoutsRepository: CheckoutsRepository,
-        private readonly productsUtilService: ProductsUtilService,
+        //private readonly productsUtilService: ProductsUtilService,
         private readonly cartItemsValidator: CartItemsValidator,
         private readonly productsValidator: ProductsValidator,
         @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy,
@@ -249,6 +249,7 @@ export class CheckoutsService {
                 this.productsValidator.validateIncludePayment(cartItem.product, paymentMethod)
                 this.cartItemsValidator.validate(chktItem)
                 this.productsValidator.validateIncludePayment(chktItem.product, paymentMethod)
+                this.productsValidator.validateEquality(chktItem.product, cartItem.product)
             } catch (error) {
                 return true
             }

@@ -13,6 +13,10 @@ import { TransactionPurchaseRepository } from './transaction-purchase.repository
 import { Web3Module } from './web3/web3.module';
 import { TransactionMerchant, TransactionMerchantSchema } from './schemas/transaction-merchant';
 import { TransactionMerchantRepository } from './transaction-merchant.repository';
+import { TransactionTemporary, TransactionTemporarySchema } from './schemas/transaction-temporary.schema';
+import { TransactionTemporaryRepository } from './transaction-temporary.repository';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronService } from './cron/cron.service';
 
 @Module({
   imports: [
@@ -30,8 +34,10 @@ import { TransactionMerchantRepository } from './transaction-merchant.repository
     JwtUtilsModule,
     DatabaseModule,
     MongooseModule.forFeature([{ name: TransactionPurchase.name, schema: TransactionPurchaseSchema }]),
-    MongooseModule.forFeature([{name: TransactionMerchant.name, schema: TransactionMerchantSchema}]),
-    Web3Module
+    MongooseModule.forFeature([{ name: TransactionMerchant.name, schema: TransactionMerchantSchema }]),
+    MongooseModule.forFeature([{ name: TransactionTemporary.name, schema: TransactionTemporarySchema }]),
+    Web3Module,
+    ScheduleModule.forRoot()
   ],
   controllers: [PaymentsController],
   providers: [
@@ -39,11 +45,14 @@ import { TransactionMerchantRepository } from './transaction-merchant.repository
     JwtStrategy,
     PaymentsService,
     TransactionMerchantRepository,
-    TransactionPurchaseRepository
+    TransactionPurchaseRepository,
+    TransactionTemporaryRepository,
+    CronService
   ],
-  exports:[
+  exports: [
     TransactionMerchantRepository,
-    TransactionPurchaseRepository
+    TransactionPurchaseRepository,
+    TransactionTemporaryRepository
   ]
 })
 export class PaymentsModule { }

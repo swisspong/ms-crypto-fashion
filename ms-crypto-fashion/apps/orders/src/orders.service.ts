@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { OrdersRepository } from './orders.repository';
 // import axios from 'axios';
 import { ClientProxy, RmqContext } from '@nestjs/microservices';
@@ -16,12 +16,12 @@ import { IDeleteChktEventPayload } from '@app/common/interfaces/carts.interface'
 import { OrderPaginationDto } from './dto/order-pagination.dto';
 import { FullfillmentDto } from './dto/fullfuillment.dto';
 
-import { PAYMENT_SERVICE, REFUND_CREDITCARD_EVENT } from '@app/common/constants/payment.constant';
+import { PAYMENT_SERVICE, RECEIVED_ORDER_EVENT, REFUND_CREDITCARD_EVENT } from '@app/common/constants/payment.constant';
 import axios from 'axios';
 import { ObserverArrayListenerService } from './observer-array-listener.service';
 import { ObserverArrayService } from './observer-array.service';
 import { Response } from 'express';
-import { IRefundEvent } from '@app/common/interfaces/payment.event.interface';
+import { IReceivedOrder, IRefundEvent } from '@app/common/interfaces/payment.event.interface';
 
 @Injectable()
 export class OrdersService {
@@ -61,6 +61,26 @@ export class OrdersService {
       return order
     } catch (error) {
       throw error;
+    }
+  }
+  async receiveOrder(orderId: string, userId: string) {
+    const order = await this.ordersRepository.findOne({ order_id: orderId, user_id: userId })
+    if (!order) throw new BadRequestException("Order not found.")
+    if (order.status === StatusFormat.FULLFILLMENT && order.payment_status === PaymentFormat.PAID) {
+      await this.ordersRepository.findAndUpdate({ order_id: orderId, user_id: userId }, {
+        $set: {
+          status: StatusFormat.RECEIVED
+        }
+      })
+      // push event
+      const payload: IReceivedOrder = {
+        orderId: order.order_id,
+        userId: order.user_id
+      }
+      await lastValueFrom(this.paymentsClient.emit(RECEIVED_ORDER_EVENT, payload))
+      return { message: "success" }
+    } else {
+      throw new BadRequestException("Can't receive order")
     }
   }
   async myOrders(userId: string, filter: OrderPaginationDto) {
@@ -120,6 +140,7 @@ export class OrdersService {
       throw error;
     }
   }
+
   async ordering(data: OrderingEventPayload) {
 
     const groupByMchtId = {}
@@ -797,7 +818,7 @@ export class OrdersService {
       const amountOrderMonth = await this.ordersRepository.aggregate([
         {
           $match: {
-            mcht_id:mchtId,
+            mcht_id: mchtId,
             createdAt: {
               $gte: new Date(currentYear, 0, 1),
               $lt: new Date(currentYear + 1, 0, 1)

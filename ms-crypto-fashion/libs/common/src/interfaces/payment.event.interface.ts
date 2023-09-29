@@ -25,4 +25,11 @@ export interface IRefundEvent {
     amount?: number;
     method: PaymentMethodFormat
 
+
+
+}
+
+export interface IReceivedOrder {
+    orderId: string;
+    userId: string;
 }

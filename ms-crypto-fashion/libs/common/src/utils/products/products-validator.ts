@@ -102,6 +102,7 @@ export class ProductsValidator {
             const isValid = option1.every(optn1 =>
                 option2.some(optn2 => {
                     if (
+
                         optn1.vrnt_id === optn2.vrnt_id &&
                         optn1.price === optn2.price
                     ) {

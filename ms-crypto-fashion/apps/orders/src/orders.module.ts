@@ -16,6 +16,8 @@ import { PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ObserverArrayListenerService } from './observer-array-listener.service';
 import { ObserverArrayService } from './observer-array.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronService } from './cron/cron.service';
 
 @Module({
   imports: [
@@ -33,7 +35,8 @@ import { ObserverArrayService } from './observer-array.service';
     RmqModule.register({ name: PRODUCTS_SERVICE }),
     RmqModule.register({ name: CARTS_SERVICE }),
     RmqModule.register({ name: PAYMENT_SERVICE }),
-   // JwtUtilsModule,
+    ScheduleModule.forRoot()
+    // JwtUtilsModule,
   ],
   controllers: [OrdersController],
   providers: [
@@ -47,6 +50,7 @@ import { ObserverArrayService } from './observer-array.service';
       provide: EventEmitter2,
       useValue: new EventEmitter2(),
     },
+    CronService
   ],
 })
 export class OrdersModule { }

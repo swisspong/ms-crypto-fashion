@@ -13,6 +13,8 @@ import { CancelOrderDto } from './dto/cancel-order.dto';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { RefundOrderDto } from './dto/refund-order.dto';
+import { RECEIVED_ORDER_EVENT } from '@app/common/constants/payment.constant';
+import { IReceivedOrder } from '@app/common/interfaces/payment.event.interface';
 
 
 
@@ -257,8 +259,10 @@ export class OrdersController {
     // this.clients = new ObservableArray([])
   }
 
+  
 
 
+  
   @EventPattern(UPDATEREVIEW_ORDER_EVENT)
   async handlerOrder(@Payload() data: UpdateStatusOrder, @Ctx() context: RmqContext) {
     this.logger.warn("Received from reviewed", data)
@@ -295,7 +299,10 @@ export class OrdersController {
     return this.ordersService.cancelOrderByMerchant(mchtId, order_id);
   }
 
-
+  @Post(':orderId/receive')
+  receiveOrder(@Param("orderId") orderId: string, @GetUserId() userId: string) {
+    return this.ordersService.receiveOrder(orderId, userId)
+  }
 
 
   @Get("polling")
@@ -384,6 +391,7 @@ export class OrdersController {
   myOrderById(@Param("orderId") orderId: string, @GetUserId() userId: string) {
     return this.ordersService.myOrderById(orderId, userId);
   }
+
 
 
 

@@ -4,9 +4,9 @@ import { GetUser, GetUserId, Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
 import { CreditCardPaymentDto } from './dto/payment-credit-card.dto';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { PAID_ORDERING_EVENT, REFUND_CREDITCARD_EVENT } from '@app/common/constants/payment.constant';
+import { PAID_ORDERING_EVENT, RECEIVED_ORDER_EVENT, REFUND_CREDITCARD_EVENT } from '@app/common/constants/payment.constant';
 import { RmqService } from '@app/common';
-import { IRefundEvent, PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
+import { IReceivedOrder, IRefundEvent, PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
 import { IOrderStatusRefundEvent } from '@app/common/interfaces/order-event.interface';
 import { Web3Service } from './web3/web3.service';
 
@@ -33,6 +33,12 @@ export class PaymentsController {
     return this.paymentsService.merchantReportTotal(merchantId)
   }
   
+  @EventPattern(RECEIVED_ORDER_EVENT)
+  async handlerReceivedOrder(@Payload() data:IReceivedOrder , @Ctx() context: RmqContext) {
+    this.logger.warn("Received from cron order", data)
+    await this.paymentsService.receivedOrder(data)
+    this.rmqService.ack(context);
+  }
 
   @EventPattern(PAID_ORDERING_EVENT)
   async handlerOrdering(@Payload() data: PaidOrderingEvent, @Ctx() context: RmqContext) {
