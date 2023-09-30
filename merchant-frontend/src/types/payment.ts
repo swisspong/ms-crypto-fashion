@@ -20,17 +20,45 @@ interface IWithdrawPayload {
   recp_id: string,
   amount: number
 }
+interface IWithdrawEthPayload {
+  address: string,
+  amount: number
+}
 
 interface IPaymentReportRes {
+  // data: {
+  //   _id: "deposit" | "withdraw"
+  //   totalAmount: number
+  // }[]
+  // data: {
+  //   _id: {
+  //     type: "deposit" | "withdraw",
+  //     payment_method: "credit" | "wallet"
+  //   },
+  //   totalAmount: number,
+  //   totalWei?: number,
+  //   totalEth?: number
+  // }[]
   data: {
-    _id: "deposit" | "withdraw"
-    totalAmount: number
-  }[]
+    totalAmountDeposit: number
+    totalDepositCredit: number
+    totalDepositWei: number
+    totalDepositWallet: number
+    totalDepositEth: number
+    // totalWithdrawCredit:number
+    // totalWithdrawWallet:number
+    // totalWithdrawWei:number
+    totalAmountWithdraw: number
+    amountCreditCanWithdraw: number
+    amountWalletCanWithdraw: number
+    amountWeiCanWithdraw: number
+    amountEthCanWithdraw: number
+  }
 }
 interface IPaymentStatisticRes {
   data: {
-    totalSales: number,
-    totalOrders: number,
+    totalSales: number
+    totalOrders: number
     month: number
   }[]
 }

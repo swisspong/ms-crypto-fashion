@@ -17,6 +17,8 @@ import { Web3Service } from './web3/web3.service';
 import { TransactionTemporaryRepository } from './transaction-temporary.repository';
 
 import { WithdrawDto } from './dto/create-recipient.dto';
+import axios from 'axios';
+import { WithdrawEthDto } from './dto/withdraw-eth.dto';
 
 
 @Injectable()
@@ -43,7 +45,7 @@ export class PaymentsService {
 
   async receivedOrder(data: IReceivedOrder) {
     const { orderId, userId } = data
-    const txTmp = await this.transactionTemporaryRepository.findOne({ order_id: orderId, user_id: userId })
+    const txTmp = await this.transactionTemporaryRepository.findOne({ order_id: orderId, user_id: userId, type: TransactionFormat.DEPOSIT })
     const tx = await this.transactionPurchaseRepository.findOne({ order_id: orderId, user_id: userId })
     if (txTmp) {
       if (!tx) {
@@ -57,7 +59,7 @@ export class PaymentsService {
           tx_id: `tx_${this.uid.stamp(15)}`
         })
       }
-      await this.transactionTemporaryRepository.findOneAndDelete({ order_id: orderId, user_id: userId })
+      await this.transactionTemporaryRepository.findOneAndDelete({ order_id: orderId, user_id: userId, type: TransactionFormat.DEPOSIT })
     }
 
 
@@ -140,6 +142,7 @@ export class PaymentsService {
         payment_method: PaymentMethodFormat.CREDIT,
         user_id,
         mcht_id: order.mchtId,
+        type: TransactionFormat.DEPOSIT
       })))
       // await this.transactionPurchaseRepository.createMany(
       //   orders.map(order => ({
@@ -160,7 +163,7 @@ export class PaymentsService {
   async evnetRefund(data: IRefundEvent) {
     console.log("refund receive", data)
     const userTx = await this.transactionPurchaseRepository.findOne({ order_id: data.orderId })
-    const userTxTmp = await this.transactionTemporaryRepository.findOne({ order_id: data.orderId })
+    const userTxTmp = await this.transactionTemporaryRepository.findOne({ order_id: data.orderId, type: TransactionFormat.DEPOSIT })
     // const isHasWithdraw = userTxs.some(tx => tx.type === TransactionFormat.WITHDRAW)
     // const isHasRefund = userTxs.some(tx => tx.type === TransactionFormat.REFUND)
     // const txDeposit = userTxs.find(tx => tx.type === TransactionFormat.DEPOSIT)
@@ -185,7 +188,7 @@ export class PaymentsService {
         order_id: userTxTmp ? userTxTmp.order_id : userTx.order_id
       })
       await this.transactionTemporaryRepository.findOneAndDelete({
-        order_id: userTxTmp ? userTxTmp.order_id : userTx.order_id
+        order_id: userTxTmp ? userTxTmp.order_id : userTx.order_id, type: TransactionFormat.DEPOSIT
       })
 
       await lastValueFrom(this.orderClient.emit(UPDATE_STATUS_REFUND_EVENT, payload))
@@ -446,6 +449,7 @@ export class PaymentsService {
         {
           $match: {
             mcht_id: mchtId,
+            payment_method: PaymentMethodFormat.CREDIT
             // user_id: userId // Match documents with the specified merchant ID
           }
         },
@@ -494,8 +498,23 @@ export class PaymentsService {
     }
 
   }
+  async getWei(priceTHB: number) {
+    const data: { THB: number } = await (await axios.get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=THB")).data
+    const rateInTHB = data.THB
+    const rate = (1 * 10 ** 18) / rateInTHB
+    const toWei = rate * priceTHB
+    const rate2 = rateInTHB / (1 * 10 ** 18)
+    const bath = toWei * rate2
+    return { wei: Math.ceil(toWei), bath }
+  }
   async merchantReportTotal(mchtId: string) {
-    const aggregate = await this.transactionPurchaseRepository.aggregate([
+    const aggregate: {
+      _id: {
+        type: "deposit" | "withdraw",
+        payment_method: "credit" | "wallet"
+      },
+      totalAmount: number
+    }[] = await this.transactionPurchaseRepository.aggregate([
       {
         $match: {
           mcht_id: mchtId  // Match documents with the specified merchant ID
@@ -503,13 +522,71 @@ export class PaymentsService {
       },
       {
         $group: {
-          _id: '$type',  // Group by transaction type (deposit or withdraw)
+          _id: {
+            type: '$type',
+            payment_method: '$payment_method'
+          },  // Group by transaction type (deposit or withdraw)
           totalAmount: { $sum: '$amount' }  // Calculate the sum of the 'amount' field
         }
       }
     ])
+
+    // const data = await Promise.all(aggregate.map(async item => {
+    //   if (item._id.payment_method === "wallet") {
+    //     const data: { THB: number } = await (await axios.get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=THB")).data
+    //     const rateInTHB = data.THB
+    //     const rate2 = rateInTHB / (1 * 10 ** 18)
+    //     const bath = item.totalAmount * rate2
+    //     return {
+    //       ...item,
+    //       totalWei: item.totalAmount,
+    //       totalEth: item.totalAmount / (1 * 10 ** 18),
+    //       totalAmount: Math.ceil(bath)
+    //     }
+    //   }
+    //   return item
+    // }))
+    const totalDepositCredit = aggregate.find(item => item._id.type === "deposit" && item._id.payment_method === "credit")?.totalAmount ?? 0
+    const totalDepositWei = aggregate.find(item => item._id.type === "deposit" && item._id.payment_method === "wallet")?.totalAmount ?? 0
+    const totalWithdrawWei = aggregate.find(item => item._id.type === "withdraw" && item._id.payment_method === "wallet")?.totalAmount ?? 0
+    const totalWithdrawCredit = aggregate.find(item => item._id.type === "withdraw" && item._id.payment_method === "credit")?.totalAmount ?? 0
+    let totalDepositWallet = 0
+    let totalWithdrawWallet = 0
+    let totalDepositEth = 0
+    let amountCreditCanWithdraw = 0
+    let amountWalletCanWithdraw = 0
+    let amountWeiCanWithdraw = 0
+    let fiftyInWei = 0
+    if (totalDepositWei > 0) {
+      const data: { THB: number } = await (await axios.get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=THB")).data
+      const rateInTHB = data.THB
+      const rate2 = rateInTHB / (1 * 10 ** 18)
+      totalDepositWallet = Math.ceil(totalDepositWei * rate2)
+      totalWithdrawWallet = Math.ceil(totalWithdrawWei * rate2)
+      totalDepositEth = totalDepositWei / (1 * 10 ** 18)
+
+      const rate = (1 * 10 ** 18) / rateInTHB
+      fiftyInWei = rate * 50
+    }
+    amountWeiCanWithdraw = totalDepositWei - totalWithdrawWei - fiftyInWei
+    amountCreditCanWithdraw = totalDepositCredit - totalWithdrawCredit - 50
+    amountWalletCanWithdraw = totalDepositWallet - totalWithdrawWallet - 50
     return {
-      data: aggregate
+      data: {
+        totalAmountDeposit: totalDepositCredit + totalDepositWallet,
+        totalDepositCredit,
+        totalDepositWei,
+        totalDepositWallet,
+        totalDepositEth,
+        // totalWithdrawCredit,
+        // totalWithdrawWallet,
+        // totalWithdrawWei,
+        totalAmountWithdraw: totalWithdrawWallet + totalWithdrawCredit,
+        amountCreditCanWithdraw: amountCreditCanWithdraw <= 50 ? 0 : amountCreditCanWithdraw,
+        amountWalletCanWithdraw: amountWalletCanWithdraw <= 50 ? 0 : amountWalletCanWithdraw,
+        amountWeiCanWithdraw: amountWeiCanWithdraw <= fiftyInWei ? 0 : amountWeiCanWithdraw,
+        amountEthCanWithdraw: amountWeiCanWithdraw <= fiftyInWei ? 0 : amountWeiCanWithdraw / (1 * 10 ** 18)
+      }
     }
   }
 
@@ -531,7 +608,8 @@ export class PaymentsService {
         {
           $group: {
             _id: {
-              month: { $month: "$createdAt" }
+              month: { $month: "$createdAt" },
+              payment_method: '$payment_method'
             },
             totalSales: { $sum: "$amount" },
             totalOrders: { $sum: 1 }
@@ -546,6 +624,7 @@ export class PaymentsService {
           $project: {
             _id: 0,
             month: "$_id.month",
+            payment_method:"$_id.payment_method",
             totalSales: 1,
             totalOrders: 1
           }
@@ -558,6 +637,65 @@ export class PaymentsService {
       }
     } catch (error) {
       console.log(error)
+    }
+  }
+  async merchantWithdrawEth(userId: string, mchtId: string, payload: WithdrawEthDto) {
+    try {
+      const aggregate: {
+        _id: "deposit" | "withdraw",
+        totalAmount: number
+      }[] = await this.transactionPurchaseRepository.aggregate([
+        {
+          $match: {
+            mcht_id: mchtId,
+            payment_method: PaymentMethodFormat.WALLET// Match documents with the specified merchant ID
+          }
+        },
+        {
+          $group: {
+            _id: '$type',  // Group by transaction type (deposit or withdraw)
+            totalAmount: { $sum: '$amount' }  // Calculate the sum of the 'amount' field
+          }
+        }
+      ])
+      const data: { THB: number } = await (await axios.get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=THB")).data
+      const rateInTHB = data.THB
+      const rate = (1 * 10 ** 18) / rateInTHB
+      const fiftyInWei = rate * 50
+      if (aggregate.length <= 0) throw new BadRequestException("Insufficient balance")
+      const tmpTx = await this.transactionTemporaryRepository.find({ payment_method: PaymentMethodFormat.WALLET, type: TransactionFormat.WITHDRAW, mcht_id: mchtId, user_id: userId })
+      const tmpTotal = tmpTx.reduce((prev, curr) => prev + curr.amount, 0)
+
+      const totalDeposit = aggregate.find(item => item._id === TransactionFormat.DEPOSIT)?.totalAmount ?? 0
+      const totalWithdraw = aggregate.find(item => item._id === TransactionFormat.WITHDRAW)?.totalAmount ?? 0
+      const amount = totalDeposit - totalWithdraw - fiftyInWei - tmpTotal
+      if (payload.amount * (1 * 10 ** 18) > amount) throw new BadRequestException("Insufficient balance")
+      await this.transactionTemporaryRepository.create({
+
+        tx_id: `tx_${this.uid.stamp(15)}`,
+        amount: payload.amount * (1 * 10 ** 18),
+
+        payment_method: PaymentMethodFormat.WALLET,
+        user_id: userId,
+        mcht_id: mchtId,
+        type: TransactionFormat.WITHDRAW
+      })
+
+      //
+      //add withdraw web3 here
+      //
+
+      await this.transactionTemporaryRepository.findOneAndDelete({ payment_method: PaymentMethodFormat.WALLET, type: TransactionFormat.WITHDRAW, mcht_id: mchtId, user_id: userId })
+      await this.transactionPurchaseRepository.create({
+        amount: payload.amount * (1 * 10 ** 18),
+        mcht_id: mchtId,
+        payment_method: PaymentMethodFormat.WALLET,
+        type: TransactionFormat.WITHDRAW,
+        user_id: userId,
+        tx_id: `tx_${this.uid.stamp(15)}`
+      })
+    } catch (error) {
+
     }
   }
   async getAccountDetail(recpId: string) {

@@ -240,6 +240,7 @@ export class OrdersService {
         await this.ordersRepository.findOneAndUpdate({ order_id: id }, { $set: { payment_status: PaymentFormat.PAID, chrg_id: data.chargeId } })
       })
     )
+    this.logger.warn("update status", data)
     const { chkt_id, user_id } = data
     if (chkt_id && user_id) {
 

@@ -67,8 +67,8 @@ export class Web3Service implements OnModuleInit {
         order_id: orderId,
         payment_method: PaymentMethodFormat.WALLET,
         user_id: userId,
-        mcht_id: mchtId
-
+        mcht_id: mchtId,
+        type: TransactionFormat.DEPOSIT
       })
       const payload: IUpdateOrderStatusEventPayload = {
         user_id: userId,
@@ -81,7 +81,7 @@ export class Web3Service implements OnModuleInit {
     contract.on('RefundDone', async (tx, amount, orderId, userId, mchtId, timestamp) => {
       this.logger.log(tx, amount, orderId, userId, mchtId, timestamp)
       await this.transactionPurchaseRepository.findOneAndDelete({ order_id: orderId })
-      await this.transactionTemporaryRepository.findOneAndDelete({ order_id: orderId })
+      await this.transactionTemporaryRepository.findOneAndDelete({ order_id: orderId, payment_method: PaymentMethodFormat.WALLET, type: TransactionFormat.DEPOSIT })
       // await this.transactionPurchaseRepository.create(
       //   {
       //     tx_id: `tx_${this.uid.stamp(15)}`,
@@ -135,5 +135,20 @@ export class Web3Service implements OnModuleInit {
       this.logger.error("web3 method error ", error)
     }
 
+  }
+  async transferToMerchant(userId: string, mchtId: string, address: string, amount: number) {
+    try {
+      const cryptoPath = path.join(__dirname, '../../../../../../../apps/payments/src/contracts/CryptoFashionTokenGoerli.json')
+      const configuration = JSON.parse(fs.readFileSync(cryptoPath, 'utf8'));
+      const CONTRACT_ABI = configuration;
+      const provider = new ethers.InfuraWebSocketProvider('goerli', "b64de7c107a44261bb1b19536d7bed23",)
+      const CONTRACT_ADDRESS = this.configService.get<string>("CONTRACT_ADDRESS")
+      const signer = new ethers.Wallet(this.configService.get<string>("PRIVATE_KEY"), provider);
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer)
+      this.logger.warn(this.configService.get<string>("PRIVATE_KEY"), CONTRACT_ADDRESS)
+   
+    } catch (error) {
+      throw error
+    }
   }
 }

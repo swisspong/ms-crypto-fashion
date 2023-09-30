@@ -49,10 +49,24 @@ import AlertInfoMerchant from "@/components/alert-info-merchant";
 import { usePaymentReport } from "@/src/hooks/payment/queries";
 import { useMerchantOrders } from "@/src/hooks/order/queries";
 import { WithdrawDialog } from "@/components/withdraw/withdraw-dialog";
-
+import Web3 from "web3";
+import { WithdrawMetamaskDialog } from "@/components/withdraw/metamask/withdraw-metamask-dialog";
 
 const inter = Inter({ subsets: ["latin"] });
-
+function formatNumber(value?: number) {
+  if (value)
+    if (value === 0) {
+      return "0.00";
+    } else if (Math.abs(value) < 1) {
+      // Use toFixed for numbers less than 1
+      return value.toFixed(
+        Math.max(3, Math.ceil(-Math.log10(Math.abs(value))))
+      );
+    } else {
+      // Use toFixed for numbers greater than or equal to 1
+      return value.toFixed(2);
+    }
+}
 export default function Home() {
   const router = useRouter();
   const paymentReportQuery = usePaymentReport();
@@ -103,10 +117,21 @@ export default function Home() {
               <CardContent>
                 {/* <div className="text-2xl font-bold">$45,231.89</div> */}
                 <div className="text-2xl font-bold">
-                  ฿
-                  {paymentReportQuery.data?.data.find(
-                    (item) => item._id === "deposit"
-                  )?.totalAmount ?? 0}
+                  ฿{paymentReportQuery.data?.data.totalAmountDeposit}
+                  {/* (paymentReportQuery.data?.data.totalAmountDeposit) +
+                  
+                  // (฿
+                  // {paymentReportQuery.data?.data.find(
+                  //   (item) =>
+                  //     item._id.type === "deposit" &&
+                  //     item._id.payment_method === "credit"
+                  // )?.totalAmount ?? 0}{" "}
+                  // + ~฿
+                  // {paymentReportQuery.data?.data.find(
+                  //   (item) =>
+                  //     item._id.type === "deposit" &&
+                  //     item._id.payment_method === "wallet"
+                  // )?.totalAmount ?? 0} */}
                 </div>
                 {/* <p className="text-xs text-muted-foreground">
                   +20.1% from last month
@@ -122,27 +147,115 @@ export default function Home() {
                   Total Revenue
                 </CardTitle> */}
                 <CardTitle className="text-sm font-medium">
-                  จำนวนที่ถอนได้
+                  รายได้รวมช่องทางธรรมดา
+                </CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                {/* <div className="text-2xl font-bold">$45,231.89</div> */}
+                <div className="text-2xl font-bold">
+                  ฿{paymentReportQuery.data?.data.totalDepositCredit}
+                </div>
+                {/* <p className="text-xs text-muted-foreground">
+                  +20.1% from last month
+                </p> */}
+                <p className="text-xs text-muted-foreground">
+                  รายได้รวมทั้งหมดตั้งแต่เปิดร้าน
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                {/* <CardTitle className="text-sm font-medium">
+                  Total Revenue
+                </CardTitle> */}
+                <CardTitle className="text-sm font-medium">
+                  รายได้รวม metamask
+                </CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                {/* <div className="text-2xl font-bold">$45,231.89</div> */}
+                <div className="text-2xl font-bold">
+                  ~฿
+                  {paymentReportQuery.data?.data.totalDepositWallet} (~ETH{" "}
+                  {/* {paymentReportQuery.data?.data.find(
+                    (item) =>
+                      item._id.type === "deposit" &&
+                      item._id.payment_method === "wallet"
+                  )?.totalEth} */}
+                  {formatNumber(paymentReportQuery.data?.data.totalDepositEth)})
+                </div>
+                {/* <p className="text-xs text-muted-foreground">
+                  +20.1% from last month
+                </p> */}
+                <p className="text-xs text-muted-foreground">
+                  รายได้รวมทั้งหมดตั้งแต่เปิดร้าน
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                {/* <CardTitle className="text-sm font-medium">
+                  Total Revenue
+                </CardTitle> */}
+                <CardTitle className="text-sm font-medium">
+                  จำนวนที่ถอนได้ช่องทางธรรมดา
                 </CardTitle>
                 <WithdrawDialog />
               </CardHeader>
               <CardContent>
                 {/* <div className="text-2xl font-bold">$45,231.89</div> */}
                 <div className="text-2xl font-bold">
-                  ฿
-                  {(paymentReportQuery.data?.data.find(
-                    (item) => item._id === "deposit"
+                  ฿{paymentReportQuery.data?.data.amountCreditCanWithdraw ?? 0}
+                </div>
+                {/* <p className="text-xs text-muted-foreground">
+                  +20.1% from last month
+                </p> */}
+                <p className="text-xs text-muted-foreground">
+                  จำนวนที่ถอนได้ทั้งหมด
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                {/* <CardTitle className="text-sm font-medium">
+                  Total Revenue
+                </CardTitle> */}
+                <CardTitle className="text-sm font-medium">
+                  จำนวนที่ถอนได้ช่องทาง metamask
+                </CardTitle>
+                <WithdrawMetamaskDialog />
+                {/* <WithdrawDialog /> */}
+              </CardHeader>
+              <CardContent>
+                {/* <div className="text-2xl font-bold">$45,231.89</div> */}
+                <div className="text-2xl font-bold">
+                  ~฿{paymentReportQuery.data?.data.amountWalletCanWithdraw ?? 0}{" "}
+                  (~ETH{" "}
+                  {paymentReportQuery.data?.data.amountEthCanWithdraw &&
+                  paymentReportQuery.data?.data.amountEthCanWithdraw > 0
+                    ? formatNumber(
+                        paymentReportQuery.data?.data.amountEthCanWithdraw
+                      )
+                    : 0}
+                  )
+                  {/* {(paymentReportQuery.data?.data.find(
+                    (item) => item._id.type === "deposit"
                   )?.totalAmount ?? 0) -
                     (paymentReportQuery.data?.data.find(
-                      (item) => item._id === "withdraw"
+                      (item) => item._id.type === "withdraw"
                     )?.totalAmount ?? 0) -
-                    50<=0?0:(paymentReportQuery.data?.data.find(
-                      (item) => item._id === "deposit"
-                    )?.totalAmount ?? 0) -
-                      (paymentReportQuery.data?.data.find(
-                        (item) => item._id === "withdraw"
+                    50 <=
+                  0
+                    ? 0
+                    : (paymentReportQuery.data?.data.find(
+                        (item) => item._id.type === "deposit"
                       )?.totalAmount ?? 0) -
-                      50}
+                      (paymentReportQuery.data?.data.find(
+                        (item) => item._id.type === "withdraw"
+                      )?.totalAmount ?? 0) -
+                      50} */}
                 </div>
                 {/* <p className="text-xs text-muted-foreground">
                   +20.1% from last month
@@ -163,10 +276,10 @@ export default function Home() {
               <CardContent>
                 {/* <div className="text-2xl font-bold">$45,231.89</div> */}
                 <div className="text-2xl font-bold">
-                  ฿
-                  {paymentReportQuery.data?.data.find(
-                    (item) => item._id === "withdraw"
-                  )?.totalAmount ?? 0}
+                  ฿ {paymentReportQuery.data?.data.totalAmountWithdraw ?? 0}
+                  {/* {paymentReportQuery.data?.data.find(
+                    (item) => item._id.type === "withdraw"
+                  )?.totalAmount ?? 0} */}
                 </div>
                 {/* <p className="text-xs text-muted-foreground">
                   +20.1% from last month

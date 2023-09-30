@@ -2,6 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { Dispatch, FC, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { usePaymentReport } from "@/src/hooks/payment/queries";
+import { useWithdraw, useWithdrawEth } from "@/src/hooks/payment/mutations";
+import { useGetMerchantCredential } from "@/src/hooks/merchant/queries";
 import {
   Form,
   FormControl,
@@ -9,42 +12,30 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { DialogFooter } from "../ui/dialog";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "recharts";
-import { usePaymentReport } from "@/src/hooks/payment/queries";
-import { useWithdraw } from "@/src/hooks/payment/mutations";
-import { useGetMerchantCredential } from "@/src/hooks/merchant/queries";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 const formSchema = z.object({
-  amount: z
-    .number()
-    .int()
-    .min(100, { message: "ต้องมากกว่าหรือเท่ากับ 100 บาท" }),
+  amount: z.number(),
+  address: z.string(),
 });
 interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
-const WithdrawForm: FC<Props> = ({ setOpen }) => {
+const WithdrawMetamaskForm: FC<Props> = ({ setOpen }) => {
   const paymentReportQuery = usePaymentReport();
-  const credentialQuery = useGetMerchantCredential();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      amount: 100,
-    },
+    defaultValues: {},
   });
-  const withdraw = useWithdraw();
+  const withdraw = useWithdrawEth();
   function onSubmit(values: z.infer<typeof formSchema>) {
     // if (!id) addHandler(values)
     // else updateHandler(values)
     console.log(values);
-    if (credentialQuery.data?.recp_id)
-      withdraw.mutate({
-        amount: values.amount,
-        recp_id: credentialQuery.data.recp_id,
-      });
+
+    withdraw.mutate(values);
   }
   const allowOnlyNumber = (value: any) => {
     if (Number(value) <= 0) {
@@ -65,6 +56,27 @@ const WithdrawForm: FC<Props> = ({ setOpen }) => {
           <div className="w-full grid gap-4 py-4">
             <FormField
               control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-4 items-center gap-4">
+                  <FormLabel className="text-right">ที่อยู่ wallet</FormLabel>
+                  <div className="w-full col-span-3">
+                    <FormControl className="">
+                      <Input
+                        type="text"
+                        placeholder="ที่อยู่ wallet (ต้องกรอก)"
+                        //disabled={isLoading}
+
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="amount"
               render={({ field }) => (
                 <FormItem className="grid grid-cols-4 items-center gap-4">
@@ -73,12 +85,12 @@ const WithdrawForm: FC<Props> = ({ setOpen }) => {
                     <FormControl className="">
                       <Input
                         type="number"
-                        placeholder="amount (required)"
+                        placeholder="จำนวน (ต้องกรอก)"
                         //disabled={isLoading}
 
                         {...field}
                         max={
-                          paymentReportQuery.data?.data.amountCreditCanWithdraw
+                          paymentReportQuery.data?.data.amountEthCanWithdraw
                         }
                         onChange={(e) =>
                           field.onChange(
@@ -108,4 +120,4 @@ const WithdrawForm: FC<Props> = ({ setOpen }) => {
   );
 };
 
-export default WithdrawForm;
+export default WithdrawMetamaskForm;

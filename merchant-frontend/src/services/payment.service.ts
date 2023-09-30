@@ -27,6 +27,11 @@ export const postWithdraw = async (body: IWithdrawPayload): Promise<void> => {
         (response) => response.data
     );
 }
+export const postWithdrawEth = async (body: IWithdrawEthPayload): Promise<void> => {
+    return await api.post(`payments/withdraw/eth`, body).then(
+        (response) => response.data
+    );
+}
 
 
 

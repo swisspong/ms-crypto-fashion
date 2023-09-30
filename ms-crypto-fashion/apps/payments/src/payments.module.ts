@@ -38,7 +38,7 @@ import { CronService } from './cron/cron.service';
     MongooseModule.forFeature([{ name: TransactionMerchant.name, schema: TransactionMerchantSchema }]),
     MongooseModule.forFeature([{ name: TransactionTemporary.name, schema: TransactionTemporarySchema }]),
     Web3Module,
-    ScheduleModule.forRoot()
+//ScheduleModule.forRoot()
   ],
   controllers: [PaymentsController],
   providers: [
@@ -48,7 +48,7 @@ import { CronService } from './cron/cron.service';
     TransactionMerchantRepository,
     TransactionPurchaseRepository,
     TransactionTemporaryRepository,
-    CronService
+    //CronService
   ],
   exports: [
     TransactionMerchantRepository,

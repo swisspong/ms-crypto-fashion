@@ -10,6 +10,7 @@ import { IReceivedOrder, IRefundEvent, PaidOrderingEvent } from '@app/common/int
 import { IOrderStatusRefundEvent } from '@app/common/interfaces/order-event.interface';
 import { Web3Service } from './web3/web3.service';
 import { WithdrawDto } from './dto/create-recipient.dto';
+import { WithdrawEthDto } from './dto/withdraw-eth.dto';
 
 
 
@@ -34,6 +35,10 @@ export class PaymentsController {
   @Post("withdraw")
   createRecipient(@GetUser("merchant") merchantId: string, @GetUserId() userId: string, @Body() dto: WithdrawDto) {
     return this.paymentsService.withdraw(merchantId, userId, dto)
+  }
+  @Post("withdraw/eth")
+  withdrawWallet(@GetUser("merchant") merchantId: string, @GetUserId() userId: string, @Body() dto: WithdrawEthDto) {
+    return this.paymentsService.merchantWithdrawEth(userId, merchantId, dto)
   }
 
 

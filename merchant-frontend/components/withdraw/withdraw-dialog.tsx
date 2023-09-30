@@ -42,14 +42,7 @@ export function WithdrawDialog() {
           size={"sm"}
           disabled={
             !paymentReportQuery.data?.data ||
-            (paymentReportQuery.data?.data.find(
-              (item) => item._id === "deposit"
-            )?.totalAmount ?? 0) -
-              (paymentReportQuery.data?.data.find(
-                (item) => item._id === "withdraw"
-              )?.totalAmount ?? 0) -
-              50 <
-              100
+            paymentReportQuery.data?.data.amountCreditCanWithdraw <= 0
           }
         >
           ถอน
@@ -62,14 +55,7 @@ export function WithdrawDialog() {
               <DialogTitle>ถอนเงินออกจากระบบ</DialogTitle>
               <DialogDescription>
                 ถอนเงินได้ไม่เกิน{" "}
-                {(paymentReportQuery.data?.data.find(
-                  (item) => item._id === "deposit"
-                )?.totalAmount ?? 0) -
-                  (paymentReportQuery.data?.data.find(
-                    (item) => item._id === "withdraw"
-                  )?.totalAmount ?? 0) -
-                  50}{" "}
-                บาท
+                {paymentReportQuery.data?.data.amountCreditCanWithdraw} บาท
               </DialogDescription>
             </DialogHeader>
             <Card>
