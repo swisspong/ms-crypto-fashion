@@ -1,7 +1,7 @@
 import axios from "axios";
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
- 
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -41,7 +41,8 @@ export enum SERVICE_FORMAT {
   ADDRESS = 'address',
   CHECKOUT = 'checkout',
   COMMENT = 'comment',
-  COMPLAINT = 'complaint'
+  COMPLAINT = 'complaint',
+  WISHLIST = 'wishlist'
 }
 interface DynamicApiOptions {
   ssr: boolean,
@@ -71,8 +72,10 @@ const urlFactory = (value: SERVICE_FORMAT) => {
       return [csrString, ssrString.concat('products:8001')]
     case SERVICE_FORMAT.CHECKOUT:
       return [csrString, ssrString.concat('orders:8003')]
-      case SERVICE_FORMAT.COMPLAINT:
+    case SERVICE_FORMAT.COMPLAINT:
       return [csrString, ssrString.concat('products:8001')]
+    case SERVICE_FORMAT.WISHLIST:
+      return [csrString, ssrString.concat('carts:8002')]
     default:
       return [csrString, ssrString.concat('auth:8000')]
   }

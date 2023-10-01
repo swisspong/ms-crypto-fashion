@@ -15,6 +15,7 @@ import { ProductsUtilModule } from '@app/common/utils/products/products-util.mod
 import { ORDER_SERVICE } from '@app/common/constants/order.constant';
 import { ProductsValidator } from '@app/common/utils/products/products-validator';
 import { CartItemsValidator } from '@app/common/utils/carts/cart-items-validator';
+import { WishListsModule } from '../wishlists/wishlists.module';
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { CartItemsValidator } from '@app/common/utils/carts/cart-items-validator
     ]),
     
     CheckoutsModule,
-    ProductsUtilModule
+    ProductsUtilModule,
+    WishListsModule
   ],
   controllers: [CartsController],
   providers: [

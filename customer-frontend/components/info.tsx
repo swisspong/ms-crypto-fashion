@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
 import Currency from "./currency";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -17,6 +17,8 @@ import {
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useAddToCart } from "@/src/hooks/cart/mutations";
 import { toast } from "react-toastify";
+import { useAddToWishlist } from "@/src/hooks/wishlist/mutations";
+
 
 interface InfoProps {
   data?: IProductRow;
@@ -39,6 +41,10 @@ const Info: React.FC<InfoProps> = ({
     { vgrpId: string; optnId: string }[]
   >([]);
   const { mutate, isSuccess } = useAddToCart();
+
+  // *Wishlist
+  const { mutate: handleWishlist } = useAddToWishlist()
+
   useEffect(() => {
     if (data) {
       setSelecteds(
@@ -70,15 +76,17 @@ const Info: React.FC<InfoProps> = ({
             ? 1
             : 0
           : data?.stock && data.stock > 0
-          ? 1
-          : 0
+            ? 1
+            : 0
       );
     }
   }, [vrntSelected]);
+
   const onSubmit = () => {
     if (data?.variants && data.variants.length <= 0 && canAddToCart) {
       console.log(quantity);
       mutate({ prodId: data.prod_id!, body: { quantity } });
+
     } else if (data?.variants) {
       const vrnt =
         data.variants.find((variant) =>
@@ -95,6 +103,12 @@ const Info: React.FC<InfoProps> = ({
       }
     }
   };
+
+  const onClickToWishlist = () => {
+    if (data) {
+      handleWishlist({ prod_id: data.prod_id! })
+    }
+  }
 
   useEffect(() => {
     if (isSuccess) {
@@ -405,10 +419,10 @@ const Info: React.FC<InfoProps> = ({
             max={
               data?.variants && data?.variants.length > 0
                 ? data.variants.find((vrnts) => vrntSelected === vrnts.vrnt_id)
-                    ?.stock ?? 0
+                  ?.stock ?? 0
                 : data?.stock && data.stock > 0
-                ? data.stock
-                : 0
+                  ? data.stock
+                  : 0
             }
             // min={data?.stock && data.stock > 0 ? 1 : 0}
             min={
@@ -417,8 +431,8 @@ const Info: React.FC<InfoProps> = ({
                   ? 1
                   : 0
                 : data?.stock && data.stock > 0
-                ? 1
-                : 0
+                  ? 1
+                  : 0
             }
             onChange={(e) => setQuantity(Number(e.target.value))}
             onKeyDown={(e) => {
@@ -439,6 +453,31 @@ const Info: React.FC<InfoProps> = ({
           เพิ่มเข้าตะกร้า
           <ShoppingCart size={20} />
         </Button>
+
+        <Button
+          onClick={onClickToWishlist}
+          className="flex items-center gap-x-2 w-40"
+        >
+          สิ่งที่อยากซื้อ
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+          </svg>
+          {/* อยู่ในสิ่งที่อยากซื้อ
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+            <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+          </svg> */}
+        </Button>
+        {/* <Button
+          className="flex items-center gap-x-2 w-40"
+        >
+          อยู่ในสิ่งที่อยากซื้อ
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+            <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+          </svg>
+
+        </Button> */}
       </div>
       <hr className="my-10" />
       <div className="mt-10  gap-x-3">
