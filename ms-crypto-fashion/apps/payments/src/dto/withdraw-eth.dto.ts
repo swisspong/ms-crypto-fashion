@@ -15,7 +15,7 @@ export class WithdrawEthDto {
 
 
 
-    @ApiProperty({ example: 1000 })
-    @IsNumber()
-    amount: number
+    // @ApiProperty({ example: 1000 })
+    // @IsNumber()
+    // amount: number
 }

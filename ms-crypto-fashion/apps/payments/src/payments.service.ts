@@ -464,15 +464,18 @@ export class PaymentsService {
       const totalDeposit = aggregate.find(item => item._id === TransactionFormat.DEPOSIT)?.totalAmount ?? 0
       const totalWithdraw = aggregate.find(item => item._id === TransactionFormat.WITHDRAW)?.totalAmount ?? 0
       const amount = totalDeposit - totalWithdraw - 50
-      if (payload.amount > amount) throw new BadRequestException("Insufficient balance")
+      if (amount <= 0) throw new BadRequestException("Insufficient balance")
+      // if (payload.amount > amount) throw new BadRequestException("Insufficient balance")
       const transfer = await this.omise.transfers.create({
-        amount: payload.amount * 100,
+        // amount: payload.amount * 100,
+        amount: amount * 100,
         recipient: payload.recp_id,
       });
       this.logger.log(transfer)
       await this.transactionPurchaseRepository.create({
         tx_id: `tx_${this.uid.stamp(15)}`,
-        amount: payload.amount,
+        // amount: payload.amount,
+        amount: amount,
         mcht_id: mchtId,
         payment_method: PaymentMethodFormat.CREDIT,
         type: TransactionFormat.WITHDRAW,
@@ -586,7 +589,7 @@ export class PaymentsService {
         amountWalletCanWithdraw: amountWalletCanWithdraw < 50 ? 0 : amountWalletCanWithdraw,
         amountWeiCanWithdraw: amountWeiCanWithdraw <= fiftyInWei ? 0 : amountWeiCanWithdraw,
         amountEthCanWithdraw: amountWeiCanWithdraw <= fiftyInWei ? 0 : amountWeiCanWithdraw / (1 * 10 ** 18),
-        
+
       }
     }
   }
@@ -700,11 +703,14 @@ export class PaymentsService {
       const totalDeposit = aggregate.find(item => item._id === TransactionFormat.DEPOSIT)?.totalAmount ?? 0
       const totalWithdraw = aggregate.find(item => item._id === TransactionFormat.WITHDRAW)?.totalAmount ?? 0
       const amount = totalDeposit - totalWithdraw - fiftyInWei - tmpTotal
-      if (payload.amount * (1 * 10 ** 18) > amount) throw new BadRequestException("Insufficient balance")
+      // if (payload.amount * (1 * 10 ** 18) > amount) throw new BadRequestException("Insufficient balance")
+
+      if (amount <= 0) throw new BadRequestException("Insufficient balance")
       await this.transactionTemporaryRepository.create({
 
         tx_id: `tx_${this.uid.stamp(15)}`,
-        amount: payload.amount * (1 * 10 ** 18),
+        // amount: payload.amount * (1 * 10 ** 18),
+        amount: amount,
 
         payment_method: PaymentMethodFormat.WALLET,
         user_id: userId,
@@ -718,7 +724,8 @@ export class PaymentsService {
 
       await this.transactionTemporaryRepository.findOneAndDelete({ payment_method: PaymentMethodFormat.WALLET, type: TransactionFormat.WITHDRAW, mcht_id: mchtId, user_id: userId })
       await this.transactionPurchaseRepository.create({
-        amount: payload.amount * (1 * 10 ** 18),
+        // amount: payload.amount * (1 * 10 ** 18),
+        amount: amount,
         mcht_id: mchtId,
         payment_method: PaymentMethodFormat.WALLET,
         type: TransactionFormat.WITHDRAW,

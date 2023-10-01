@@ -16,6 +16,8 @@ import * as z from "zod";
 import dynamic from "next/dynamic";
 import { PaymentMethodFormat } from "@/src/types/enums/product";
 import RemoveItemAllertDialog from "@/components/cart/remove-item-allert-dialog";
+import CartDataTable from "@/components/cart/cart-data-table";
+import CartItemNew from "@/components/cart/cart-item-new";
 const RemoveItemDialog = dynamic(
   () => import("@/components/remove-item-dialog"),
   { ssr: false }
@@ -30,7 +32,7 @@ const CartPage = () => {
   const [selecteds, setSelecteds] = useState<string[]>([]);
   const [isNormalPay, setIsNormalPay] = useState<boolean | undefined>();
   const paymentMethodHandler = (val: boolean | undefined) => {
-    setSelecteds([])
+    setSelecteds([]);
     setIsNormalPay(val);
   };
   const { data } = useMyCart();
@@ -45,13 +47,15 @@ const CartPage = () => {
           <h1 className="text-3xl font-bold text-black">รถเข็น</h1>
           <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start gap-x-12">
             <div className="lg:col-span-7">
+              {/* <CartDataTable /> */}
+
               {data?.items?.length === 0 && (
                 <p className="text-neutral-500 flex justify-center">
                   ไม่มีสินค้าเพิ่มลงในรถเข็น
                 </p>
               )}
-              {data
-                ?.items?.filter(
+              {data?.items
+                ?.filter(
                   (item) =>
                     isNormalPay === undefined ||
                     (isNormalPay === true &&
@@ -64,12 +68,20 @@ const CartPage = () => {
                       ))
                 )
                 ?.map((item) => (
-                  <CartItem
-                    data={item}
-                    setSelecteds={setSelecteds}
-                    selecteds={selecteds}
-                    isNormalPay={isNormalPay}
-                  />
+                  <>
+                    <CartItemNew
+                      data={item}
+                      setSelecteds={setSelecteds}
+                      selecteds={selecteds}
+                      isNormalPay={isNormalPay}
+                    />
+                    {/* <CartItem
+                      data={item}
+                      setSelecteds={setSelecteds}
+                      selecteds={selecteds}
+                      isNormalPay={isNormalPay}
+                    /> */}
+                  </>
                 ))}
             </div>
             <Summary

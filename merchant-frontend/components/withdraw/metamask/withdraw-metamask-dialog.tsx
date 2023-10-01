@@ -50,9 +50,25 @@ export function WithdrawMetamaskDialog() {
               {paymentReportQuery.data?.data.amountEthCanWithdraw} ETH
             </DialogDescription>
           </DialogHeader>
-
+          <Card>
+            <CardContent className="pt-6 grid gap-1">
+              <div className="-mx-2 flex items-start space-x-4 rounded-md p-1 transition-all hover:bg-accent hover:text-accent-foreground">
+                <User2 className="mt-px h-5 w-5" />
+                <div className="space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    จำนวนที่จะถอน
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    ETH {paymentReportQuery.data?.data.amountEthCanWithdraw}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    ฿ {paymentReportQuery.data?.data.amountWalletCanWithdraw}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           <WithdrawMetamaskForm setOpen={setOpen} />
-          {/* <WithdrawForm setOpen={setOpen} /> */}
         </>
       </DialogContent>
     </Dialog>

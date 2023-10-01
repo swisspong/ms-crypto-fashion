@@ -17,13 +17,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PaymentMethod } from "@/components/payment-method";
 import Currency from "@/components/currency";
-import CheckoutItem from "@/components/checkout-item";
+//import CheckoutItem from "@/components/checkout-item";
 import { useGetCheckoutById } from "@/src/hooks/checkout/queries";
 import { useRouter } from "next/router";
 import { useMyAddress } from "@/src/hooks/address/queries";
 import AddressListDialog from "@/components/account/address-list-dialog";
 import RemoveCheckoutAlertDialog from "@/components/checkout/remove-checkout-alert-dialog";
 import Link from "next/link";
+import CheckoutItem from "@/components/checkout/checkout-item";
 
 const formSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {

@@ -18,11 +18,11 @@ interface ICreateCreditCard {
 }
 interface IWithdrawPayload {
   recp_id: string,
-  amount: number
+  // amount: number
 }
 interface IWithdrawEthPayload {
   address: string,
-  amount: number
+  // amount: number
 }
 
 interface IPaymentReportRes {

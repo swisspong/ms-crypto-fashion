@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 const formSchema = z.object({
-  amount: z.number(),
+  // amount: z.number(),
   address: z.string(),
 });
 interface Props {
@@ -75,7 +75,7 @@ const WithdrawMetamaskForm: FC<Props> = ({ setOpen }) => {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="amount"
               render={({ field }) => (
@@ -103,7 +103,7 @@ const WithdrawMetamaskForm: FC<Props> = ({ setOpen }) => {
                   </div>
                 </FormItem>
               )}
-            />
+            /> */}
             {/* <Label htmlFor="name" className="text-right">
               จำนวน
             </Label>

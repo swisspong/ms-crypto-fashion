@@ -18,10 +18,10 @@ import { usePaymentReport } from "@/src/hooks/payment/queries";
 import { useWithdraw } from "@/src/hooks/payment/mutations";
 import { useGetMerchantCredential } from "@/src/hooks/merchant/queries";
 const formSchema = z.object({
-  amount: z
-    .number()
-    .int()
-    .min(50, { message: "ต้องมากกว่าหรือเท่ากับ 100 บาท" }),
+  // amount: z
+  //   .number()
+  //   .int()
+  //   .min(50, { message: "ต้องมากกว่าหรือเท่ากับ 100 บาท" }),
 });
 interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -42,7 +42,7 @@ const WithdrawForm: FC<Props> = ({ setOpen }) => {
     console.log(values);
     if (credentialQuery.data?.recp_id)
       withdraw.mutate({
-        amount: values.amount,
+        // amount: values.amount,
         recp_id: credentialQuery.data.recp_id,
       });
   }
@@ -60,10 +60,10 @@ const WithdrawForm: FC<Props> = ({ setOpen }) => {
   }, [withdraw.isSuccess]);
   return (
     <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+      {/* <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}> */}
           <div className="w-full grid gap-4 py-4">
-            <FormField
+            {/* <FormField
               control={form.control}
               name="amount"
               render={({ field }) => (
@@ -91,7 +91,7 @@ const WithdrawForm: FC<Props> = ({ setOpen }) => {
                   </div>
                 </FormItem>
               )}
-            />
+            /> */}
             {/* <Label htmlFor="name" className="text-right">
               จำนวน
             </Label>
@@ -102,8 +102,8 @@ const WithdrawForm: FC<Props> = ({ setOpen }) => {
               ยืนยัน
             </Button>
           </DialogFooter>
-        </form>
-      </Form>
+        {/* </form>
+      </Form> */}
     </>
   );
 };
