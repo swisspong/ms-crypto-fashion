@@ -21,7 +21,7 @@ const formSchema = z.object({
   amount: z
     .number()
     .int()
-    .min(100, { message: "ต้องมากกว่าหรือเท่ากับ 100 บาท" }),
+    .min(50, { message: "ต้องมากกว่าหรือเท่ากับ 100 บาท" }),
 });
 interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -32,7 +32,7 @@ const WithdrawForm: FC<Props> = ({ setOpen }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      amount: 100,
+      amount: 50,
     },
   });
   const withdraw = useWithdraw();

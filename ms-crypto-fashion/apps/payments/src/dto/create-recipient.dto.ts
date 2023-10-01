@@ -11,6 +11,6 @@ export class WithdrawDto {
     recp_id: string
     @ApiProperty({})
     @IsNumber()
-    @Min(100)
+    @Min(50)
     amount: number
 }

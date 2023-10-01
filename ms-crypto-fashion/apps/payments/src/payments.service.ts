@@ -582,10 +582,11 @@ export class PaymentsService {
         // totalWithdrawWallet,
         // totalWithdrawWei,
         totalAmountWithdraw: totalWithdrawWallet + totalWithdrawCredit,
-        amountCreditCanWithdraw: amountCreditCanWithdraw <= 50 ? 0 : amountCreditCanWithdraw,
-        amountWalletCanWithdraw: amountWalletCanWithdraw <= 50 ? 0 : amountWalletCanWithdraw,
+        amountCreditCanWithdraw: amountCreditCanWithdraw < 50 ? 0 : amountCreditCanWithdraw,
+        amountWalletCanWithdraw: amountWalletCanWithdraw < 50 ? 0 : amountWalletCanWithdraw,
         amountWeiCanWithdraw: amountWeiCanWithdraw <= fiftyInWei ? 0 : amountWeiCanWithdraw,
-        amountEthCanWithdraw: amountWeiCanWithdraw <= fiftyInWei ? 0 : amountWeiCanWithdraw / (1 * 10 ** 18)
+        amountEthCanWithdraw: amountWeiCanWithdraw <= fiftyInWei ? 0 : amountWeiCanWithdraw / (1 * 10 ** 18),
+        
       }
     }
   }
@@ -594,7 +595,12 @@ export class PaymentsService {
     try {
       const currentYear = new Date().getFullYear();
 
-      const amountOrderMonth = await this.transactionPurchaseRepository.aggregate([
+      const amountOrderMonth: {
+        totalSales: number
+        totalOrders: number
+        month: number
+        payment_method: "wallet" | "credit"
+      }[] = await this.transactionPurchaseRepository.aggregate([
         {
           $match: {
             mcht_id: mchtId,
@@ -624,16 +630,41 @@ export class PaymentsService {
           $project: {
             _id: 0,
             month: "$_id.month",
-            payment_method:"$_id.payment_method",
+            payment_method: "$_id.payment_method",
             totalSales: 1,
             totalOrders: 1
           }
         }
       ])
 
+      let filterWallet = amountOrderMonth.filter(data => data.payment_method === "wallet")
+      const filterCredit = amountOrderMonth.filter(data => data.payment_method === "credit")
+      if (filterWallet.length > 0) {
+        const data: { THB: number } = await (await axios.get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=THB")).data
+        const rateInTHB = data.THB
+        const weiPerTHB = rateInTHB / (1 * 10 ** 18)
+        filterWallet = filterWallet.map(data => {
+          return {
+            ...data,
+            totalSales: Math.ceil(data.totalSales * weiPerTHB)
+          }
+        })
+      }
 
       return {
-        data: amountOrderMonth
+        data: filterCredit.map(credit => {
+          const { payment_method, ...newCredit } = credit
+          const wallet = filterWallet.find(wallet => wallet.month === credit.month)
+          if (wallet) {
+            return {
+              ...newCredit,
+              totalSales: newCredit.totalSales + wallet.totalSales
+            }
+          }
+          return {
+            ...newCredit
+          }
+        })
       }
     } catch (error) {
       console.log(error)

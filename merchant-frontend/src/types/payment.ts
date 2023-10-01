@@ -53,6 +53,7 @@ interface IPaymentReportRes {
     amountWalletCanWithdraw: number
     amountWeiCanWithdraw: number
     amountEthCanWithdraw: number
+    amountCreditRemaining:number
   }
 }
 interface IPaymentStatisticRes {

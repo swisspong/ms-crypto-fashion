@@ -231,7 +231,9 @@ export default function Home() {
               <CardContent>
                 {/* <div className="text-2xl font-bold">$45,231.89</div> */}
                 <div className="text-2xl font-bold">
-                  ~฿{paymentReportQuery.data?.data.amountWalletCanWithdraw ?? 0}{" "}
+                 
+                  ~฿{paymentReportQuery.data?.data.amountWalletCanWithdraw ??
+                    0}{" "}
                   (~ETH{" "}
                   {paymentReportQuery.data?.data.amountEthCanWithdraw &&
                   paymentReportQuery.data?.data.amountEthCanWithdraw > 0
