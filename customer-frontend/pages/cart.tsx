@@ -17,8 +17,9 @@ import dynamic from "next/dynamic";
 import { PaymentMethodFormat } from "@/src/types/enums/product";
 import RemoveItemAllertDialog from "@/components/cart/remove-item-allert-dialog";
 import CartDataTable from "@/components/cart/cart-data-table";
-import CartItemNew from "@/components/cart/cart-item-new";
+
 import useCartHook from "@/components/cart/use-cart-hook";
+import CartItemNew from "@/components/cart/cart-item/cart-item-new";
 const RemoveItemDialog = dynamic(
   () => import("@/components/remove-item-dialog"),
   { ssr: false }

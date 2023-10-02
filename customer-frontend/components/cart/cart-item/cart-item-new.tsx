@@ -1,5 +1,5 @@
 import React from "react";
-import { Checkbox } from "../ui/checkbox";
+
 import {
   Bitcoin,
   ChevronRight,
@@ -10,9 +10,11 @@ import {
 } from "lucide-react";
 import { Plus } from "lucide-react";
 import { PaymentMethodFormat } from "@/src/types/enums/product";
-import IconButton from "../icon-button";
-import VaraintPopover from "./variant-popover";
+
 import useCartItemHook from "./use-cart-item-hook";
+import { Checkbox } from "@/components/ui/checkbox";
+import VaraintPopover from "../variant-popover";
+import IconButton from "@/components/icon-button";
 
 interface CartItemProps {
   data: ICartItem;

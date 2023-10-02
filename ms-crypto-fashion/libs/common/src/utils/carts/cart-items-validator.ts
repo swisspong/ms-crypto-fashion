@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { CartItem } from "apps/carts/src/schemas/cart.schema";
 import { Product } from "apps/products/src/schemas/product.schema";
 import { ProductsValidator } from "../products/products-validator";
@@ -24,20 +24,20 @@ export class CartItemsValidator {
         }
     }
     validateEnough(cartItem: CartItem) {
-        if (cartItem.vrnt_id) throw new Error("Product info has changed")
+        if (cartItem.vrnt_id) throw new BadRequestException("Product info has changed")
         if (cartItem.quantity > cartItem.product.stock) {
-            throw new Error("Out of stock")
+            throw new BadRequestException("Out of stock")
         }
 
     }
     validateEnoughOptions(cartItem: CartItem) {
-        if (!cartItem.vrnt_id) throw new Error("Product info has changed")
+        if (!cartItem.vrnt_id) throw new BadRequestException("Product info has changed")
         const variant = cartItem.product.variants.find(vrnt => vrnt.vrnt_id === cartItem.vrnt_id)
-        if (!variant) throw new Error("Product info has changed.")
+        if (!variant) throw new BadRequestException("Product info has changed.")
         if (
             cartItem.quantity > variant.stock
         ) {
-            throw new Error("Out of stock")
+            throw new BadRequestException("Out of stock")
         }
 
     }

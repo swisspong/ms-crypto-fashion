@@ -18,12 +18,18 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useAddToCart } from "@/src/hooks/cart/mutations";
 import { toast } from "react-toastify";
 import { useAddToWishlist } from "@/src/hooks/wishlist/mutations";
-
+import useAddItemHook from "./use-add-item-hook";
 
 interface InfoProps {
   data?: IProductRow;
   canAddToCart?: boolean;
-  setVrntSelected: Dispatch<SetStateAction<string | undefined>>;
+  //setVrntSelected: Dispatch<SetStateAction<string | undefined>>;
+  vrntSelectedHandler: (
+    selecteds: {
+      vgrpId: string;
+      optnId: string;
+    }[]
+  ) => void;
   vrntSelected: string | undefined;
 }
 const formSchema = z.object({
@@ -32,106 +38,118 @@ const formSchema = z.object({
 });
 const Info: React.FC<InfoProps> = ({
   data,
-  setVrntSelected,
+  //setVrntSelected,
+  vrntSelectedHandler,
   canAddToCart = false,
   vrntSelected,
 }) => {
-  const [quantity, setQuantity] = useState<number>(0);
-  const [selecteds, setSelecteds] = useState<
-    { vgrpId: string; optnId: string }[]
-  >([]);
-  const { mutate, isSuccess } = useAddToCart();
+  const {
+    disableButtonHandler,
+    onClickToWishlist,
+    onSubmit,
+    quantityHandler,
+    quantity,
+    selectValueChangeHandler,
+    disableSelect,
+    selecteds,
+    showSelectValue,
+  } = useAddItemHook(data, vrntSelectedHandler, vrntSelected, canAddToCart);
+  // const [quantity, setQuantity] = useState<number>(0);
+  // const [selecteds, setSelecteds] = useState<
+  //   { vgrpId: string; optnId: string }[]
+  // >([]);
+  // const { mutate, isSuccess } = useAddToCart();
 
-  // *Wishlist
-  const { mutate: handleWishlist } = useAddToWishlist()
+  // // *Wishlist
+  // const { mutate: handleWishlist } = useAddToWishlist()
 
-  useEffect(() => {
-    if (data) {
-      setSelecteds(
-        data.groups.map((group) => ({ vgrpId: group.vgrp_id, optnId: "" }))
-      );
-    }
-    setQuantity(data?.stock && data.stock > 0 ? 1 : 0);
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     setSelecteds(
+  //       data.groups.map((group) => ({ vgrpId: group.vgrp_id, optnId: "" }))
+  //     );
+  //   }
+  //   setQuantity(data?.stock && data.stock > 0 ? 1 : 0);
+  // }, [data]);
 
-  useEffect(() => {
-    console.log(selecteds);
-    setVrntSelected(
-      data?.variants.find((variant) =>
-        variant.variant_selecteds.every((vrnts) =>
-          selecteds.some(
-            (slct) =>
-              slct.optnId === vrnts.optn_id && slct.vgrpId === vrnts.vgrp_id
-          )
-        )
-      )?.vrnt_id ?? undefined
-    );
-  }, [selecteds]);
+  // useEffect(() => {
+  //   console.log(selecteds);
+  //   setVrntSelected(
+  //     data?.variants.find((variant) =>
+  //       variant.variant_selecteds.every((vrnts) =>
+  //         selecteds.some(
+  //           (slct) =>
+  //             slct.optnId === vrnts.optn_id && slct.vgrpId === vrnts.vgrp_id
+  //         )
+  //       )
+  //     )?.vrnt_id ?? undefined
+  //   );
+  // }, [selecteds]);
 
-  useEffect(() => {
-    if (vrntSelected) {
-      setQuantity(
-        data?.variants && data?.variants.length > 0
-          ? data.variants.some((vrnts) => vrntSelected === vrnts.vrnt_id)
-            ? 1
-            : 0
-          : data?.stock && data.stock > 0
-            ? 1
-            : 0
-      );
-    }
-  }, [vrntSelected]);
+  // useEffect(() => {
+  //   if (vrntSelected) {
+  //     setQuantity(
+  //       data?.variants && data?.variants.length > 0
+  //         ? data.variants.some((vrnts) => vrntSelected === vrnts.vrnt_id)
+  //           ? 1
+  //           : 0
+  //         : data?.stock && data.stock > 0
+  //           ? 1
+  //           : 0
+  //     );
+  //   }
+  // }, [vrntSelected]);
 
-  const onSubmit = () => {
-    if (data?.variants && data.variants.length <= 0 && canAddToCart) {
-      console.log(quantity);
-      mutate({ prodId: data.prod_id!, body: { quantity } });
+  // const onSubmit = () => {
+  //   if (data?.variants && data.variants.length <= 0 && canAddToCart) {
+  //     console.log(quantity);
+  //     mutate({ prodId: data.prod_id!, body: { quantity } });
 
-    } else if (data?.variants) {
-      const vrnt =
-        data.variants.find((variant) =>
-          variant.variant_selecteds.every((vrnts) =>
-            selecteds.some(
-              (slct) =>
-                slct.optnId === vrnts.optn_id && slct.vgrpId === vrnts.vgrp_id
-            )
-          )
-        )?.vrnt_id ?? undefined;
-      if (vrnt && canAddToCart) {
-        mutate({ prodId: data.prod_id!, body: { quantity, vrnt_id: vrnt } });
-        console.log(quantity, vrnt);
-      }
-    }
-  };
+  //   } else if (data?.variants) {
+  //     const vrnt =
+  //       data.variants.find((variant) =>
+  //         variant.variant_selecteds.every((vrnts) =>
+  //           selecteds.some(
+  //             (slct) =>
+  //               slct.optnId === vrnts.optn_id && slct.vgrpId === vrnts.vgrp_id
+  //           )
+  //         )
+  //       )?.vrnt_id ?? undefined;
+  //     if (vrnt && canAddToCart) {
+  //       mutate({ prodId: data.prod_id!, body: { quantity, vrnt_id: vrnt } });
+  //       console.log(quantity, vrnt);
+  //     }
+  //   }
+  // };
 
-  const onClickToWishlist = () => {
-    if (data) {
-      handleWishlist({ prod_id: data.prod_id! })
-    }
-  }
+  // const onClickToWishlist = () => {
+  //   if (data) {
+  //     handleWishlist({ prod_id: data.prod_id! })
+  //   }
+  // }
 
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("เพิ่มลงตะกร้าสำเร็จ");
-    }
-  }, [isSuccess]);
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     toast.success("เพิ่มลงตะกร้าสำเร็จ");
+  //   }
+  // }, [isSuccess]);
 
-  const disableButtonHandler = (): boolean => {
-    if (data?.variants && data.variants.length > 0) {
-      return data.variants.find((variant) =>
-        variant.variant_selecteds.every((vrnts) =>
-          selecteds.some(
-            (slct) =>
-              slct.optnId === vrnts.optn_id && slct.vgrpId === vrnts.vgrp_id
-          )
-        )
-      )?.vrnt_id
-        ? false
-        : true;
-    } else {
-      return false;
-    }
-  };
+  // const disableButtonHandler = (): boolean => {
+  //   if (data?.variants && data.variants.length > 0) {
+  //     return data.variants.find((variant) =>
+  //       variant.variant_selecteds.every((vrnts) =>
+  //         selecteds.some(
+  //           (slct) =>
+  //             slct.optnId === vrnts.optn_id && slct.vgrpId === vrnts.vgrp_id
+  //         )
+  //       )
+  //     )?.vrnt_id
+  //       ? false
+  //       : true;
+  //   } else {
+  //     return false;
+  //   }
+  // };
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-900">{data?.name}</h1>
@@ -294,45 +312,8 @@ const Info: React.FC<InfoProps> = ({
           <div className="flex items-center gap-x-4">
             <h3 className="font-semibold text-black">{group.name}:</h3>
             <Select
-              value={
-                selecteds.find((selected) => selected.vgrpId === group.vgrp_id)
-                  ?.optnId ?? undefined
-              }
-              onValueChange={(value) =>
-                setSelecteds((prev) => {
-                  const result = prev.map((groupState) => {
-                    if (groupState.vgrpId === group.vgrp_id) {
-                      return { ...groupState, optnId: value };
-                    }
-                    return groupState;
-                  });
-                  const isSelectedCompolete = result.every(
-                    (selected) => selected.optnId.trim().length > 0
-                  );
-                  console.log(isSelectedCompolete);
-                  if (isSelectedCompolete) {
-                    const isValid = data.variants.some((variant) =>
-                      variant.variant_selecteds.every((vrnts) =>
-                        result.some(
-                          (selected) =>
-                            selected.optnId === vrnts.optn_id &&
-                            selected.vgrpId === vrnts.vgrp_id
-                        )
-                      )
-                    );
-
-                    if (!isValid) {
-                      return result.map((groupState) => {
-                        if (groupState.vgrpId === group.vgrp_id) {
-                          return { ...groupState, optnId: value };
-                        }
-                        return { ...groupState, optnId: "" };
-                      });
-                    }
-                  }
-                  return result;
-                })
-              }
+              value={showSelectValue(selecteds, group)}
+              onValueChange={(value) => selectValueChangeHandler(value, group)}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder={`Select a ${group.name}`} />
@@ -343,65 +324,7 @@ const Info: React.FC<InfoProps> = ({
                   <SelectItem value="">กรุณาเลือก</SelectItem>
                   {group.options.map((option) => (
                     <SelectItem
-                      disabled={
-                        !data.variants
-                          .filter((variant) => variant.stock > 0)
-                          .some((variant) =>
-                            variant.variant_selecteds.some(
-                              (vrnts) => vrnts.optn_id === option.optn_id
-                            )
-                          ) ||
-                        !data.variants
-                          .filter((variant) => variant.stock > 0)
-                          .filter(
-                            (variant) =>
-                              selecteds
-                                .filter(
-                                  (selected) =>
-                                    selected.optnId.trim().length > 0
-                                )
-                                .every((selected) =>
-                                  variant.variant_selecteds.some(
-                                    (vrnts) =>
-                                      vrnts.vgrp_id === selected.vgrpId &&
-                                      vrnts.optn_id === selected.optnId
-                                  )
-                                ) ||
-                              (selecteds.every(
-                                (selected) => selected.optnId.trim().length > 0
-                              ) &&
-                                (selecteds
-                                  .filter(
-                                    (selected) =>
-                                      selected.optnId.trim().length > 0
-                                  )
-                                  .every(
-                                    (selected) =>
-                                      !variant.variant_selecteds.some(
-                                        (vrnts) =>
-                                          vrnts.vgrp_id === selected.vgrpId &&
-                                          vrnts.optn_id === selected.optnId
-                                      )
-                                  ) ||
-                                  selecteds
-                                    .filter(
-                                      (selected) =>
-                                        selected.optnId.trim().length > 0
-                                    )
-                                    .some((selected) =>
-                                      variant.variant_selecteds.some(
-                                        (vrnts) =>
-                                          vrnts.vgrp_id === selected.vgrpId &&
-                                          vrnts.optn_id === selected.optnId
-                                      )
-                                    )))
-                          )
-                          .some((variant) =>
-                            variant.variant_selecteds.some(
-                              (vrnts) => vrnts.optn_id === option.optn_id
-                            )
-                          )
-                      }
+                      disabled={disableSelect(data, option, selecteds)}
                       value={`${option.optn_id}`}
                     >
                       {option.name}
@@ -419,10 +342,10 @@ const Info: React.FC<InfoProps> = ({
             max={
               data?.variants && data?.variants.length > 0
                 ? data.variants.find((vrnts) => vrntSelected === vrnts.vrnt_id)
-                  ?.stock ?? 0
+                    ?.stock ?? 0
                 : data?.stock && data.stock > 0
-                  ? data.stock
-                  : 0
+                ? data.stock
+                : 0
             }
             // min={data?.stock && data.stock > 0 ? 1 : 0}
             min={
@@ -431,10 +354,10 @@ const Info: React.FC<InfoProps> = ({
                   ? 1
                   : 0
                 : data?.stock && data.stock > 0
-                  ? 1
-                  : 0
+                ? 1
+                : 0
             }
-            onChange={(e) => setQuantity(Number(e.target.value))}
+            onChange={(e) => quantityHandler(Number(e.target.value))}
             onKeyDown={(e) => {
               e.preventDefault();
             }}
@@ -459,8 +382,19 @@ const Info: React.FC<InfoProps> = ({
           className="flex items-center gap-x-2 w-40"
         >
           สิ่งที่อยากซื้อ
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+            />
           </svg>
           {/* อยู่ในสิ่งที่อยากซื้อ
 

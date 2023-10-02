@@ -721,7 +721,7 @@ export class PaymentsService {
       //
       //add withdraw web3 here
       //
-
+      await this.web3Service.transferToMerchant(payload.address, amount)
       await this.transactionTemporaryRepository.findOneAndDelete({ payment_method: PaymentMethodFormat.WALLET, type: TransactionFormat.WITHDRAW, mcht_id: mchtId, user_id: userId })
       await this.transactionPurchaseRepository.create({
         // amount: payload.amount * (1 * 10 ** 18),

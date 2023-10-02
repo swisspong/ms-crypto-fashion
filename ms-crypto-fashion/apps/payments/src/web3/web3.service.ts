@@ -136,7 +136,7 @@ export class Web3Service implements OnModuleInit {
     }
 
   }
-  async transferToMerchant(userId: string, mchtId: string, address: string, amount: number) {
+  async transferToMerchant(address: string, amount: number) {
     try {
       const cryptoPath = path.join(__dirname, '../../../../../../../apps/payments/src/contracts/CryptoFashionTokenGoerli.json')
       const configuration = JSON.parse(fs.readFileSync(cryptoPath, 'utf8'));
@@ -146,7 +146,10 @@ export class Web3Service implements OnModuleInit {
       const signer = new ethers.Wallet(this.configService.get<string>("PRIVATE_KEY"), provider);
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer)
       this.logger.warn(this.configService.get<string>("PRIVATE_KEY"), CONTRACT_ADDRESS)
-   
+      const tx = await contract.withdraw(address, amount)
+      await tx.wait();
+      this.logger.log('Transaction Hash:', tx.hash);
+      this.logger.log('Refund successful.');
     } catch (error) {
       throw error
     }

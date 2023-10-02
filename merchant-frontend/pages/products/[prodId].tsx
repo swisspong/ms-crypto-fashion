@@ -50,6 +50,7 @@ import { Loader2 } from "lucide-react";
 import { useProductById } from "@/src/hooks/product/queries";
 import VariantAllForm from "@/components/products/variant-all-form";
 import { Checkbox } from "@/components/ui/checkbox";
+import Variants from "@/components/products/variants/variants";
 const items = [
   {
     id: "credit",
@@ -623,7 +624,8 @@ export default function EditProduct() {
           value="variants"
           className="h-full flex-col border-none p-0 data-[state=active]:flex"
         >
-          <VariantAllForm />
+          {/* <VariantAllForm /> */}
+          <Variants/>
           {/* <VariantForm /> */}
 
           {/* <div className="flex items-center justify-between">

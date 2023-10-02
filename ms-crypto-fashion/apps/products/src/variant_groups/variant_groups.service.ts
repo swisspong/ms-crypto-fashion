@@ -12,6 +12,7 @@ import { MerchantsRepository } from '../merchants/merchants.repository';
 import { CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants/carts.constant';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
+import { CreateGroupDto } from './dto/create-group.dto';
 
 @Injectable()
 export class VariantGroupsService {
@@ -23,8 +24,8 @@ export class VariantGroupsService {
   ) { }
 
   async create(merchantId: string, productId: string, createVariantGroupDto: CreateVariantGroupDto) {
-    const merchant = await this.merchantsRepository.findOne({mcht_id: merchantId})
-    if (!merchant)  throw new NotFoundException("Merchant not found.")
+    const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new NotFoundException("Merchant not found.")
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchant._id) })
     if (!product) throw new NotFoundException("Product not found.")
     const tmpGroups = [...createVariantGroupDto.groups, ...product.groups]
@@ -43,6 +44,64 @@ export class VariantGroupsService {
     const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId }, { groups: newVariantGroups })
 
     return newProduct
+  }
+
+  async addGroup(merchantId: string, productId: string, payload: CreateGroupDto) {
+    const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new ForbiddenException()
+    const product = await this.productsRepository.findOne({ prod_id: productId, merchant: merchant._id })
+    if (!product) throw new NotFoundException("Product not found.")
+
+    //validate group name is exist
+    const isExistGroup = product.groups.some(group => group.name === payload.name)
+    if (isExistGroup) throw new BadRequestException("Group name is duplicate.")
+    const groups = product.groups
+    groups.push(payload)
+    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId, merchant: merchant._id },
+      {
+        groups,
+      }
+    )
+    await lastValueFrom(
+      this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+        ...newProduct, merchant
+      })
+    )
+    return {
+      message: "success"
+    }
+  }
+  async editGroup(merchantId: string, productId: string, payload: CreateGroupDto) {
+    const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new ForbiddenException()
+    const product = await this.productsRepository.findOne({ prod_id: productId, merchant: merchant._id })
+    if (!product) throw new NotFoundException("Product not found.")
+
+    //validate group name is exist
+    const existGroup = product.groups.find(group => group.name === payload.name && group.vgrp_id !== payload.vgrp_id)
+    if (existGroup) throw new BadRequestException("Group name is exist.")
+    const groups = product.groups
+    for (let i = 0; i < groups.length; i++) {
+      const eGroup = groups[i];
+      if (eGroup.vgrp_id === payload.vgrp_id) {
+        groups[i].name = payload.name
+        groups[i].options = payload.options
+      }
+    }
+
+    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId, merchant: merchant._id },
+      {
+        groups,
+      }
+    )
+    await lastValueFrom(
+      this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+        ...newProduct, merchant
+      })
+    )
+    return {
+      message: "success"
+    }
   }
   async updsertDel(merchantId: string, productId: string, upsertDto: UpsertVariantGroupDto) {
     //return upsertDto

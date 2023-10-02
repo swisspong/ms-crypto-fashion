@@ -235,64 +235,69 @@ export class CartsService {
 
   // }
   async update(userId: string, itemId: string, updateCartDto: UpdateCartItemDto) {
+    try {
+      let cart = await this.cartsRepository.findOne({ user_id: userId })
+      cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
+      const existItemIndex = cart.items.findIndex(item => item.item_id === itemId)
+      if (existItemIndex < 0) throw new NotFoundException("Item not found.")
+      const existItem = cart.items[existItemIndex]
+      const product = existItem.product
 
-    let cart = await this.cartsRepository.findOne({ user_id: userId })
-    cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
-    const existItemIndex = cart.items.findIndex(item => item.item_id === itemId)
-    if (existItemIndex < 0) throw new NotFoundException("Item not found.")
-    const existItem = cart.items[existItemIndex]
-    const product = existItem.product
-
-    if (!product) throw new NotFoundException("Product not found.")
-    this.cartItemsValidator.validate(existItem)
+      if (!product) throw new NotFoundException("Product not found.")
+      this.cartItemsValidator.validate(existItem)
 
 
-    if (
-      this.productsValidator.validateIsHasGroups(product.groups) &&
-      this.productsValidator.validateIsHasOptions(product.variants)
-    ) {
-      if (!updateCartDto.vrnt_id) throw new BadRequestException("Product has options")
-      this.productsValidator.validateIncludeOptions(product.variants, updateCartDto.vrnt_id)
-    } else if (
-      !this.productsValidator.validateIsHasGroups(product.groups) &&
-      !this.productsValidator.validateIsHasOptions(product.variants)
-    ) {
+      if (
+        this.productsValidator.validateIsHasGroups(product.groups) &&
+        this.productsValidator.validateIsHasOptions(product.variants)
+      ) {
+        if (!updateCartDto.vrnt_id) throw new BadRequestException("Product has options")
+        this.productsValidator.validateIncludeOptions(product.variants, updateCartDto.vrnt_id)
+      } else if (
+        !this.productsValidator.validateIsHasGroups(product.groups) &&
+        !this.productsValidator.validateIsHasOptions(product.variants)
+      ) {
+        if (updateCartDto.vrnt_id) {
+          throw new BadRequestException("Product has no options")
+        }
+      }
+
+
       if (updateCartDto.vrnt_id) {
-        throw new BadRequestException("Product has no options")
-      }
-    }
 
+        cart.items[existItemIndex].quantity = updateCartDto.quantity
+        this.cartItemsValidator.validate(cart.items[existItemIndex])
+        // (cart.items[existItemIndex].quantity > variant.stock) throw new BadRequestException("The product not enough.")
 
-    if (updateCartDto.vrnt_id) {
-
-      cart.items[existItemIndex].quantity = updateCartDto.quantity
-      this.cartItemsValidator.validate(cart.items[existItemIndex])
-      // (cart.items[existItemIndex].quantity > variant.stock) throw new BadRequestException("The product not enough.")
-
-      if (cart.items[existItemIndex].vrnt_id !== updateCartDto.vrnt_id) {
-        const itemDuplicate = cart.items.find(item => {
-          if (item.product.prod_id === cart.items[existItemIndex].product.prod_id) {
-            if (item.vrnt_id === updateCartDto.vrnt_id) {
-              return true
+        if (cart.items[existItemIndex].vrnt_id !== updateCartDto.vrnt_id) {
+          const itemDuplicate = cart.items.find(item => {
+            if (item.product.prod_id === cart.items[existItemIndex].product.prod_id) {
+              if (item.vrnt_id === updateCartDto.vrnt_id) {
+                return true
+              }
             }
-          }
-          return false
-        })
-        if (itemDuplicate) throw new BadRequestException("Item already exist.")
+            return false
+          })
+          if (itemDuplicate) throw new BadRequestException("Item already exist.")
+        }
+        cart.items[existItemIndex].vrnt_id = updateCartDto.vrnt_id
+      } else {
+
+        cart.items[existItemIndex].quantity = updateCartDto.quantity
+        this.cartItemsValidator.validate(cart.items[existItemIndex])
+        //  if (cart.items[existItemIndex].quantity > product.stock) throw new BadRequestException("The product not enough.")
       }
-      cart.items[existItemIndex].vrnt_id = updateCartDto.vrnt_id
-    } else {
 
-      cart.items[existItemIndex].quantity = updateCartDto.quantity
-      this.cartItemsValidator.validate(cart.items[existItemIndex])
-      //  if (cart.items[existItemIndex].quantity > product.stock) throw new BadRequestException("The product not enough.")
+      const errorItems: CartItem[] = []
+      cart.items = this.filterItem(errorItems, cart.items)
+
+      const newCart = await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { items: cart.items })
+      return newCart
+
+    } catch (error) {
+      this.logger.error(error)
+      throw error
     }
-
-    const errorItems: CartItem[] = []
-    cart.items = this.filterItem(errorItems, cart.items)
-
-    const newCart = await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { items: cart.items })
-    return newCart
 
 
   }
