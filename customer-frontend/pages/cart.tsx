@@ -8,7 +8,7 @@ import Summary from "@/components/summary";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Store } from "lucide-react";
+import { Loader2, Store } from "lucide-react";
 import { useMyCart } from "@/src/hooks/cart/queries";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -18,6 +18,7 @@ import { PaymentMethodFormat } from "@/src/types/enums/product";
 import RemoveItemAllertDialog from "@/components/cart/remove-item-allert-dialog";
 import CartDataTable from "@/components/cart/cart-data-table";
 import CartItemNew from "@/components/cart/cart-item-new";
+import useCartHook from "@/components/cart/use-cart-hook";
 const RemoveItemDialog = dynamic(
   () => import("@/components/remove-item-dialog"),
   { ssr: false }
@@ -29,16 +30,25 @@ const formSchema = z.object({
 });
 
 const CartPage = () => {
-  const [selecteds, setSelecteds] = useState<string[]>([]);
-  const [isNormalPay, setIsNormalPay] = useState<boolean | undefined>();
-  const paymentMethodHandler = (val: boolean | undefined) => {
-    setSelecteds([]);
-    setIsNormalPay(val);
-  };
-  const { data } = useMyCart();
-  useEffect(() => {
-    console.log(selecteds);
-  }, [selecteds]);
+  // const [selecteds, setSelecteds] = useState<string[]>([]);
+  // const [isNormalPay, setIsNormalPay] = useState<boolean | undefined>();
+  // const paymentMethodHandler = (val: boolean | undefined) => {
+  //   setSelecteds([]);
+  //   setIsNormalPay(val);
+  // };
+  // const { data } = useMyCart();
+  // useEffect(() => {
+  //   console.log(selecteds);
+  // }, [selecteds]);
+  const {
+    filterItemByPayementMethod,
+    cartItems,
+    cartItemsLoading,
+    selecteds,
+    isNormalPay,
+    paymentMethodHandler,
+    onCheckedHandler,
+  } = useCartHook();
   return (
     <div className="bg-white">
       <Navbar />
@@ -47,9 +57,33 @@ const CartPage = () => {
           <h1 className="text-3xl font-bold text-black">รถเข็น</h1>
           <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start gap-x-12">
             <div className="lg:col-span-7">
-              {/* <CartDataTable /> */}
+              {cartItemsLoading ? (
+                <p className="text-neutral-500 flex justify-center">
+                  <Loader2 className="animate-spin" />
+                </p>
+              ) : (
+                <>
+                  {cartItems?.items?.length === 0 && (
+                    <p className="text-neutral-500 flex justify-center">
+                      ไม่มีสินค้าเพิ่มลงในรถเข็น
+                    </p>
+                  )}
+                  {filterItemByPayementMethod.map((item) => (
+                    <>
+                      <CartItemNew
+                        data={item}
+                        onCheckedHandler={onCheckedHandler}
+                        // setSelecteds={setSelecteds}
 
-              {data?.items?.length === 0 && (
+                        selecteds={selecteds}
+                        isNormalPay={isNormalPay}
+                      />
+                    </>
+                  ))}
+                </>
+              )}
+
+              {/* {data?.items?.length === 0 && (
                 <p className="text-neutral-500 flex justify-center">
                   ไม่มีสินค้าเพิ่มลงในรถเข็น
                 </p>
@@ -75,24 +109,24 @@ const CartPage = () => {
                       selecteds={selecteds}
                       isNormalPay={isNormalPay}
                     />
-                    {/* <CartItem
+                    <CartItem
                       data={item}
                       setSelecteds={setSelecteds}
                       selecteds={selecteds}
                       isNormalPay={isNormalPay}
-                    /> */}
+                    />
                   </>
-                ))}
+                ))} */}
             </div>
             <Summary
               selecteds={selecteds}
-              data={data?.items}
+              data={cartItems?.items}
               isNormalPay={isNormalPay}
               paymentMethodHandler={paymentMethodHandler}
             />
           </div>
         </div>
-        <RemoveItemAllertDialog data={data?.errorItems} />
+        <RemoveItemAllertDialog data={cartItems?.errorItems} />
       </Container>
 
       <Footer />
