@@ -1,8 +1,7 @@
-import React, { Dispatch, SetStateAction, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Checkbox } from "../ui/checkbox";
 import {
   Bitcoin,
-  ChevronDown,
   ChevronRight,
   CreditCard,
   Minus,
@@ -12,19 +11,17 @@ import {
 import { Plus } from "lucide-react";
 import { PaymentMethodFormat } from "@/src/types/enums/product";
 import IconButton from "../icon-button";
-import {
-  useEditItemCart,
-  useRemoveItemInCart,
-} from "@/src/hooks/cart/mutations";
-import { toast } from "react-toastify";
 import VaraintPopover from "./variant-popover";
 import { Button } from "../ui/button";
 import { useAddToWishlist } from "@/src/hooks/wishlist/mutations";
 import { useWishlistInfo } from "@/src/hooks/wishlist/queries";
+import useCartItemHook from "./use-cart-item-hook";
+import { useEditItemCart, useRemoveItemInCart } from "@/src/hooks/cart/mutations";
+import { toast } from "react-toastify";
 
 interface CartItemProps {
   data: ICartItem;
-  setSelecteds: Dispatch<SetStateAction<string[]>>;
+  onCheckedHandler: (itemId: string) => void;
   selecteds: string[];
   isNormalPay?: boolean | undefined;
 }
@@ -32,7 +29,7 @@ const CartItemNew: React.FC<CartItemProps> = ({
   data,
   isNormalPay,
   selecteds,
-  setSelecteds,
+  onCheckedHandler,
 }) => {
   const removeMutate = useRemoveItemInCart();
   const editMutate = useEditItemCart();
@@ -61,6 +58,15 @@ const CartItemNew: React.FC<CartItemProps> = ({
       }
     }
   }, [wishlistSuccess]);
+  const {
+    image,
+    removeItem,
+    increaseQty,
+    decreaseQty,
+    remainingStock,
+    price,
+    totalPrice,
+  } = useCartItemHook();
   return (
     <>
       <li className="pb-6 border-y list-none flex flex-col space-y-1">
@@ -72,25 +78,13 @@ const CartItemNew: React.FC<CartItemProps> = ({
           <ChevronRight className="whitespace-nowrap w-6" />
         </div>
         <div className="flex space-x-2 md:space-x-5 relative">
-          <div className="absolute z-10 right-0 top-0">
-            <IconButton
-              icon={<X size={15} />}
-              onClick={() => removeMutate.mutate(data.item_id)}
-            />
-          </div>
           <div className="flex items-center self-start space-x-2">
             <div className="">
               <Checkbox
                 disabled={isNormalPay === undefined}
                 id={data.item_id}
                 checked={selecteds.includes(data.item_id)}
-                onCheckedChange={(checked) => {
-                  setSelecteds((prev) => {
-                    return selecteds.includes(data.item_id)
-                      ? prev.filter((item) => item !== data.item_id)
-                      : [...prev, data.item_id];
-                  });
-                }}
+                onCheckedChange={(checked) => onCheckedHandler(data.item_id)}
               />
               <label
                 htmlFor={data.item_id}
@@ -99,17 +93,7 @@ const CartItemNew: React.FC<CartItemProps> = ({
             </div>
             <div className="relative h-20 w-20 rounded-md overflow-hidden border sm:h-32 sm:w-32">
               <img
-                src={
-                  (data.vrnt_id
-                    ? data.product.variants.find(
-                      (vrnt) => vrnt.vrnt_id === data.vrnt_id
-                    )?.image_url
-                      ? data.product.variants.find(
-                        (vrnt) => vrnt.vrnt_id === data.vrnt_id
-                      )?.image_url
-                      : data.product.image_urls[0]
-                    : data.product.image_urls[0]) as string
-                }
+                src={image(data)}
                 alt=""
                 className="object-cover object-center"
               />
@@ -133,44 +117,17 @@ const CartItemNew: React.FC<CartItemProps> = ({
               )}
             </div>
             <div className="col-span-2 flex space-x-1 items-center text-sm sm:text-base font-medium">
-              <span>
-                ฿
-                {data.vrnt_id
-                  ? data.product.variants.find(
-                    (vrnts) => vrnts.vrnt_id === data.vrnt_id
-                  )?.price
-                  : data.product?.price}
-              </span>
+              <span>฿{price(data)}</span>
               <span>x</span>
               <span>{data.quantity}</span>
               <span>=</span>
-              <span>
-                ฿
-                {(data.vrnt_id
-                  ? data.product.variants.find(
-                    (vrnts) => vrnts.vrnt_id === data.vrnt_id
-                  )?.price ?? 0
-                  : data.product?.price) * data.quantity}
-              </span>
+              <span>฿{totalPrice(data)}</span>
             </div>
             <div className="col-span-2 flex items-center space-x-2">
               <p
                 className=" border rounded-md p-1 cursor-pointer"
                 onClick={() => {
-                  if (data.vrnt_id) {
-                    editMutate.mutate({
-                      itemId: data.item_id,
-                      body: {
-                        quantity: data.quantity + 1,
-                        vrnt_id: data.vrnt_id,
-                      },
-                    });
-                  } else {
-                    editMutate.mutate({
-                      itemId: data.item_id,
-                      body: { quantity: data.quantity + 1 },
-                    });
-                  }
+                  increaseQty(data);
                 }}
               >
                 <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -180,32 +137,11 @@ const CartItemNew: React.FC<CartItemProps> = ({
                 <Minus
                   className="w-3 h-3 sm:w-4 sm:h-4"
                   onClick={() => {
-                    if (data.quantity - 1 <= 0) return;
-                    if (data.vrnt_id) {
-                      editMutate.mutate({
-                        itemId: data.item_id,
-                        body: {
-                          quantity: data.quantity - 1,
-                          vrnt_id: data.vrnt_id,
-                        },
-                      });
-                    } else {
-                      editMutate.mutate({
-                        itemId: data.item_id,
-                        body: { quantity: data.quantity - 1 },
-                      });
-                    }
+                    decreaseQty(data);
                   }}
                 />
               </p>
-              <span className="text-xs">
-                คงเเหลือ{" "}
-                {data.vrnt_id
-                  ? data.product.variants.find(
-                    (vrnt) => vrnt.vrnt_id === data.vrnt_id
-                  )?.stock
-                  : data.product.stock}
-              </span>
+              <span className="text-xs">คงเเหลือ {remainingStock(data)}</span>
               <Button
                 onClick={onClickToWishlist}
                 className="flex items-center gap-x-2"
@@ -229,6 +165,12 @@ const CartItemNew: React.FC<CartItemProps> = ({
                 }
               </Button>
             </div>
+          </div>
+          <div className="absolute z-10 right-0 top-0">
+            <IconButton
+              icon={<X size={15} />}
+              onClick={() => removeItem(data.item_id)}
+            />
           </div>
         </div>
       </li>
