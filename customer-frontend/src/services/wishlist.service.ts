@@ -6,3 +6,9 @@ export const postWishList = async (body: IWishlistPayload): Promise<void> => {
         (response) => response.data
     );
 };
+
+export const getMyWishlist = async (): Promise<IWishlistResponse> => {
+    return await api.get(`/wishlists`).then(
+        (response) => response.data
+    );
+};
