@@ -37,17 +37,15 @@ export class WishListService {
                 const { data: product }: { data: Product } = await lastValueFrom(this.productsClient.send({ cmd: 'get_product' }, { prod_id: data.prod_id }));
                 this.logger.log("res from product =>", product)
                 if (!product) throw new NotFoundException("Product not found.")
-                
+
                 const newItem = new WishListItem()
                 newItem.item_id = `item_${this.uid.stamp(15)}`
                 newItem.prod_id = product.prod_id
-                newItem.description = product.description
-                newItem.name = product.name
-                newItem.price = product.price
+                newItem.product = product
                 wishlist.items.push(newItem)
             }
-           
-            const newWishlist = await this.wishListRepository.findOneAndUpdate({ wishl_id:  wishlist.wishl_id}, { items: wishlist.items })
+
+            const newWishlist = await this.wishListRepository.findOneAndUpdate({ wishl_id: wishlist.wishl_id }, { items: wishlist.items })
             return newWishlist
         } catch (error) {
             console.log(error);
@@ -57,13 +55,25 @@ export class WishListService {
 
     async findWishlistByUserId(user_id: string) {
         try {
-            let wishlist = await this.wishListRepository.findOne({user_id})
+            let wishlist = await this.wishListRepository.findOne({ user_id })
             wishlist = wishlist ? wishlist : await this.wishListRepository.create({ wishl_id: `wishl_${this.uid.stamp(15)}`, user_id, items: [] })
-            
-            return {items: wishlist.items}
+
+            return { items: wishlist.items }
         } catch (error) {
             console.log(error);
-            
+
         }
-      }
+    }
+
+    async findWishlistByProductId(prod_id: string) {
+        try {
+            const wishlist = await this.wishListRepository.findOne({
+                items: {$elemMatch: {prod_id}}
+            })
+            return {check_wishlist: wishlist? true: false};
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+    }
 }

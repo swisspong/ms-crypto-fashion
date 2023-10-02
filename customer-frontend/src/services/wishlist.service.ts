@@ -12,3 +12,12 @@ export const getMyWishlist = async (): Promise<IWishlistResponse> => {
         (response) => response.data
     );
 };
+
+
+export const getWishlistInfoCsr = async (product_id: string): Promise<ICheckWishList> => {
+    return await api.get(`/wishlists/product/${product_id}`).then(
+        (response) => {
+            return response.data
+        }
+    );
+};

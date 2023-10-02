@@ -42,6 +42,8 @@ import {
 } from "@/components/ui/select";
 import { comment } from "postcss";
 import userProductHook from "@/components/product/use-product-hook";
+import { useWishlistInfo } from "@/src/hooks/wishlist/queries";
+
 
 const ProductStorefrontPage = () => {
   const router = useRouter();
@@ -66,7 +68,9 @@ const ProductStorefrontPage = () => {
     isSuccess: meSuccess,
   } = useUserInfo();
 
-  const [open, setOpen] = useState(false);
+  const {data: wishlist, isLoading: wishlistLoading, isSuccess: wishlistSuccess} = useWishlistInfo(router.query.prodId as string)
+
+  const [open, setOpen] = useState(false)
 
   // ! use state report & complain
   const [compText, setCompText] = useState("");
@@ -233,7 +237,10 @@ const ProductStorefrontPage = () => {
                 vrntSelectedHandler={vrntSelectedHandler}
                 canAddToCart={true}
                 vrntSelected={vrntSelected}
+                wishlist={wishlist}
+                
               />
+              
             </div>
           </div>
           <hr className="my-10" />
