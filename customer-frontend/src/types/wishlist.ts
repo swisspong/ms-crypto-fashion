@@ -9,7 +9,9 @@ interface IWishlistResponse {
 interface IWishlistItem {
     item_id: string;
     prod_id: string;
-    name: string;
-    description: string;
-    price: number
+    product: IProductRow;
+}
+
+interface ICheckWishList {
+    check_wishlist: boolean
 }

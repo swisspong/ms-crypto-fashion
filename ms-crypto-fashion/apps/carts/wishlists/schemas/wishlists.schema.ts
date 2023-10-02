@@ -1,12 +1,11 @@
 import { AbstractDocument } from "@app/common";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Product } from "apps/products/src/schemas/product.schema";
 
 export class WishListItem {
     item_id: string;
     prod_id: string;
-    name: string;
-    description: string;
-    price: number
+    product: Product
 }
 
 @Schema({timestamps: true})

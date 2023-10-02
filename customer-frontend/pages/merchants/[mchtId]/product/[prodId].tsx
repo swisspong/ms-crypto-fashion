@@ -27,6 +27,7 @@ import { TComplaintPlayload } from "@/src/types/complaint";
 import { TypeFormat } from "@/src/types/enums/complaint";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { comment } from "postcss";
+import { useWishlistInfo } from "@/src/hooks/wishlist/queries";
 
 
 const ProductStorefrontPage = () => {
@@ -45,6 +46,8 @@ const ProductStorefrontPage = () => {
     isLoading: meLoading,
     isSuccess: meSuccess,
   } = useUserInfo();
+
+  const {data: wishlist, isLoading: wishlistLoading, isSuccess: wishlistSuccess} = useWishlistInfo(router.query.prodId as string)
 
   const [open, setOpen] = useState(false)
 
@@ -104,6 +107,7 @@ const ProductStorefrontPage = () => {
     if (compSuccess) setOpen(false)
   }, [compSuccess])
 
+  
 
 
   return (
@@ -193,7 +197,10 @@ const ProductStorefrontPage = () => {
                 setVrntSelected={setVrntSelected}
                 canAddToCart={true}
                 vrntSelected={vrntSelected}
+                wishlist={wishlist}
+                
               />
+              
             </div>
           </div>
           <hr className="my-10" />
