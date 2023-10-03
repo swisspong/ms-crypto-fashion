@@ -33,10 +33,15 @@ export class VariantGroupsController {
   // update(@GetUser('merchant') merchantId: string, @Param('productId') productId: string, @Body() updateVariantGroupDto: UpdateVariantGroupDto) {
   //   return this.variantGroupsService.update(merchantId, productId, updateVariantGroupDto);
   // }
+  // @Roles(RoleFormat.MERCHANT)
+  // @Delete()
+  // remove(@GetUser('merchant') merchantId: string, @Param('productId') productId: string, @Query('ids', new ParseArrayPipe({ items: String, separator: ',' }))
+  // ids: string[]) {
+  //   return this.variantGroupsService.remove(merchantId, productId, ids);
+  // }
   @Roles(RoleFormat.MERCHANT)
-  @Delete()
-  remove(@GetUser('merchant') merchantId: string, @Param('productId') productId: string, @Query('ids', new ParseArrayPipe({ items: String, separator: ',' }))
-  ids: string[]) {
-    return this.variantGroupsService.remove(merchantId, productId, ids);
+  @Delete(':vgrpId')
+  removeGroup(@GetUser('merchant') merchantId: string, @Param('productId') productId: string, @Param("vgrpId") vgrpId: string) {
+    return this.variantGroupsService.removeGroup(merchantId, productId, vgrpId);
   }
 }

@@ -4,17 +4,18 @@ import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpsertVariant } from '@/src/hooks/product/variant/mutations';
 import { useRouter } from 'next/router';
-import { useEditGroup } from '@/src/hooks/product/groups/mutations';
+import { useDeleteGroup, useEditGroup } from '@/src/hooks/product/groups/mutations';
 import { useProductById } from '@/src/hooks/product/queries';
 import { formSchema, genId } from '../groups-helper';
 const useGroupsEditFormHook = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const router = useRouter()
   const editGroupMutate = useEditGroup()
+  
   const productQuery = useProductById(
     router.query.prodId as string
   );
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form= useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       vgrp_id: genId('vgrp')
@@ -23,7 +24,6 @@ const useGroupsEditFormHook = () => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     editGroupMutate.mutate({ prodId: router.query.prodId as string, body: values })
-    // mutate(values);
     setIsEdit(false)
   }
   const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -49,7 +49,7 @@ const useGroupsEditFormHook = () => {
     })
     setIsEdit(false)
   }
-
+ 
   return {
     form,
     onSubmit,
@@ -57,7 +57,8 @@ const useGroupsEditFormHook = () => {
     initForm,
     isEdit,
     toggleEdit,
-    cancelForm
+    cancelForm,
+    
   }
 }
 

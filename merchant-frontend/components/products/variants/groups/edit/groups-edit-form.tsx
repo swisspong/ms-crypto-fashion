@@ -14,6 +14,7 @@ import {
 import OptionsInput from "../options/options-input";
 import useGroupsEditFormHook from "./use-groups-edit-form-hook";
 import { Pencil, Trash, X } from "lucide-react";
+import GroupsDeleteDialog from "../delete/groups-delete-dialog";
 
 interface Props {
   group: IGroup;
@@ -87,14 +88,7 @@ const GroupsEditForm: FC<Props> = ({ group }) => {
                 </>
               ) : (
                 <>
-                  <Button
-                    className="grow-0 shrink-0"
-                    size={"icon"}
-                    variant={"destructive"}
-                    type="button"
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
+                  <GroupsDeleteDialog vgrpId={group.vgrp_id} />
                   <Button
                     onClick={toggleEdit}
                     type="button"

@@ -103,6 +103,54 @@ export class VariantGroupsService {
       message: "success"
     }
   }
+
+  async removeGroup(merchantId: string, productId: string, id: string) {
+    const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new ForbiddenException()
+    const product = await this.productsRepository.findOne({ prod_id: productId, merchant: merchant._id })
+    if (!product) throw new NotFoundException("Product not found.")
+    product.groups = product.groups.filter(group => id !== group.vgrp_id)
+    // if (this.isDuplicateGroup(product.groups)) throw new BadRequestException("Group name is duplicate.")
+    // if (this.variantIsIncludeInGroups(product.variants, product.groups) || this.isDuplicateVariant(product.variants)) {
+    //   //set product is not available
+    //   product.available = false
+    //   product.variants.map(variant => {
+    //     const variantSelectedFiltered = variant.variant_selecteds.filter(vrnt_select => {
+    //       const group = product.groups.find(group => group.vgrp_id === vrnt_select.vgrp_id);
+    //       if (!group) return false
+    //       const option = group.options.map(option => option.optn_id === vrnt_select.optn_id)
+    //       if (!option) return false
+    //       return true
+    //     })
+    //     return { ...variant, variant_selecteds: variantSelectedFiltered }
+    //   })
+    //   // const newVariant = 
+    // }
+    product.variants.map(variant => {
+      const variantSelectedFiltered = variant.variant_selecteds.filter(vrnt_select => {
+        const group = product.groups.find(group => group.vgrp_id === vrnt_select.vgrp_id);
+        if (!group) return false
+        const option = group.options.map(option => option.optn_id === vrnt_select.optn_id)
+        if (!option) return false
+        return true
+      })
+      return { ...variant, variant_selecteds: variantSelectedFiltered }
+    })
+    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId }, {
+      //available: product.available,
+      groups: product.groups,
+      variants: product.variants
+    })
+
+    await lastValueFrom(
+      this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+        ...newProduct, merchant
+      })
+    )
+    return {
+      message: "success"
+    }
+  }
   async updsertDel(merchantId: string, productId: string, upsertDto: UpsertVariantGroupDto) {
     //return upsertDto
     const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
@@ -164,6 +212,7 @@ export class VariantGroupsService {
 
 
   }
+
 
   findAll() {
     return `This action returns all variantGroups`;
@@ -260,34 +309,35 @@ export class VariantGroupsService {
     }
     return isDuplicate
   }
-  async remove(merchantId: string, productId: string, ids: string[]) {
-    const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchantId) })
-    if (!product) throw new NotFoundException("Product not found.")
-    product.groups = product.groups.filter(group => ids.find(id => id === group.vgrp_id) ? false : true)
-    // if (this.isDuplicateGroup(product.groups)) throw new BadRequestException("Group name is duplicate.")
-    if (this.variantIsIncludeInGroups(product.variants, product.groups) || this.isDuplicateVariant(product.variants)) {
-      //set product is not available
-      product.available = false
-      product.variants.map(variant => {
-        const variantSelectedFiltered = variant.variant_selecteds.filter(vrnt_select => {
-          const group = product.groups.find(group => group.vgrp_id === vrnt_select.vgrp_id);
-          if (!group) return false
-          const option = group.options.map(option => option.optn_id === vrnt_select.optn_id)
-          if (!option) return false
-          return true
-        })
-        return { ...variant, variant_selecteds: variantSelectedFiltered }
-      })
-      // const newVariant = 
-    }
-    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId }, {
-      available: product.available,
-      groups: product.groups,
-      variants: product.variants
-    })
+  // async remove(merchantId: string, productId: string, ids: string[]) {
+  //   const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchantId) })
+  //   if (!product) throw new NotFoundException("Product not found.")
+  //   product.groups = product.groups.filter(group => ids.find(id => id === group.vgrp_id) ? false : true)
+  //   // if (this.isDuplicateGroup(product.groups)) throw new BadRequestException("Group name is duplicate.")
+  //   if (this.variantIsIncludeInGroups(product.variants, product.groups) || this.isDuplicateVariant(product.variants)) {
+  //     //set product is not available
+  //     product.available = false
+  //     product.variants.map(variant => {
+  //       const variantSelectedFiltered = variant.variant_selecteds.filter(vrnt_select => {
+  //         const group = product.groups.find(group => group.vgrp_id === vrnt_select.vgrp_id);
+  //         if (!group) return false
+  //         const option = group.options.map(option => option.optn_id === vrnt_select.optn_id)
+  //         if (!option) return false
+  //         return true
+  //       })
+  //       return { ...variant, variant_selecteds: variantSelectedFiltered }
+  //     })
+  //     // const newVariant = 
+  //   }
+  //   const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId }, {
+  //     available: product.available,
+  //     groups: product.groups,
+  //     variants: product.variants
+  //   })
 
-    return newProduct
-  }
+  //   return newProduct
+  // }
+
 
   isDuplicateGroup(tmpGroups: (GroupDto | VariantGroup)[]) {
     let isDuplicate = false
