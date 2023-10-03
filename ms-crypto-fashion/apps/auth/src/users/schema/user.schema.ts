@@ -35,6 +35,12 @@ export class User extends AbstractDocument {
     @Prop({ type: String})
     cart?: string
 
+    @Prop({type: Boolean, default: false})
+    isVerified?: boolean
+
+    @Prop({type: String})
+    emailToken?: string
+
 
 }
 
