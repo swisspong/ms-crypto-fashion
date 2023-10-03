@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./apps/ms-crypto-fashion/test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.9.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.0.0",
@@ -43,6 +44,7 @@
     "joi": "^17.9.2",
     "mongoose": "^7.4.4",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.5",
     "omise": "^0.10.1",
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",

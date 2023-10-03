@@ -11,6 +11,8 @@ import { JwtUtilsService } from '@app/common/jwt/jwt-utils.service';
 import { HashService } from '@app/common';
 import { RoleFormat } from '@app/common/enums';
 import { Response } from 'express';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +21,9 @@ export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly jwtUtilsService: JwtUtilsService,
-    private readonly hashSerive: HashService
+    private readonly hashService: HashService,
+    private readonly mailerService: MailerService,
+    private readonly configService: ConfigService
   ) { }
 
   getHello(): string {
@@ -65,7 +69,7 @@ export class AuthService {
 
       if (!user) throw new NotFoundException('Account not found.');
 
-      if (!await this.hashSerive.comparePassword(signinLocalDto.password, user.password))
+      if (!await this.hashService.comparePassword(signinLocalDto.password, user.password))
         throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
 
       const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
@@ -88,10 +92,24 @@ export class AuthService {
 
       if (user) throw new HttpException('Email is already exist.', HttpStatus.BAD_REQUEST);
 
-      const hash = await this.hashSerive.hashPassword(signupLocalDto.password)
+      const hash = await this.hashService.hashPassword(signupLocalDto.password)
+      const emailToken = await this.uid.randomUUID(30)
+      const newUser = await this.usersRepository.create({ ...signupLocalDto, user_id: `user_${this.uid.stamp(15)}`, password: hash, emailToken })
+      const mailOptions = {
+        from: this.configService.get('MAIL_USER', { infer: true }) as string,
+        to: newUser.email,
+        subject: "Crypto Fashion Verify you email.",
+        html: `
+          <h2>${newUser.username} Thanks for registering on our site.</h2>
+          <h4> Please verify you email to continue...</h4>
+          <a href="#">Verify you email</a>
+        `
+      }
 
-      const newUser = await this.usersRepository.create({ ...signupLocalDto, user_id: `user_${this.uid.stamp(15)}`, password: hash })
-
+   
+      console.log(mailOptions);
+      
+      await this.mailerService.sendMail(mailOptions)
       const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
 
       // res.cookie("token", accessToken)
@@ -115,7 +133,7 @@ export class AuthService {
       if (!user) throw new NotFoundException('Account not found.');
 
       if (user.role === RoleFormat.ADMIN) {
-        if (!await this.hashSerive.comparePassword(signinLocalDto.password, user.password))
+        if (!await this.hashService.comparePassword(signinLocalDto.password, user.password))
           throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
 
         const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
@@ -213,7 +231,7 @@ export class AuthService {
     this.logger.log(profile)
     const users = await this.usersRepository.find({ $or: [{ google_id: profile.id }, { email: profile.emails[0].value }] })
     if (users.length <= 0) {
-      const newUser = await this.usersRepository.create({ user_id: `user_${this.uid.stamp(15)}`, email: profile.emails[0].value, google_id: profile.id,username:profile.displayName })
+      const newUser = await this.usersRepository.create({ user_id: `user_${this.uid.stamp(15)}`, email: profile.emails[0].value, google_id: profile.id, username: profile.displayName })
       const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
 
       // res.cookie("token", accessToken)
@@ -248,6 +266,17 @@ export class AuthService {
     }
   }
 
+
+  async sendMail() {
+    try {
+      this.mailerService.sendMail({
+        
+      })
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
 
 
 }
