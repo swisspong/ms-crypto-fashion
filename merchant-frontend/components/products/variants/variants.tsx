@@ -14,6 +14,8 @@ import React from "react";
 import useVariantsHook from "./use-variants-hook";
 import GroupsAddForm from "./groups/add/groups-add-form";
 import GroupsEditForm from "./groups/edit/groups-edit-form";
+import VariantAddForm from "./add/variant-add-form";
+import VariantEditForm from "./edit/variant-edit-form";
 
 const Variants = () => {
   const { productData, productLoading } = useVariantsHook();
@@ -136,13 +138,13 @@ const Variants = () => {
                 </div> */}
           </CardFooter>
         </Card>
-        {/* <Card className="mt-4">
+        <Card className="mt-4">
           <CardHeader className="space-y-1 flex justify-between">
             <div className="flex justify-between">
               <p className="font-semibold tracking-tight text-2xl">
                 ส่วนเสริมรูปแบบ
               </p>
-              <Button
+              {/* <Button
                 size={"sm"}
                 type="button"
                 onClick={() =>
@@ -162,12 +164,16 @@ const Variants = () => {
               >
                 <PlusCircle className="mr-2 h-4 w-4" />
                 {`เพิ่มรูปแบบ`}
-              </Button>
+              </Button> */}
             </div>
           </CardHeader>
 
           <CardContent>
-            {vrntFields.map((field, index) => (
+            {productData?.variants.map((variant) => (
+              <VariantEditForm variant={variant} />
+            ))}
+            <VariantAddForm />
+            {/* {vrntFields.map((field, index) => (
               <div
                 className="grid grid-cols-4 gap-4 border-b py-2 relative"
                 key={field.id}
@@ -288,10 +294,10 @@ const Variants = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            ))} */}
           </CardContent>
           <CardFooter></CardFooter>
-        </Card> */}
+        </Card>
       </div>
     </div>
   );

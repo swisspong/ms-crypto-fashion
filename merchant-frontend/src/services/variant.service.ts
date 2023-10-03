@@ -11,3 +11,8 @@ export const putVariant = async (data: { prodId: string, vrntId: string, body: I
         (response) => response.data
     );
 };
+export const postVariant = async (data: { prodId: string, body: IVariant }): Promise<void> => {
+    await api.post(`/products/${data.prodId}/variants`, data.body).then(
+        (response) => response.data
+    );
+};

@@ -4,14 +4,20 @@ import { GetUser, Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantByIdDto, UpdateVariantDto } from './dto/update-variant.dto';
+import { AddVariantDto } from './dto/add-variant.dto';
 
 @Controller('products/:productId/variants')
 export class VariantsController {
   constructor(private readonly variantsService: VariantsService) {}
+  // @Roles(RoleFormat.MERCHANT)
+  // @Post()
+  // create(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Body() createVariantDto: CreateVariantDto) {
+  //   return this.variantsService.create(merchantId, productId, createVariantDto);
+  // }
   @Roles(RoleFormat.MERCHANT)
   @Post()
-  create(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Body() createVariantDto: CreateVariantDto) {
-    return this.variantsService.create(merchantId, productId, createVariantDto);
+  addVariant(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Body() payload: AddVariantDto) {
+    return this.variantsService.addVariant(merchantId, productId, payload);
   }
 
   @Get()

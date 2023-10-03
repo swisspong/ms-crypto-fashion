@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import ShortUniqueId from 'short-unique-id';
 import { ProductsRepository } from '../products.repository';
 import { CreateVariantDto, VariantDto } from './dto/create-variant.dto';
@@ -7,18 +7,23 @@ import { Variant } from './schemas/variant.schema';
 import { UpdateVariantByIdDto, UpdateVariantDto } from './dto/update-variant.dto';
 import { VariantGroup } from '../variant_groups/schemas/variant-group.schema';
 import { MerchantsRepository } from '../merchants/merchants.repository';
+import { AddVariantDto } from './dto/add-variant.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants/carts.constant';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class VariantsService {
   private readonly uid = new ShortUniqueId()
   constructor(
     private readonly productsRepository: ProductsRepository,
-    private readonly merchantRepository: MerchantsRepository
+    private readonly merchantRepository: MerchantsRepository,
+    @Inject(CARTS_SERVICE) private readonly cartsClient: ClientProxy,
   ) { }
 
   async create(merchantId: string, productId: string, createVariantDto: CreateVariantDto) {
-    const merchant = await this.merchantRepository.findOne({mcht_id: merchantId})
-    if (!merchant)  throw new NotFoundException("Merchant not found.")
+    const merchant = await this.merchantRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new NotFoundException("Merchant not found.")
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchant._id) })
     if (!product) throw new NotFoundException("Product not found.")
     if (this.isVariantInvalid(createVariantDto.variants, product.groups)) throw new NotFoundException("Variant not found.")
@@ -38,6 +43,45 @@ export class VariantsService {
 
     return newProduct
   }
+  async addVariant(merchantId: string, productId: string, payload: AddVariantDto) {
+    const merchant = await this.merchantRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new NotFoundException("Merchant not found.")
+    const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchant._id) })
+    if (!product) throw new NotFoundException("Product not found.")
+
+    const existVrnt = product.variants.some(vrnt => vrnt.vrnt_id === payload.vrnt_id)
+    if (existVrnt) throw new BadRequestException("variant id already exsit.")
+    const isValidVrnts = payload.variant_selecteds.every(vrnts => product.groups.find(group => group.vgrp_id === vrnts.vgrp_id).options.some(optn => optn.optn_id === vrnts.optn_id))
+    if (!isValidVrnts) throw new BadRequestException("Invalid groups or options")
+
+    product.variants.push(payload)
+    // if (this.isVariantInvalid(createVariantDto.variants, product.groups)) throw new NotFoundException("Variant not found.")
+    // const tmpVariants = [...createVariantDto.variants, ...product.variants]
+
+    // if (this.isDuplicateVariant(tmpVariants)) throw new BadRequestException("Variant is duplicate.")
+    // const newVariants: Variant[] = [...product.variants]
+    // createVariantDto.variants.forEach(variant => {
+    //   const vrnt = new Variant()
+    //   vrnt.price = variant.price;
+    //   vrnt.vrnt_id = `vrnt_${this.uid.stamp(15)}`;
+    //   vrnt.variant_selecteds = variant.variant_selecteds
+    //   product.groups
+    //   newVariants.push(vrnt)
+    // })
+
+
+    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId }, { variants: product.variants })
+    await lastValueFrom(
+      this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+        ...newProduct, merchant
+      })
+    )
+    return {
+      message: "success"
+    }
+
+    // return newProduct
+  }
 
 
 
@@ -50,8 +94,8 @@ export class VariantsService {
   }
 
   async update(merchantId: string, productId: string, updateVariantDto: UpdateVariantDto) {
-    const merchant = await this.merchantRepository.findOne({mcht_id: merchantId})
-    if (!merchant)  throw new NotFoundException("Merchant not found.")
+    const merchant = await this.merchantRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new NotFoundException("Merchant not found.")
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchant._id) })
     if (!product) throw new NotFoundException("Product not found.")
     product.variants.map(variant => {
@@ -73,8 +117,8 @@ export class VariantsService {
   async updateById(merchantId: string, productId: string, variantId: string, updateVarianByIdtDto: UpdateVariantByIdDto) {
 
     // TODO: Find merchant 
-    const merchant = await this.merchantRepository.findOne({mcht_id: merchantId})
-    if (!merchant)  throw new NotFoundException("Merchant not found.")
+    const merchant = await this.merchantRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new NotFoundException("Merchant not found.")
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchant._id) })
     if (!product) throw new NotFoundException("Product not found.")
 
@@ -136,8 +180,8 @@ export class VariantsService {
   }
 
   async remove(merchantId: string, productId: string, ids: string[]) {
-    const merchant = await this.merchantRepository.findOne({mcht_id: merchantId})
-    if (!merchant)  throw new NotFoundException("Merchant not found.")
+    const merchant = await this.merchantRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new NotFoundException("Merchant not found.")
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchant._id) })
     if (!product) throw new NotFoundException("Product not found.")
     product.variants = product.variants.filter(variant => ids.find(id => id === variant.vrnt_id) ? false : true)
