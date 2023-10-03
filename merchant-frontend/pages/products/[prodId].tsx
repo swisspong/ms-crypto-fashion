@@ -147,14 +147,7 @@ export default function EditProduct() {
     console.log(values);
     mutate({ prodId: router.query.prodId as string, body: values });
   }
-  const allowOnlyNumber = (value: any) => {
-    if (Number(value) <= 0) {
-      return 0;
-    }
-
-    return value;
-  };
-
+ 
   const {
     fields: images,
     append: imageAppend,
@@ -266,7 +259,7 @@ export default function EditProduct() {
                                   {...field}
                                   onChange={(e) =>
                                     field.onChange(
-                                      Number(allowOnlyNumber(e.target.value))
+                                      (e.target.value)
                                     )
                                   }
                                   // disabled={addLoading || updateLoading}
@@ -294,7 +287,7 @@ export default function EditProduct() {
                                   {...field}
                                   onChange={(e) =>
                                     field.onChange(
-                                      Number(allowOnlyNumber(e.target.value))
+                                      (e.target.value)
                                     )
                                   }
                                 />

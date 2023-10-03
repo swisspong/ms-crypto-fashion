@@ -136,13 +136,9 @@ export default function AddProduct() {
     console.log(values);
     mutate(values);
   }
-  const allowOnlyNumber = (value: any) => {
-    if (Number(value) <= 0) {
-      return 0;
-    }
-
-    return value;
-  };
+  
+  
+  
   const {
     fields: images,
     append: imageAppend,
@@ -236,7 +232,7 @@ export default function AddProduct() {
                                   {...field}
                                   onChange={(e) =>
                                     field.onChange(
-                                      Number(allowOnlyNumber(e.target.value))
+                                      e.target.value
                                     )
                                   }
                                 // disabled={addLoading || updateLoading}
@@ -261,7 +257,7 @@ export default function AddProduct() {
                                   {...field}
                                   onChange={(e) =>
                                     field.onChange(
-                                      Number(allowOnlyNumber(e.target.value))
+                                      (e.target.value)
                                     )
                                   }
                                 />
