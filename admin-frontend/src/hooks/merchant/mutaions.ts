@@ -71,10 +71,10 @@ export const useDeleteMerchant = () => {
             // When mutate is called:
             onMutate: async (info) => {
                 // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-                await queryClient.cancelQueries(["merchants"])
+                await queryClient.cancelQueries(["merchant"])
 
                 // Snapshot the previous value
-                const previousInfos = queryClient.getQueryData(["merchants"]);
+                const previousInfos = queryClient.getQueryData(["merchant"]);
 
                 return { previousInfos };
             },
@@ -82,7 +82,7 @@ export const useDeleteMerchant = () => {
             onError: (err: any, variables, context) => {
                 // displayError(err.response?.data?.message)
                 if (context?.previousInfos) {
-                    queryClient.setQueryData(["merchants"], context.previousInfos);
+                    queryClient.setQueryData(["merchant"], context.previousInfos);
                 }
             },
             // useErrorBoundary:true,
