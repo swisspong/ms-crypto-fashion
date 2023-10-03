@@ -36,9 +36,11 @@ const VariantAddForm = () => {
     showSelectPlaceholder,
     productData,
     showSelectItems,
+    showSelectValue,
   } = useVariantAddHook();
-  console.log(form.watch(`variant_selecteds`));
+  console.log(form.formState.errors.variant_selecteds?.root?.message)
   return (
+    
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -62,23 +64,11 @@ const VariantAddForm = () => {
                             onValueChange={(val) => {
                               field.onChange(val);
                             }}
-                            defaultValue={
-                              field.value.trim().length > 0
-                                ? field.value
-                                : undefined
-                            }
-                            value={
-                              field.value.trim().length > 0 &&
+                            value={showSelectValue(
+                              field.value,
+                              fieldItem.vgrp_id,
                               productData?.groups
-                                .find(
-                                  (group) => group.vgrp_id === fieldItem.vgrp_id
-                                )
-                                ?.options.find(
-                                  (option) => option.optn_id === field.value
-                                )
-                                ? field.value
-                                : undefined
-                            }
+                            )}
                           >
                             <FormControl>
                               <SelectTrigger>
@@ -98,6 +88,7 @@ const VariantAddForm = () => {
                                     productData
                                   )}
                                 </SelectLabel>
+                                <SelectItem value={"none"}>ไม่ระบุ</SelectItem>
                                 {showSelectItems(
                                   fieldItem.vgrp_id,
                                   productData?.groups
@@ -114,22 +105,13 @@ const VariantAddForm = () => {
                       )}
                     />
                   ))}
-                  {/* <Select>
-                    <SelectTrigger className="w-[180px] h-8">
-                      <SelectValue placeholder="Select a fruit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="apple">Apple</SelectItem>
-                        <SelectItem value="banana">Banana</SelectItem>
-                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                        <SelectItem value="grapes">Grapes</SelectItem>
-                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select> */}
                 </div>
               </div>
+              {form.formState.errors.variant_selecteds?.root?.message && (
+                <p className="text-sm font-medium text-destructive">
+                  {form.formState.errors.variant_selecteds?.root?.message}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex flex-col space-y-2">

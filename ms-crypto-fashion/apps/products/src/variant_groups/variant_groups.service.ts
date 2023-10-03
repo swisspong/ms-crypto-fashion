@@ -80,18 +80,17 @@ export class VariantGroupsService {
     //validate group name is exist
     const existGroup = product.groups.find(group => group.name === payload.name && group.vgrp_id !== payload.vgrp_id)
     if (existGroup) throw new BadRequestException("Group name is exist.")
-    const groups = product.groups
-    for (let i = 0; i < groups.length; i++) {
-      const eGroup = groups[i];
-      if (eGroup.vgrp_id === payload.vgrp_id) {
-        groups[i].name = payload.name
-        groups[i].options = payload.options
-      }
-    }
-
+    const eGroupIndex = product.groups.findIndex(group => group.vgrp_id === payload.vgrp_id)
+    if (eGroupIndex < 0) throw new BadRequestException("Group not exist")
+    product.groups[eGroupIndex].name = payload.name
+    product.groups[eGroupIndex].options = payload.options
+    const optionIsInUse = product.variants.some(vrnt =>
+      vrnt.variant_selecteds.some(vrnts => vrnts.vgrp_id === payload.vgrp_id && !payload.options.some(optn => optn.optn_id === vrnts.optn_id))
+    )
+    if (optionIsInUse) throw new BadRequestException("Variant already use option")
     const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId, merchant: merchant._id },
       {
-        groups,
+        groups: product.groups,
       }
     )
     await lastValueFrom(
@@ -109,7 +108,10 @@ export class VariantGroupsService {
     if (!merchant) throw new ForbiddenException()
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: merchant._id })
     if (!product) throw new NotFoundException("Product not found.")
+
     product.groups = product.groups.filter(group => id !== group.vgrp_id)
+    const isIncludeInVariant = product.variants.some(vrnt => vrnt.variant_selecteds.some(vrnts => vrnts.vgrp_id === id))
+    if (isIncludeInVariant) throw new BadRequestException("Groups is already in use")
     // if (this.isDuplicateGroup(product.groups)) throw new BadRequestException("Group name is duplicate.")
     // if (this.variantIsIncludeInGroups(product.variants, product.groups) || this.isDuplicateVariant(product.variants)) {
     //   //set product is not available
@@ -126,7 +128,7 @@ export class VariantGroupsService {
     //   })
     //   // const newVariant = 
     // }
-    product.variants.map(variant => {
+    product.variants = product.variants.map(variant => {
       const variantSelectedFiltered = variant.variant_selecteds.filter(vrnt_select => {
         const group = product.groups.find(group => group.vgrp_id === vrnt_select.vgrp_id);
         if (!group) return false

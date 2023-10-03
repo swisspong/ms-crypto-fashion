@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
-import { ArrayNotEmpty, IsArray, IsNotEmpty, IsNumber, IsString, Length, Min, ValidateNested } from "class-validator";
+import { ArrayNotEmpty, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Min, ValidateNested } from "class-validator";
 
 
 export class VariantSelectedDto {
@@ -38,4 +38,8 @@ export class AddVariantDto {
     @IsNotEmpty()
     @Length(3)
     vrnt_id: string;
+    @ApiProperty({ example: "https://cdn.shopify.com/s/files/1/2303/2711/files/2_e822dae0-14df-4cb8-b145-ea4dc0966b34.jpg?v=1617059123" })
+    @IsOptional()
+    @IsString()
+    image_url?: string
 }

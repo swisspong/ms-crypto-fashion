@@ -1,12 +1,17 @@
 import { useProductById } from "@/src/hooks/product/queries";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as z from 'zod'
-import { formSchema, genId, showSelectPlaceholder } from "../add/variant-add-helper";
+import { formSchema, genId, showSelectItems, showSelectPlaceholder, showSelectValue } from "../add/variant-add-helper";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEditVariant } from "@/src/hooks/product/variant/mutations";
 
 const useVariantEditHook = () => {
+    const [isEdit, setIsEdit] = useState<boolean>(false)
+
+    const [open, setOpen] = useState<boolean>(false)
+    const editMutate = useEditVariant()
     const router = useRouter()
     const productQuery = useProductById(
         router.query.prodId as string
@@ -25,9 +30,9 @@ const useVariantEditHook = () => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
-        //   addVariantMutate.mutate({ prodId: router.query.prodId as string, body: values })
-        // addGroupMutate.mutate({ prodId: router.query.prodId as string, body: values })
-        // mutate(values);
+        values.variant_selecteds = values.variant_selecteds.filter(vrnts => vrnts.optn_id !== '' && vrnts.optn_id !== 'none')
+        editMutate.mutate({ prodId: router.query.prodId as string, body: values })
+        setIsEdit(false)
     }
     const initForm = (variant: IVariant) => {
         useEffect(() => {
@@ -35,14 +40,35 @@ const useVariantEditHook = () => {
                 console.log("tets log")
                 form.reset({
                     vrnt_id: variant.vrnt_id,
-                    variant_selecteds: variant.variant_selecteds,
-                    price:variant.price,
-                    stock:variant.stock
+                    //variant_selecteds: variant.variant_selecteds,
+                    variant_selecteds: productQuery.data?.groups.map(group => {
+                        const optnId = variant.variant_selecteds.find(vrnts => vrnts.vgrp_id === group.vgrp_id && group.options.some(optn => vrnts.optn_id === optn.optn_id))?.optn_id ?? ""
+                        return {
+                            optn_id: optnId,
+                            vgrp_id: group.vgrp_id
+                        }
+                    }) ?? [],
+                    price: variant.price,
+                    stock: variant.stock
                 })
             }
-        }, [productQuery.data])
+        }, [productQuery.data, productQuery.isSuccess, open])
     }
-
+    const toggleEdit = () => {
+        setIsEdit(prev => !prev)
+    }
+    const cancelForm = (variant: IVariant) => {
+        form.reset({
+            vrnt_id: variant.vrnt_id,
+            variant_selecteds: variant.variant_selecteds,
+            price: variant.price,
+            stock: variant.stock
+        })
+        setIsEdit(false)
+    }
+    const toggleHandler = (value: boolean) => {
+        setOpen(value)
+    }
     return {
         form,
         fields,
@@ -50,8 +76,14 @@ const useVariantEditHook = () => {
         onSubmit,
         showSelectPlaceholder: showSelectPlaceholder,
         initForm,
-        productData: productQuery.data
-
+        productData: productQuery.data,
+        showSelectItems,
+        showSelectValue,
+        isEdit,
+        toggleEdit,
+        cancelForm,
+        open,
+        toggleHandler
     }
 }
 

@@ -10,9 +10,17 @@ const formSchema = z.object({
             // vgrp_id: z.string().trim().min(2, { message: "ต้องเลือก" }),
             // optn_id: z.string().trim().min(2, { message: "ต้องเลือก" }),
         })
-    ),
+    ).refine((val) => {
+        console.log(val)
+        const filtered = val.filter(data => data.optn_id === "" || data.optn_id === "none")
+        if (val.length === filtered.length) {
+            return false
+        }
+        return true
+    }, { message: "ต้องมีอย่างน้อย 1 ตัวเลือก" }),
     price: z.number().min(0),
     stock: z.number().int().min(0),
+    image_url: z.string().url().optional(),
 })
 const genId = (prefix: string) => {
     const uid = new ShortUniqueId();
@@ -26,9 +34,21 @@ const showSelectPlaceholder = (vgrpId: string, data: IProductRow | undefined) =>
 const showSelectItems = (vgrpId: string, groups: IGroup[] | undefined) => {
     return groups?.find(group => group.vgrp_id === vgrpId)?.options ?? []
 }
+const showSelectValue = (value: string, vgrpId: string, groups: IGroup[] | undefined) => {
+    return value.trim().length > 0 &&
+        groups?.find(
+            (group) => group.vgrp_id === vgrpId
+        )
+            ?.options.find(
+                (option) => option.optn_id === value
+            )
+        ? value
+        : ""
+}
 export {
     genId,
     formSchema,
     showSelectPlaceholder,
-    showSelectItems
+    showSelectItems,
+    showSelectValue
 }

@@ -16,3 +16,13 @@ export const postVariant = async (data: { prodId: string, body: IVariant }): Pro
         (response) => response.data
     );
 };
+export const patchVariant = async (data: { prodId: string, body: IVariant }): Promise<void> => {
+    await api.patch(`/products/${data.prodId}/variants`, data.body).then(
+        (response) => response.data
+    );
+};
+export const deleteVariant = async (data: { prodId: string, vrntId: string, }): Promise<void> => {
+    await api.delete(`/products/${data.prodId}/variants/${data.vrntId}`).then(
+        (response) => response.data
+    );
+};

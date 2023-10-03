@@ -53,7 +53,8 @@ export class VariantsService {
     if (existVrnt) throw new BadRequestException("variant id already exsit.")
     const isValidVrnts = payload.variant_selecteds.every(vrnts => product.groups.find(group => group.vgrp_id === vrnts.vgrp_id).options.some(optn => optn.optn_id === vrnts.optn_id))
     if (!isValidVrnts) throw new BadRequestException("Invalid groups or options")
-
+    const isDuplicate = product.variants.some(vrnt => vrnt.variant_selecteds.length === payload.variant_selecteds.length && vrnt.variant_selecteds.every(vrnts => payload.variant_selecteds.some(pvrnts => vrnts.optn_id === pvrnts.optn_id && vrnts.vgrp_id === pvrnts.vgrp_id)))
+    if (isDuplicate) throw new BadRequestException("Variant is duplicate.")
     product.variants.push(payload)
     // if (this.isVariantInvalid(createVariantDto.variants, product.groups)) throw new NotFoundException("Variant not found.")
     // const tmpVariants = [...createVariantDto.variants, ...product.variants]
@@ -82,7 +83,76 @@ export class VariantsService {
 
     // return newProduct
   }
+  async editVariant(merchantId: string, productId: string, payload: AddVariantDto) {
+    const merchant = await this.merchantRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new NotFoundException("Merchant not found.")
+    const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchant._id) })
+    if (!product) throw new NotFoundException("Product not found.")
 
+    const existVrntIndex = product.variants.findIndex(vrnt => vrnt.vrnt_id === payload.vrnt_id)
+    if (existVrntIndex < 0) throw new BadRequestException("Variant not found.")
+    const isValidVrnts = payload.variant_selecteds.every(vrnts => product.groups.find(group => group.vgrp_id === vrnts.vgrp_id).options.some(optn => optn.optn_id === vrnts.optn_id))
+    if (!isValidVrnts) throw new BadRequestException("Invalid groups or options")
+    const isDuplicate = product.variants.some(vrnt => vrnt.vrnt_id !== payload.vrnt_id && vrnt.variant_selecteds.length === payload.variant_selecteds.length && vrnt.variant_selecteds.every(vrnts => payload.variant_selecteds.some(pvrnts => vrnts.optn_id === pvrnts.optn_id && vrnts.vgrp_id === pvrnts.vgrp_id)))
+
+
+    console.log("isdu ", isDuplicate, payload.vrnt_id)
+    if (isDuplicate) throw new BadRequestException("Variant is duplicate")
+
+
+    //product.variants.push(payload)
+    // if (this.isVariantInvalid(createVariantDto.variants, product.groups)) throw new NotFoundException("Variant not found.")
+    // const tmpVariants = [...createVariantDto.variants, ...product.variants]
+
+    // if (this.isDuplicateVariant(tmpVariants)) throw new BadRequestException("Variant is duplicate.")
+    // const newVariants: Variant[] = [...product.variants]
+    // createVariantDto.variants.forEach(variant => {
+    //   const vrnt = new Variant()
+    //   vrnt.price = variant.price;
+    //   vrnt.vrnt_id = `vrnt_${this.uid.stamp(15)}`;
+    //   vrnt.variant_selecteds = variant.variant_selecteds
+    //   product.groups
+    //   newVariants.push(vrnt)
+    // })
+    product.variants[existVrntIndex].variant_selecteds = payload.variant_selecteds
+    product.variants[existVrntIndex].image_url = payload.image_url
+    product.variants[existVrntIndex].price = payload.price
+    product.variants[existVrntIndex].stock = payload.stock
+
+    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId }, { variants: product.variants })
+    await lastValueFrom(
+      this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+        ...newProduct, merchant
+      })
+    )
+    return {
+      message: "success"
+    }
+
+    // return newProduct
+  }
+
+
+  async deleteVariant(merchantId: string, productId: string, vrntId: string) {
+    const merchant = await this.merchantRepository.findOne({ mcht_id: merchantId })
+    if (!merchant) throw new NotFoundException("Merchant not found.")
+    const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchant._id) })
+    if (!product) throw new NotFoundException("Product not found.")
+
+    const existVrntIndex = product.variants.findIndex(vrnt => vrnt.vrnt_id === vrntId)
+    if (existVrntIndex < 0) throw new BadRequestException("Variant not found.")
+
+    product.variants.splice(existVrntIndex, 1)
+    const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId }, { variants: product.variants })
+    await lastValueFrom(
+      this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+        ...newProduct, merchant
+      })
+    )
+    return {
+      message: "success"
+    }
+  }
 
 
   findAll() {

@@ -18,7 +18,8 @@ import VariantAddForm from "./add/variant-add-form";
 import VariantEditForm from "./edit/variant-edit-form";
 
 const Variants = () => {
-  const { productData, productLoading } = useVariantsHook();
+  const { productData, productLoading, delVgrpId, setDelVgrpIdHandler } =
+    useVariantsHook();
   return (
     <div className="grid grid-cols-5 gap-4">
       <div className="col-span-5 grid gap-4">
@@ -32,7 +33,11 @@ const Variants = () => {
           </CardHeader>
           <CardContent>
             {productData?.groups.map((group) => (
-              <GroupsEditForm group={group} />
+              <GroupsEditForm
+                group={group}
+                delVgrpId={delVgrpId}
+                setDelVgrpIdHandler={setDelVgrpIdHandler}
+              />
             ))}
             <GroupsAddForm />
             {/* <div className="grid grid-cols-2 gap-4 py-2 border-b relative">

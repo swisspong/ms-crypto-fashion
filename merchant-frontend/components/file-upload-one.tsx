@@ -44,7 +44,7 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
             <img
               src={image_url as string}
               alt=""
-              className="aspect-square object-cover rounded-md"
+              className="aspect-square object-cover rounded-md h-40 w-40"
             />
             {/* <Image
               src={image_url as string}

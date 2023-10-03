@@ -18,8 +18,10 @@ import GroupsDeleteDialog from "../delete/groups-delete-dialog";
 
 interface Props {
   group: IGroup;
+  setDelVgrpIdHandler: (data: string | undefined) => void;
+  delVgrpId: string | undefined;
 }
-const GroupsEditForm: FC<Props> = ({ group }) => {
+const GroupsEditForm: FC<Props> = ({ group,delVgrpId,setDelVgrpIdHandler }) => {
   const {
     form,
     onSubmit,

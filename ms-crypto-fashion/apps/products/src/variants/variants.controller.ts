@@ -8,7 +8,7 @@ import { AddVariantDto } from './dto/add-variant.dto';
 
 @Controller('products/:productId/variants')
 export class VariantsController {
-  constructor(private readonly variantsService: VariantsService) {}
+  constructor(private readonly variantsService: VariantsService) { }
   // @Roles(RoleFormat.MERCHANT)
   // @Post()
   // create(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Body() createVariantDto: CreateVariantDto) {
@@ -27,18 +27,28 @@ export class VariantsController {
 
   @Roles(RoleFormat.MERCHANT)
   @Patch()
-  update(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Body() updateVariantDto: UpdateVariantDto) {
-    return this.variantsService.update(merchantId, productId, updateVariantDto);
+  editVariant(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Body() payload: AddVariantDto) {
+    return this.variantsService.editVariant(merchantId, productId, payload);
   }
+  // @Roles(RoleFormat.MERCHANT)
+  // @Patch()
+  // update(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Body() updateVariantDto: UpdateVariantDto) {
+  //   return this.variantsService.update(merchantId, productId, updateVariantDto);
+  // }
   @Roles(RoleFormat.MERCHANT)
   @Patch(":variantId")
   updateByVariantId(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Param("variantId") id: string, @Body() updateVariantDto: UpdateVariantByIdDto) {
     return this.variantsService.updateById(merchantId, productId, id, updateVariantDto);
   }
   @Roles(RoleFormat.MERCHANT)
-  @Delete()
-  remove(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Query('ids', new ParseArrayPipe({ items: String, separator: ',' }))
-  ids: string[]) {
-    return this.variantsService.remove(merchantId, productId, ids);
+  @Delete(":vrntId")
+  removeVariant(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Param('vrntId') vrntId: string) {
+    return this.variantsService.deleteVariant(merchantId, productId, vrntId);
   }
+  // @Roles(RoleFormat.MERCHANT)
+  // @Delete()
+  // remove(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Query('ids', new ParseArrayPipe({ items: String, separator: ',' }))
+  // ids: string[]) {
+  //   return this.variantsService.remove(merchantId, productId, ids);
+  // }
 }

@@ -11,11 +11,11 @@ const useGroupsEditFormHook = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const router = useRouter()
   const editGroupMutate = useEditGroup()
-  
+
   const productQuery = useProductById(
     router.query.prodId as string
   );
-  const form= useForm<z.infer<typeof formSchema>>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       vgrp_id: genId('vgrp')
@@ -31,12 +31,14 @@ const useGroupsEditFormHook = () => {
   };
   const initForm = (group: IGroup) => {
     useEffect(() => {
-      form.reset({
-        name: group.name,
-        vgrp_id: group.vgrp_id,
-        options: group.options,
-      })
-    }, [productQuery.isSuccess])
+      if (productQuery.data) {
+        form.reset({
+          name: group.name,
+          vgrp_id: group.vgrp_id,
+          options: productQuery.data.groups.find(grp => grp.vgrp_id === group.vgrp_id)?.options,
+        })
+      }
+    }, [productQuery.isSuccess,  editGroupMutate.isError,productQuery.data])
   }
   const toggleEdit = () => {
     setIsEdit(prev => !prev)
@@ -49,7 +51,7 @@ const useGroupsEditFormHook = () => {
     })
     setIsEdit(false)
   }
- 
+
   return {
     form,
     onSubmit,
@@ -58,7 +60,7 @@ const useGroupsEditFormHook = () => {
     isEdit,
     toggleEdit,
     cancelForm,
-    
+
   }
 }
 
