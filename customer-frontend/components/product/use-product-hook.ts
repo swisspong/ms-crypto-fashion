@@ -16,7 +16,7 @@ const userProductHook = () => {
     const router = useRouter();
     const productQuery = useProductById(router.query.prodId as string);
     const [vrntSelected, setVrntSelected] = useState<string | undefined>();
-
+    const [vrntId, setVrntId] = useState<string | undefined>()
     const vrntSelectedHandler = (selecteds: { vgrpId: string; optnId: string }[]) => {
         setVrntSelected(
             productQuery.data?.variants.find((variant) =>
@@ -29,10 +29,15 @@ const userProductHook = () => {
             )?.vrnt_id ?? undefined
         );
     }
+    const vrntIdHandler = (data: string | undefined) => {
+        setVrntId(data)
+    }
 
     return {
         vrntSelectedHandler,
-        vrntSelected
+        vrntSelected,
+        vrntId,
+        vrntIdHandler
     }
 
 

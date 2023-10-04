@@ -44,7 +44,6 @@ import { comment } from "postcss";
 import userProductHook from "@/components/product/use-product-hook";
 import { useWishlistInfo } from "@/src/hooks/wishlist/queries";
 
-
 const ProductStorefrontPage = () => {
   const router = useRouter();
   const { data } = useProductById(router.query.prodId as string);
@@ -68,9 +67,13 @@ const ProductStorefrontPage = () => {
     isSuccess: meSuccess,
   } = useUserInfo();
 
-  const {data: wishlist, isLoading: wishlistLoading, isSuccess: wishlistSuccess} = useWishlistInfo(router.query.prodId as string)
+  const {
+    data: wishlist,
+    isLoading: wishlistLoading,
+    isSuccess: wishlistSuccess,
+  } = useWishlistInfo(router.query.prodId as string);
 
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   // ! use state report & complain
   const [compText, setCompText] = useState("");
@@ -124,7 +127,8 @@ const ProductStorefrontPage = () => {
   useEffect(() => {
     if (compSuccess) setOpen(false);
   }, [compSuccess]);
-  const { vrntSelectedHandler,vrntSelected } = userProductHook();
+  const { vrntSelectedHandler, vrntSelected, vrntId, vrntIdHandler } =
+    userProductHook();
 
   return (
     <div className="bg-white">
@@ -232,15 +236,15 @@ const ProductStorefrontPage = () => {
             />
             <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
               <Info
+                vrntId={vrntId}
+                vrntIdHandler={vrntIdHandler}
                 data={data}
                 // setVrntSelected={setVrntSelected}
                 vrntSelectedHandler={vrntSelectedHandler}
                 canAddToCart={true}
                 vrntSelected={vrntSelected}
                 wishlist={wishlist}
-                
               />
-              
             </div>
           </div>
           <hr className="my-10" />

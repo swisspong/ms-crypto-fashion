@@ -1,6 +1,6 @@
 import { useAddToCart } from '@/src/hooks/cart/mutations';
 import { useAddToWishlist } from '@/src/hooks/wishlist/mutations';
-import React, { useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
 import { disableSelect, showSelectValue } from './add-item-helper';
 
@@ -145,4 +145,226 @@ const useAddItemHook = (data: IProductRow | undefined, vrntSelectedHandler: (sel
     }
 }
 
+const useAddItemHookNew = (data: IProductRow | undefined) => {
+    const [quantity, setQuantity] = useState<number>(0);
+    const [selecteds, setSelecteds] = useState<
+        { vgrpId: string; optnId: string }[]
+    >([]);
+    const addItemMutate = useAddToCart();
+    const [activeVgrpId, setActiveVgrpId] = useState<string | undefined>()
+    const selectValueChangeHandler = (value: string, group: IGroup) => {
+        setSelecteds((prev) => {
+            let variants: IVariant[] | undefined = undefined
+
+            variants = data?.variants.filter(vrnt => vrnt.variant_selecteds.some(vrnts => vrnts.optn_id === value))
+
+            const filteredSelectedsError = selecteds.filter(select => select.optnId !== '' && select.vgrpId !== group.vgrp_id && value !== '' && !variants?.some(vrnt => vrnt.variant_selecteds.some(vrnts => vrnts.optn_id === select.optnId)))
+            console.log("filteredSelectedsError =>", filteredSelectedsError)
+            const result = prev.map(groupState => {
+                if (filteredSelectedsError.some(error => error.vgrpId === groupState.vgrpId)) {
+                    return { ...groupState, optnId: '' }
+                } else if (groupState.vgrpId === group.vgrp_id) {
+                    return { ...groupState, optnId: value };
+                }
+                return groupState
+            })
+            return result;
+        })
+    }
+
+    const disabledOption = (option: IOption, vgrpId: string) => {
+        const optionNotInVariant = !data?.variants.some(vrnt => vrnt.variant_selecteds.some(vrnts => vrnts.optn_id === option.optn_id))
+        if (optionNotInVariant) return true
+        if (activeVgrpId === vgrpId && selecteds.some(select => select.vgrpId === vgrpId && select.optnId !== "")) {
+            return false
+        }
+        const availableVaraints = data?.variants.filter(vrnt => selecteds.every(select => {
+            if (select.optnId === '') {
+                return true
+            }
+            return vrnt.variant_selecteds.some(vrnts => vrnts.vgrp_id === select.vgrpId && vrnts.optn_id === select.optnId)
+        }))
+
+        return !availableVaraints?.some(vrnt => vrnt.variant_selecteds.some(vrnts => vrnts.optn_id === option.optn_id))
+    }
+    const disableButton = (vrntId: string | undefined) => {
+        const maxQty = maxQuantity(vrntId)
+        if (data) {
+            if (data.groups.length > 0 && data.variants.length > 0) {
+                if (vrntId) {
+                    const variant = data.variants.find(vrnt => vrnt.vrnt_id === vrntId)
+                    if (variant) {
+                        return quantity <= 0 || quantity > maxQty
+                    } else {
+                        return true
+                    }
+                } else {
+                    return true
+                }
+            }
+            return quantity <= 0 || quantity > maxQty
+
+        } else {
+            return true
+        }
+    }
+    const onOpenChange = (open: boolean, vgrpId: string) => {
+        if (open) {
+            setActiveVgrpId(vgrpId)
+        } else {
+            setActiveVgrpId(undefined)
+        }
+    }
+    const whenSelectsChange = (vrntIdHandler: (vrntId: string | undefined) => void) => {
+        useEffect(() => {
+            console.log("selecteds => ", selecteds)
+            if (selecteds.length > 0) {
+                const selectedOptions = selecteds.filter(select => select.optnId !== '')
+                console.log("test init selectedOptions =>", selectedOptions)
+                if (selectedOptions.length > 0) {
+
+                    const varinat = data?.variants.find(vrnt => vrnt.variant_selecteds.length === selectedOptions.length && selectedOptions.every(sl => vrnt.variant_selecteds.some(vrnts => vrnts.vgrp_id === sl.vgrpId && vrnts.optn_id === sl.optnId)))
+                    if (varinat) {
+                        console.log("test init", varinat.vrnt_id)
+                        vrntIdHandler(varinat.vrnt_id)
+                    } else {
+                        vrntIdHandler(undefined)
+
+                    }
+                } else {
+                    vrntIdHandler(undefined)
+                }
+            }
+        }, [selecteds])
+    }
+
+    const whenVrntIdSelectedChange = (vrntId: string | undefined) => {
+        useEffect(() => {
+            if (data) {
+                if (data.variants.length > 0) {
+                    if (vrntId) {
+                        setQuantity(data.variants.some((vrnts) => vrntId === vrnts.vrnt_id) ? 1 : 0)
+                    } else {
+                        setQuantity(0)
+                    }
+                } else {
+                    setQuantity(data.stock > 0 ? 1 : 0)
+                }
+            } else {
+                setQuantity(0)
+            }
+            console.log("vrntId => ", vrntId)
+        }, [vrntId]);
+    }
+    useEffect(() => {
+        if (data && data.groups.length > 0) {
+            setSelecteds(data.groups.map(group => ({ vgrpId: group.vgrp_id, optnId: '' })))
+        }
+    }, [data])
+    const disabledQtyInput = (vrntId: string | undefined) => {
+        if (data) {
+            if (data.groups.length > 0 && data.variants.length > 0) {
+                if (vrntId) {
+                    const variant = data.variants.find(vrnt => vrnt.vrnt_id === vrntId)
+                    if (variant) {
+                        console.log(variant)
+                        return variant.stock <= 0
+                    } else {
+                        console.log("fdsfsfds")
+                        return true
+                    }
+                } else {
+                    console.log("fdsfsfds")
+                    return true
+                }
+            }
+            return data.stock <= 0
+        }
+        console.log("fdsfsfds")
+        return true
+    }
+    const maxQuantity = (vrntId: string | undefined) => {
+        if (data) {
+            if (data.groups.length > 0 && data.variants.length > 0) {
+                if (vrntId) {
+                    const variant = data.variants.find(vrnt => vrnt.vrnt_id === vrntId)
+                    if (variant) {
+                        return variant.stock
+                    } else {
+                        return 0
+                    }
+                } else {
+                    return 0
+                }
+            }
+            return data.stock
+        } else {
+            return 0
+        }
+    }
+    const showQuantity = (vrntId: string | undefined) => {
+        const maxQty = maxQuantity(vrntId)
+        if (quantity > maxQty) {
+            return maxQty
+        } else {
+            return quantity
+        }
+    }
+    const qtyChangeHandler = (event: ChangeEvent<HTMLInputElement>, vrntId: string | undefined) => {
+        const qty = Number(event.target.value)
+        const maxQty = maxQuantity(vrntId)
+
+        if (qty > maxQty) {
+            setQuantity(maxQty)
+        } else if (qty <= 0) {
+            setQuantity(1)
+        } else {
+
+            setQuantity(qty)
+        }
+    }
+
+    const onSubmit = (canAddToCart: boolean) => {
+        if (data && data.variants.length <= 0 && canAddToCart) {
+            console.log(quantity);
+            addItemMutate.mutate({ prodId: data.prod_id!, body: { quantity } });
+
+        } else if (data) {
+            const vrnt =
+                data.variants.find((variant) =>
+                    variant.variant_selecteds.every((vrnts) =>
+                        selecteds.some(
+                            (slct) =>
+                                slct.optnId === vrnts.optn_id && slct.vgrpId === vrnts.vgrp_id
+                        )
+                    )
+                )?.vrnt_id ?? undefined;
+            if (vrnt && canAddToCart) {
+                addItemMutate.mutate({ prodId: data.prod_id!, body: { quantity, vrnt_id: vrnt } });
+                console.log(quantity, vrnt);
+            }
+        }
+    };
+    return {
+        disabledOption,
+        selectValueChangeHandler,
+        quantity,
+        whenSelectsChange,
+        whenVrntIdSelectedChange,
+        showSelectValue,
+        selecteds,
+        onOpenChange,
+        activeVgrpId,
+        disabledQtyInput,
+        maxQuantity,
+        showQuantity,
+        qtyChangeHandler,
+        disableButton,
+        onSubmit
+    }
+
+}
+export {
+    useAddItemHookNew
+}
 export default useAddItemHook
