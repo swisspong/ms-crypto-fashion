@@ -103,17 +103,17 @@ export class AuthService {
         to: newUser.email,
         subject: "Crypto Fashion Verify you email.",
         html: `
-          <h2>${newUser.username} Thanks for registering on our site.</h2>
-          <h4> Please verify you email to continue...</h4>
-          <a href="${this.configService.get('HOST_MAIN', { infer: true }) }/verify?token='${newUser.emailToken}'">Verify you email</a>
+          <h2>${newUser.username} ขอบคุณสำหรับการลงทะเบียนบนเว็บไซต์ของเรา</h2>
+          <h4>กรุณายืนยันอีเมลของคุณเพื่อดำเนินการต่อ...</h4>
+          <a href="${this.configService.get('HOST_MAIN', { infer: true })}/verify?token=${newUser.emailToken}">ยืนยันอีเมลของคุณ</a>
         `
       }
 
-   
+
       console.log(mailOptions);
-      
+
       await this.mailerService.sendMail(mailOptions)
-      const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
+      // const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
 
       // res.cookie("token", accessToken)
       // res.cookie("token", accessToken, {
@@ -123,7 +123,7 @@ export class AuthService {
       //   domain: 'example.com'
       // })
       // return { accessToken }
-      return { status: "success"}
+      return { status: "success" }
 
     } catch (error) {
       throw error
@@ -273,19 +273,18 @@ export class AuthService {
 
   async verifyEmail(token: string) {
     try {
-      const user = await this.usersRepository.findOne({emailToken: token})
+      let updateUser = undefined
+      const user = await this.usersRepository.findOne({ emailToken: token })
       if (user) {
-        const updateUser = await this.usersRepository.findAndUpdate({emailToken: token},{
-          $set: {emailToken: null, isVerified: true}
+        updateUser = await this.usersRepository.findAndUpdate({ emailToken: token }, {
+          $set: { emailToken: null, isVerified: true }
         })
-
-        return updateUser
       }
 
-      return user
+      return { status: updateUser ? "success" : "failure" }
     } catch (error) {
       console.log(error);
-      
+
     }
   }
 

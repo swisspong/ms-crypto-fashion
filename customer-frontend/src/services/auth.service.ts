@@ -31,3 +31,4 @@ export const getNonce = async (): Promise<{ nonce: string }> => {
     );
     return result;
 }
+

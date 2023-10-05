@@ -1,0 +1,101 @@
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { withoutUserVerify } from "@/src/hooks/auth/auth-hook"
+import { CheckIcon, Loader2, X } from "lucide-react"
+import { NextPage } from "next"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
+
+enum VerifyFormat {
+    SUCCESS = "success",
+    FAILURE = "failure"
+}
+
+const VerifyPage: NextPage<{ data: IVerify | undefined }> = ({ data }) => {
+    const router = useRouter()
+
+    
+    return (
+        <div className="min-h-screen h-full ">
+            <div className="border-t">
+                <div className="h-full fixed inset-0 flex items-center justify-center">
+                    {
+                        !data?.status ? (
+                            <Card className="w-9/12 sm:w-96">
+                                <CardHeader>
+                                    <div className="flex items-center justify-center w-full">
+                                        <Loader2 className="mr-2 h-16 w-16 animate-spin" />
+                                    </div>
+                                    <div className="text-center">
+                                        <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+                                            <span>กรุณารอสักครู่</span>
+
+                                        </h2>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-xl text-muted-foreground">
+                                            <span>กำลังดำเนินการตรวจสอบข้อมูลของคุณและจะแจ้งให้คุณทราบเมื่อเสร็จสมบูรณ์ กรุณารอสักครู่</span>
+                                        </p>
+                                    </div>
+                                </CardHeader>
+
+                            </Card>
+                        ) : data.status === VerifyFormat.SUCCESS ? (
+                            <Card className="w-9/12 sm:w-96">
+                                <CardHeader>
+                                    <div className="flex items-center justify-center w-full">
+                                        <CheckIcon className="mr-2 h-16 w-16" />
+                                    </div>
+                                    <div className="text-center">
+                                        <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+                                            <span>ยืนยันอีเมลสำเร็จ</span>
+                                        </h2>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-xl text-muted-foreground">
+                                            <span>ยินดีด้วย! คุณได้ทำการยืนยันตัวตนเรียบร้อยแล้ว คุณสามารถเข้าใช้บัญชีของคุณตอนนี้และเพลิดเพลินกับบริการของเรา</span>
+                                        </p>
+                                    </div>
+                                </CardHeader>
+                                <CardFooter className="flex justify-between">
+                                    <Button
+                                        className="w-full"
+                                        onClick={() => router.push('signin')}
+                                    >
+                                        เข้าสู่ระบบ
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        ) : data.status === VerifyFormat.FAILURE ? (
+                            <Card className="w-9/12 sm:w-96">
+                                <CardHeader>
+                                    <div className="flex items-center justify-center w-full">
+                                        <X className="mr-2 h-16 w-16" />
+                                    </div>
+                                    <div className="text-center">
+                                        <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+                                            <span>เกิดข้อผิดพลาด</span>
+                                        </h2>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-xl text-muted-foreground">
+                                            <span>ขออภัยในความไม่สะดวก ดูเหมือนว่ามีข้อผิดพลาดเกิดขึ้นในระบบยืนยันตัวตน</span>
+                                        </p>
+                                    </div>
+                                </CardHeader>
+
+                            </Card>
+                        ) : (
+                            <Loader2 className="mr-2 h-16 w-16 animate-spin" />
+                        )
+                    }
+
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default VerifyPage
+
+export const getServerSideProps = withoutUserVerify()

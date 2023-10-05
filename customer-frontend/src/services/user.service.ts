@@ -16,3 +16,13 @@ export const getInfoCsr = async (): Promise<IUserRes> => {
         (response) => response.data
     );
 };
+
+export const verifyEmail = async (token: string): Promise<IVerify> => {
+
+
+    return apiSsr.get(`/auth/email/verify?token=${token}`, {
+    }).then(
+        (response) => response.data
+    );
+
+}
