@@ -12,3 +12,7 @@ interface ISignupPayload {
     username: string
     password: string
 }
+
+interface IVerify {
+    status: string
+}

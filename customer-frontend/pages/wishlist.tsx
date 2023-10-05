@@ -2,6 +2,7 @@ import Container from "@/components/container"
 import Footer from "@/components/footer"
 import Navbar from "@/components/navbar"
 import WishListItem from "@/components/wishlist/wishlist-item"
+import { withUser } from "@/src/hooks/auth/auth-hook"
 import { useMyWishlist } from "@/src/hooks/wishlist/queries"
 
 const WishListPage = () => {
@@ -30,3 +31,4 @@ const WishListPage = () => {
     )
 }
 export default WishListPage
+export const getServerSideProps = withUser();
