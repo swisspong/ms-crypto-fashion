@@ -24,14 +24,8 @@ interface InfoProps {
   data?: IProductRow;
   canAddToCart?: boolean;
   //setVrntSelected: Dispatch<SetStateAction<string | undefined>>;
-  vrntSelectedHandler: (
-    selecteds: {
-      vgrpId: string;
-      optnId: string;
-    }[]
-  ) => void;
   vrntIdHandler: (data: string | undefined) => void;
-  vrntSelected: string | undefined;
+  // vrntSelected: string | undefined;
   wishlist: ICheckWishList | undefined;
   vrntId: string | undefined;
 }
@@ -44,9 +38,7 @@ const Info: React.FC<InfoProps> = ({
   vrntId,
   vrntIdHandler,
   //setVrntSelected,
-  vrntSelectedHandler,
   canAddToCart = false,
-  vrntSelected,
   wishlist,
 }) => {
   // const {

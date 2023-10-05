@@ -73,7 +73,15 @@ const ProductStorefrontPage = () => {
               // vrntSelected={data?.variants.find(variant=>variant.variant_selecteds.every(vrnts=>))}
             />
             <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
-              <Info data={data} setVrntSelected={setVrntSelected} vrntSelected={undefined} canAddToCart={undefined}/>
+              <Info
+                data={data}
+                vrntIdHandler={(data?: string) => {
+                  setVrntSelected(data);
+                }}
+                wishlist={undefined}
+                vrntId={vrntSelected}
+                canAddToCart={undefined}
+              />
             </div>
           </div>
           <hr className="my-10" />

@@ -243,9 +243,9 @@ const ProductStorefrontPage = () => {
                 vrntIdHandler={vrntIdHandler}
                 data={data}
                 // setVrntSelected={setVrntSelected}
-                vrntSelectedHandler={vrntSelectedHandler}
+               // vrntSelectedHandler={vrntSelectedHandler}
                 canAddToCart={true}
-                vrntSelected={vrntSelected}
+               // vrntSelected={vrntSelected}
                 wishlist={wishlist}
               />
             </div>
