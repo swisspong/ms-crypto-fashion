@@ -76,8 +76,9 @@ const Info: React.FC<InfoProps> = ({
     qtyChangeHandler,
     disableButton,
     onSubmit,
+    whenDataChange,
   } = useAddItemHookNew(data);
-
+  whenDataChange();
   whenSelectsChange(vrntIdHandler);
   whenVrntIdSelectedChange(vrntId);
   // const [quantity, setQuantity] = useState<number>(0);

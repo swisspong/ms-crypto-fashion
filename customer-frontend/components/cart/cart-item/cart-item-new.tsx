@@ -18,8 +18,9 @@ import { useEditItemCart, useRemoveItemInCart } from "@/src/hooks/cart/mutations
 import { toast } from "react-toastify";
 import IconButton from "@/components/icon-button";
 import { Button } from "@/components/ui/button";
-import VaraintPopover from "../variant-popover";
+// import VaraintPopover from "../variant-popover";
 import { Checkbox } from "@/components/ui/checkbox";
+import VaraintPopover from "./variant/variant-popover";
 
 interface CartItemProps {
   data: ICartItem;

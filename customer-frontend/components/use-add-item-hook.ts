@@ -256,11 +256,14 @@ const useAddItemHookNew = (data: IProductRow | undefined) => {
             console.log("vrntId => ", vrntId)
         }, [vrntId]);
     }
-    useEffect(() => {
-        if (data && data.groups.length > 0) {
-            setSelecteds(data.groups.map(group => ({ vgrpId: group.vgrp_id, optnId: '' })))
-        }
-    }, [data])
+    const whenDataChange = () => {
+
+        useEffect(() => {
+            if (data && data.groups.length > 0) {
+                setSelecteds(data.groups.map(group => ({ vgrpId: group.vgrp_id, optnId: '' })))
+            }
+        }, [data])
+    }
     const disabledQtyInput = (vrntId: string | undefined) => {
         if (data) {
             if (data.groups.length > 0 && data.variants.length > 0) {
@@ -360,7 +363,10 @@ const useAddItemHookNew = (data: IProductRow | undefined) => {
         showQuantity,
         qtyChangeHandler,
         disableButton,
-        onSubmit
+        onSubmit,
+        setSelecteds,
+        setQuantity,
+        whenDataChange
     }
 
 }
