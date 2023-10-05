@@ -77,6 +77,8 @@ const Info: React.FC<InfoProps> = ({
     disableButton,
     onSubmit,
     whenDataChange,
+    showCurrentPrice,
+    hasVariant,
   } = useAddItemHookNew(data);
   whenDataChange();
   whenSelectsChange(vrntIdHandler);
@@ -384,35 +386,25 @@ const Info: React.FC<InfoProps> = ({
           <Input
             type="number"
             max={maxQuantity(vrntId)}
-            // max={
-            //   data?.variants && data?.variants.length > 0
-            //     ? data.variants.find((vrnts) => vrntSelected === vrnts.vrnt_id)
-            //         ?.stock ?? 0
-            //     : data?.stock && data.stock > 0
-            //     ? data.stock
-            //     : 0
-            // }
-            // min={data?.stock && data.stock > 0 ? 1 : 0}
-            // min={
-            //   data?.variants && data?.variants.length > 0
-            //     ? data.variants.some((vrnts) => vrntSelected === vrnts.vrnt_id)
-            //       ? 1
-            //       : 0
-            //     : data?.stock && data.stock > 0
-            //     ? 1
-            //     : 0
-            // }
-            // onChange={(e) => quantityHandler(Number(e.target.value))}
             disabled={disabledQtyInput(vrntId)}
             onKeyDown={(e) => {
               e.preventDefault();
             }}
             onChange={(e) => qtyChangeHandler(e, vrntId)}
-            // readOnly={true}
             value={showQuantity(vrntId)}
             className="w-[180px]"
           />
         </div>
+        {hasVariant ? (
+          <div className="flex items-center gap-x-4">
+            <h3 className="font-semibold text-black">ราคา: </h3>
+            <h3 className="text-black">
+              {showCurrentPrice(vrntId) === undefined
+                ? "กรุณาเลือก"
+                : showCurrentPrice(vrntId)}
+            </h3>
+          </div>
+        ) : undefined}
       </div>
       <div className="mt-10 flex items-center gap-x-3">
         <Button

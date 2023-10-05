@@ -23,6 +23,7 @@ import queryString from "query-string";
 import { useSearchParams } from "next/navigation";
 import FilterState from "@/components/filterState";
 import { useUserInfo } from "@/src/hooks/user/queries";
+import { useMerchantById } from "@/src/hooks/merchant/queries";
 
 export const revalidate = 0;
 
@@ -40,6 +41,7 @@ const CategoryPage = ({}) => {
     catIds: selectedCheckboxes,
     search,
   });
+  const { data: merchantInfo } = useMerchantById(myInfo?.mcht_id);
   const { data: categories } = useMyCagories({
     page: pageIndex + 1,
     per_page: pageSize,
@@ -49,7 +51,7 @@ const CategoryPage = ({}) => {
     <div className="bg-white">
       <Navbar />
       <Container>
-        <Billboard  info={myInfo?.merchant as IMerchant}  />
+        <Billboard  info={merchantInfo}  />
         <div className="px-4 sm:px-6 lg:px-8 pb-24">
           <div className="lg:grid lg:grid-cols-5 lg:gap-x-8">
             <MobileFilters sizes={[]} colors={[]} />

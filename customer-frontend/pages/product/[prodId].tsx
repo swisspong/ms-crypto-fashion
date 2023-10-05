@@ -7,7 +7,7 @@ import ProductList from "@/components/product-list";
 import { useOneProductStorefront } from "@/src/hooks/product/merchant/queries";
 import { useProductById } from "@/src/hooks/product/user/queries";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import Gallery from '@/components/gallery';
 // import Info from '@/components/info';
 // import getProduct from '@/actions/get-product';
@@ -17,8 +17,10 @@ import { useState } from "react";
 const ProductStorefrontPage = () => {
   const router = useRouter();
   // const { data } = useOneProductStorefront(router.query.prodId as string);
-  const { data } = useProductById(router.query.prodId as string);
+  const { data, isError } = useProductById(router.query.prodId as string);
+
   const [vrntSelected, setVrntSelected] = useState<string | undefined>();
+ 
   return (
     <div className="bg-white">
       <Navbar />
@@ -52,7 +54,6 @@ const ProductStorefrontPage = () => {
           </div>
           {/* <ProductList title="Related Items" items={suggestedProducts} /> */}
         </div>
-
       </Container>
       <Footer />
     </div>

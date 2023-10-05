@@ -145,6 +145,10 @@ const useAddItemHook = (data: IProductRow | undefined, vrntSelectedHandler: (sel
     }
 }
 
+const formatter = new Intl.NumberFormat("th-TH", {
+    style: "currency",
+    currency: "THB",
+});
 const useAddItemHookNew = (data: IProductRow | undefined) => {
     const [quantity, setQuantity] = useState<number>(0);
     const [selecteds, setSelecteds] = useState<
@@ -348,6 +352,20 @@ const useAddItemHookNew = (data: IProductRow | undefined) => {
             }
         }
     };
+    const showCurrentPrice = (vrntId: string | undefined) => {
+        if (vrntId) {
+            const variant = data?.variants.find(vrnt => vrnt.vrnt_id === vrntId)
+            if (variant) return formatter.format(Number(variant.price))
+        }
+        return undefined
+    }
+    const hasVariant = () => {
+        if (data) {
+            return data.groups.length > 0 && data.variants.length > 0
+        }
+        return false
+
+    }
     return {
         disabledOption,
         selectValueChangeHandler,
@@ -366,7 +384,9 @@ const useAddItemHookNew = (data: IProductRow | undefined) => {
         onSubmit,
         setSelecteds,
         setQuantity,
-        whenDataChange
+        whenDataChange,
+        showCurrentPrice,
+        hasVariant: hasVariant()
     }
 
 }

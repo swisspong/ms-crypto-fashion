@@ -1,6 +1,6 @@
 import { Controller, Body, Post, Res, Get, Patch, Query, Param, Delete } from '@nestjs/common';
 import { MerchantsService } from './merchants.service';
-import { GetUser, GetUserId, Roles } from '@app/common/decorators';
+import { GetUser, GetUserId, Public, Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
 import { CreateMerchantDto } from './dto/create-merchant.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -14,6 +14,9 @@ import { RmqService } from '@app/common';
 import { CHARGE_MONTH_EVENT, MERCHANT_DELETE_P } from '@app/common/constants/products.constant';
 import { DeleteMerchantData } from '@app/common/interfaces';
 import { CreateRecipientDto } from './dto/create-recipient.dto';
+import { GetProductNoTypeSerchatDto } from '../dto/get-product-no-type-search.dto';
+import { GetProductStoreDto } from '../dto/get-product-store.dto';
+import { StoreQueryDto } from '../dto/store-query.dto';
 @ApiTags('Merchant')
 @Controller('merchants')
 export class MerchantsController {
@@ -21,6 +24,26 @@ export class MerchantsController {
     private readonly rmqService: RmqService,
     private readonly merchantsService: MerchantsService
   ) { }
+  @Public()
+  @Get(":mchtId/products")
+  getAllProductsForUser(@Param('mchtId') id: string, @Query() productFilter: GetProductNoTypeSerchatDto) {
+    return this.merchantsService.findAllProductsForUser(id, productFilter)
+  }
+  @Roles(RoleFormat.MERCHANT)
+  @Get('/store-front/products')
+  myMerchantStorefront(@GetUserId() userId: string, @GetUser('merchant') merchantId: string, @Query() productFilter: GetProductStoreDto) {
+    return this.merchantsService.merchantStorefront(userId, merchantId, productFilter);
+  }
+  @Roles(RoleFormat.MERCHANT)
+  @Get('/store-front/products/:id')
+  myMerchantStorefrontOneProduct(@Param('id') id: string, @GetUser('merchant') merchantId: string, @Query() productFilter: StoreQueryDto) {
+    return this.merchantsService.merchantStorefrontOneProduct(id, merchantId, productFilter);
+  }
+  @Roles(RoleFormat.MERCHANT)
+  @Get("products")
+  getAllProducts(@GetUserId() userId: string, @GetUser('merchant') merchantId: string, @Query() productFilter: GetProductStoreDto) {
+    return this.merchantsService.myMerchant(userId, merchantId, productFilter)
+  }
   @Roles(RoleFormat.USER)
   @Post("/start")
   create(@Res({ passthrough: true }) res, @GetUserId() userId: string, @GetUser('role') role: string, @GetUser('permission') permission: string[], @GetUser('merchant') merchant: string | undefined, @Body() createMerchantDto: CreateMerchantDto) {
@@ -34,7 +57,7 @@ export class MerchantsController {
   @Roles(RoleFormat.MERCHANT)
   @Post("account")
   addAccount(@GetUser("merchant") mchtId: string, @Body() dto: CreateRecipientDto) {
-    return this.merchantsService.createRecipient(mchtId,dto)
+    return this.merchantsService.createRecipient(mchtId, dto)
 
   }
   @Roles(RoleFormat.MERCHANT)

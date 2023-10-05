@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MerchantsService } from './merchants.service';
 import { MerchantsController } from './merchants.controller';
 import { JwtUtilsModule, RmqModule, authProviders } from '@app/common';
@@ -9,6 +9,7 @@ import { AuthModule } from 'apps/auth/src/auth.module';
 import { AUTH_SERVICE } from '@app/common/constants';
 import { ProductsModule } from '../products.module';
 import { OmiseService } from './omise.service';
+import { Product, ProductSchema } from '../schemas/product.schema';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { OmiseService } from './omise.service';
     RmqModule.register({ name: AUTH_SERVICE }),
     RmqModule,
     MongooseModule.forFeature([{ name: Merchant.name, schema: MerchantSchema }]),
+    forwardRef(() => ProductsModule)
   ],
   controllers: [MerchantsController],
   providers: [

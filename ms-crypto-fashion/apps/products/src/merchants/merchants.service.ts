@@ -1,4 +1,4 @@
-import { Injectable, Inject, ForbiddenException, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, Inject, ForbiddenException, BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateMerchantDto } from './dto/create-merchant.dto';
 import ShortUniqueId from 'short-unique-id';
 import { ClientProxy } from '@nestjs/microservices';
@@ -16,6 +16,11 @@ import { UpdateChargeMerchant } from '@app/common/interfaces/payment.event.inter
 import { StatusFormat } from 'apps/orders/src/schemas/order.schema';
 import { CreateRecipientDto } from './dto/create-recipient.dto';
 import { OmiseService } from './omise.service';
+import { GetProductNoTypeSerchatDto } from '../dto/get-product-no-type-search.dto';
+import { ProductsRepository } from '../products.repository';
+import { GetProductStoreDto } from '../dto/get-product-store.dto';
+import { Product } from '../schemas/product.schema';
+import { StoreQueryDto } from '../dto/store-query.dto';
 interface StatusTotal {
     _id: MerchantStatus;
     count: number
@@ -28,9 +33,435 @@ export class MerchantsService {
         @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
         private readonly jwtUtilsService: JwtUtilsService,
         private readonly merchantsRepository: MerchantsRepository,
-        private readonly omiseService: OmiseService
+        private readonly omiseService: OmiseService,
+        private readonly productsRepository: ProductsRepository
     ) { }
     private readonly uid = new ShortUniqueId()
+    async findAllProductsForUser(mchtId: string, productFilter: GetProductNoTypeSerchatDto) {
+        const merchant = await this.merchantsRepository.findOne({ mcht_id: mchtId, status: MerchantStatus.OPENED })
+        if (!merchant) throw new NotFoundException("Not found merchant.")
+        let sort = {}
+        if (productFilter.sort) {
+            const sortArr = productFilter.sort.split(",")
+            if (sortArr.length > 1) {
+                sort[sortArr[0]] = sortArr[1] === "desc" ? -1 : 1
+            }
+        }
+        const total = await this.productsRepository.aggregate([
+            {
+                $lookup: {
+                    from: "merchants",
+                    localField: "merchant",
+                    foreignField: "_id",
+                    as: "merchant"
+                },
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "categories",
+                    foreignField: "_id",
+                    as: "categories"
+                },
+            },
+            {
+                $match: {
+                    available: true,
+                    ...(productFilter.cat_ids ? { 'categories.cat_id': { $all: productFilter.cat_ids } } : undefined),
+                    "merchant.mcht_id": mchtId,
+                    name: { $regex: productFilter.search, $options: 'i' },
+                    "merchant.status": "opened"
+                },
+            },
+            {
+                $match: {
+                    $or: [
+                        {
+                            $and: [
+                                {
+                                    groups: {
+                                        $exists: true,
+                                        $ne: [],
+                                    },
+                                },
+                                {
+                                    variants: {
+                                        $exists: true,
+                                        $ne: [],
+                                    },
+                                },
+                            ],
+                        },
+                        {
+                            $and: [
+                                {
+                                    groups: {
+                                        $size: 0,
+                                    },
+                                },
+                                {
+                                    variants: {
+                                        $size: 0,
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    count: 1,
+                },
+            },
+        ])
+        const product = await this.productsRepository.aggregate([
+            {
+                $lookup: {
+                    from: "merchants",
+                    localField: "merchant",
+                    foreignField: "_id",
+                    as: "merchant"
+                },
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "categories",
+                    foreignField: "_id",
+                    as: "categories"
+                },
+            },
+            {
+                $match: {
+                    available: true,
+                    ...(productFilter.cat_ids ? { 'categories.cat_id': { $all: productFilter.cat_ids } } : undefined),
+
+                    // 'categories.cat_id': { $all: productFilter.cat_ids },
+                    "merchant.mcht_id": mchtId,
+                    name: { $regex: productFilter.search, $options: "i" },
+                    "merchant.status": "opened",
+                },
+            },
+            {
+                $match: {
+                    $or: [
+                        {
+                            $and: [
+                                {
+                                    groups: {
+                                        $exists: true,
+                                        $ne: [],
+                                    },
+                                },
+                                {
+                                    variants: {
+                                        $exists: true,
+                                        $ne: [],
+                                    },
+                                },
+                            ],
+                        },
+                        {
+                            $and: [
+                                {
+                                    groups: {
+                                        $size: 0,
+                                    },
+                                },
+                                {
+                                    variants: {
+                                        $size: 0,
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    __v: 0,
+                    "merchant": 0,
+                    "categories.__v": 0,
+                    "categories._id": 0
+                }
+            },
+            {
+                ...(Object.keys(sort).length > 0 ? { $sort: sort } : { $sort: { "createdAt": 1 } }),
+            },
+            {
+                $skip: (productFilter.page - 1) * productFilter.per_page,
+            },
+            {
+                $limit: productFilter.per_page
+            },
+        ])
+        return {
+            data: product,
+            page: productFilter.page,
+            per_page: productFilter.per_page,
+            total: total[0]?.count || 0,
+        }
+
+    }
+
+    async myMerchant(userId: string, merchantId: string, productFilter: GetProductStoreDto) {
+        // const user = await this.usersRepository.findOne({ user_id: userId, merchant: new Types.ObjectId(merchantId) })
+        console.log(merchantId)
+        let sort = {}
+        if (productFilter.sort) {
+            const sortArr = productFilter.sort.split(",")
+            if (sortArr.length > 1) {
+
+                sort[sortArr[0]] = sortArr[1] === "desc" ? -1 : 1
+
+            }
+        }
+        console.log(sort)
+        const total = await this.productsRepository.aggregate([
+            {
+                $lookup: {
+                    from: "merchants",
+                    localField: "merchant",
+                    foreignField: "_id",
+                    as: "merchant"
+                },
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "categories",
+                    foreignField: "_id",
+                    as: "categories"
+                },
+            },
+            {
+                $match: {
+                    ...(productFilter.cat_ids ? { 'categories.cat_id': { $all: productFilter.cat_ids } } : undefined),
+                    // 'categories.cat_id': { $all: productFilter.cat_ids },
+
+                    "merchant.mcht_id": merchantId,
+                    name: { $regex: productFilter.search, $options: 'i' },
+                    //  "merchant.status": "opened"
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    count: 1,
+                },
+            },
+        ])
+        const product = await this.productsRepository.aggregate([
+            {
+                $lookup: {
+                    from: "merchants",
+                    localField: "merchant",
+                    foreignField: "_id",
+                    as: "merchant"
+                },
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "categories",
+                    foreignField: "_id",
+                    as: "categories"
+                },
+            },
+            {
+                $match: {
+                    ...(productFilter.cat_ids ? { 'categories.cat_id': { $all: productFilter.cat_ids } } : undefined),
+                    "merchant.mcht_id": merchantId,
+                    name: { $regex: productFilter.search, $options: "i" },
+                    // "merchant.status": "opened",
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    __v: 0,
+                    "merchant": 0,
+                    //"categories":0,
+                    "categories.__v": 0,
+                    "categories._id": 0
+                }
+            },
+            {
+                ...(Object.keys(sort).length > 0 ? { $sort: sort } : { $sort: { "createdAt": 1 } }),
+            },
+            {
+                $skip: (productFilter.page - 1) * productFilter.per_page,
+            },
+            {
+                $limit: productFilter.per_page
+            },
+        ])
+        return {
+            data: product,
+            page: productFilter.page,
+            per_page: productFilter.per_page,
+            total: total[0]?.count || 0,
+            total_page: Math.ceil((total[0]?.count || 0) / productFilter.per_page)
+        }
+    }
+    async merchantStorefrontOneProduct(id: string, merchantId: string, productFilter: StoreQueryDto) {
+        const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
+        if (!merchant) throw new ForbiddenException()
+        // const product = await this.productsRepository.findOne({ prod_id: id, merchant: new Types.ObjectId(merchantId), ...(productFilter.store_front ? { available: true } : undefined) }, ["categories", "merchants"])
+        // return product
+        let product = await this.productsRepository.findOnePopulate({ prod_id: id, merchant: merchant._id, available: true },
+            [
+                {
+                    model: "Merchant",
+                    path: 'merchant',
+                    // populate: {
+                    //   model: 'Merchant',
+                    //   path: 'merchant',
+                    // }
+                },
+                {
+                    model: "Category",
+                    path: 'categories',
+                    // populate: {
+                    //   model: 'Merchant',
+                    //   path: 'merchant',
+                    // }
+                },
+                {
+                    model: "CategoryWeb",
+                    path: 'categories_web',
+                    // populate: {
+                    //   model: 'Merchant',
+                    //   path: 'merchant',
+                    // }
+                },
+            ]
+        ) as Product
+        return product
+    }
+    async merchantStorefront(userId: string, merchantId: string, productFilter: GetProductStoreDto) {
+        // const user = await this.usersRepository.findOne({ user_id: userId, merchant: new Types.ObjectId(merchantId) })
+        console.log(merchantId)
+        let sort = {}
+        if (productFilter.sort) {
+            const sortArr = productFilter.sort.split(",")
+            if (sortArr.length > 1) {
+
+                sort[sortArr[0]] = sortArr[1] === "desc" ? -1 : 1
+
+            }
+        }
+        console.log(sort)
+        const total = await this.productsRepository.aggregate([
+            {
+                $lookup: {
+                    from: "merchants",
+                    localField: "merchant",
+                    foreignField: "_id",
+                    as: "merchant"
+                },
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "categories",
+                    foreignField: "_id",
+                    as: "categories"
+                },
+            },
+            {
+                $match: {
+                    ...(productFilter.cat_ids ? { 'categories.cat_id': { $all: productFilter.cat_ids } } : undefined),
+                    // 'categories.cat_id': { $all: productFilter.cat_ids },
+                    available: true,
+                    "merchant.mcht_id": merchantId,
+                    name: { $regex: productFilter.search, $options: 'i' },
+                    //  "merchant.status": "opened"
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    count: 1,
+                },
+            },
+        ])
+        const product = await this.productsRepository.aggregate([
+            {
+                $lookup: {
+                    from: "merchants",
+                    localField: "merchant",
+                    foreignField: "_id",
+                    as: "merchant"
+                },
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "categories",
+                    foreignField: "_id",
+                    as: "categories"
+                },
+            },
+            {
+                $match: {
+                    ...(productFilter.cat_ids ? { 'categories.cat_id': { $all: productFilter.cat_ids } } : undefined),
+                    available: true,
+                    "merchant.mcht_id": merchantId,
+                    name: { $regex: productFilter.search, $options: "i" },
+                    // "merchant.status": "opened",
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    __v: 0,
+                    "merchant": 0,
+                    //"categories":0,
+                    "categories.__v": 0,
+                    "categories._id": 0
+                }
+            },
+            {
+                ...(Object.keys(sort).length > 0 ? { $sort: sort } : { $sort: { "createdAt": 1 } }),
+            },
+            {
+                $skip: (productFilter.page - 1) * productFilter.per_page,
+            },
+            {
+                $limit: productFilter.per_page
+            },
+        ])
+        return {
+            data: product,
+            page: productFilter.page,
+            per_page: productFilter.per_page,
+            total: total[0]?.count || 0,
+            total_page: Math.ceil((total[0]?.count || 0) / productFilter.per_page)
+        }
+    }
     async createStarterMerchant(userId: string, role: string, merchant: string | undefined, permission: string[], createMerchantDto: CreateMerchantDto, res: any) {
         const session = await this.merchantsRepository.startTransaction()
         try {
@@ -295,7 +726,7 @@ export class MerchantsService {
     }
     async createRecipient(mchtId: string, data: CreateRecipientDto) {
         const recp = await this.omiseService.createRecipient(data)
-        await this.merchantsRepository.findAndUpdate({ mcht_id:mchtId}, {$set:{recp_id:recp.id}})
+        await this.merchantsRepository.findAndUpdate({ mcht_id: mchtId }, { $set: { recp_id: recp.id } })
         return { message: "success" }
     }
 }

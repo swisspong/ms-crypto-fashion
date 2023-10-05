@@ -24,6 +24,7 @@ import { CronService } from './cron/cron.service';
 import { ProductsUtilModule } from '@app/common/utils/products/products-util.module';
 import { CartsUtilModule } from '@app/common/utils/carts/carts-util.module';
 import { PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
+import { ProductsValidator } from '@app/common/utils/products/products-validator';
 
 @Module({
   imports: [
@@ -60,7 +61,8 @@ import { PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
     ProductsService,
     CronService,
     ProductsRepository,
-    JwtStrategy
+    JwtStrategy,
+    ProductsValidator
   ],
   exports: [
     ProductsRepository

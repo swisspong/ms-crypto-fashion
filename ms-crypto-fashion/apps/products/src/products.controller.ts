@@ -25,22 +25,32 @@ export class ProductsController {
   @Roles(RoleFormat.MERCHANT)
   @Post()
   create(@GetUserId() userId: string, @Body() createProductDto: CreateProductDto) {
-
     return this.productsService.create(userId, createProductDto);
   }
 
   @Public()
   @Get()
-  findAll(@Query() productFilter: GetProductDto) {
-    return this.productsService.findAll(productFilter);
+  userGetAllProducts(@Query() productFilter: GetProductDto) {
+    return this.productsService.findAllProducts(productFilter);
   }
+  // @Public()
+  // @Get()
+  // findAll(@Query() productFilter: GetProductDto) {
+  //   return this.productsService.findAll(productFilter);
+  // }
 
   @Public()
   @Get('/merchants')
   findAllMerchant(@Query() productFilter: GetProductDto) {
-    return this.productsService.findAllMerchantType(productFilter);
+    return this.productsService.findAllMerchantsProducts(productFilter);
     // return productFilter
   }
+  // @Public()
+  // @Get('/merchants')
+  // findAllMerchant(@Query() productFilter: GetProductDto) {
+  //   return this.productsService.findAllMerchantType(productFilter);
+  //   // return productFilter
+  // }
 
   @Public()
   @Get("/merchant/:id")
@@ -64,7 +74,7 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
   @MessagePattern(PRODUCTS_ORDERING_EVENT)
-  async handlerOrdering(@Payload() data: IProductOrderingEventPayload,@Ctx() context: RmqContext) {
+  async handlerOrdering(@Payload() data: IProductOrderingEventPayload, @Ctx() context: RmqContext) {
     this.logger.warn("Received message from ordering")
     await this.productsService.cutStock(data)
     this.rmqService.ack(context);

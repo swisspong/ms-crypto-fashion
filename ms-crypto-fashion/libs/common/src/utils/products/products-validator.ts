@@ -26,7 +26,7 @@ export class ProductsValidator {
             throw new Error('Invalid stock value');
         }
         if (
-            product.variants.length <= 0 && product.groups.length > 0 &&
+            product.variants.length <= 0 && product.groups.length > 0 ||
             product.variants.length > 0 && product.groups.length <= 0
         ) {
             throw new Error("Invalid option")

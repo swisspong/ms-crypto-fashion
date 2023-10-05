@@ -10,7 +10,7 @@ import { SearchType } from './dto/get-product-base.dto';
 import { GetProductNoTypeSerchatDto } from './dto/get-product-no-type-search.dto';
 import { MerchantStatus, PaymentMethodFormat } from '@app/common/enums';
 import { GetProductStoreDto } from './dto/get-product-store.dto';
-import { Product } from './schemas/product.schema';
+import { Product, ProductDocument } from './schemas/product.schema';
 import { StoreQueryDto } from './dto/store-query.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Types } from 'mongoose';
@@ -24,6 +24,7 @@ import { PaidOrderingEvent } from '@app/common/interfaces/payment.event.interfac
 import { IProductOrderingEventPayload } from '@app/common/interfaces/products-event.interface';
 import { PAID_ORDERING_EVENT, PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
 import { IDeleteChktEventPayload } from '@app/common/interfaces/carts.interface';
+import { ProductsValidator } from '@app/common/utils/products/products-validator';
 
 @Injectable()
 export class ProductsService {
@@ -36,6 +37,7 @@ export class ProductsService {
     private readonly merchantsRepository: MerchantsRepository,
     private readonly productsUtilService: ProductsUtilService,
     private readonly cartsUtilService: CartsUtilService,
+    private readonly productsValidator: ProductsValidator,
     @Inject(PAYMENT_SERVICE) private readonly paymentClient: ClientProxy,
     @Inject(CARTS_SERVICE) private readonly cartsClient: ClientProxy,
   ) { }
@@ -72,6 +74,198 @@ export class ProductsService {
       variants: [],
     })
     return newProduct;
+  }
+  async findAllProducts(productFilter: GetProductDto) {
+    let sort = {}
+    if (productFilter.sort) {
+      const sortArr = productFilter.sort.split(",")
+      if (sortArr.length > 1) {
+
+        sort[sortArr[0]] = sortArr[1] === "desc" ? -1 : 1
+
+      }
+    }
+    console.log(sort)
+    // return this.productsRepository.find({})
+    const total = await this.productsRepository.aggregate([
+      {
+        $lookup: {
+          from: "merchants",
+          localField: "merchant",
+          foreignField: "_id",
+          as: "merchant"
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categories",
+          foreignField: "_id",
+          as: "categories"
+        },
+      },
+      {
+        $lookup: {
+          from: "categorywebs",
+          localField: "categories_web",
+          foreignField: "_id",
+          as: "categories_web"
+        },
+      },
+      {
+        $match: {
+          available: true,
+          // [type_search]: { $regex: productFilter.search, $options: 'i' },
+          ...(productFilter.cat_ids ? { 'categories_web.catweb_id': { $all: productFilter.cat_ids } } : undefined),
+          name: { $regex: productFilter.search, $options: 'i' },
+          "merchant.status": "opened"
+        },
+      },
+      {
+        $match: {
+          $or: [
+            {
+              $and: [
+                {
+                  groups: {
+                    $exists: true,
+                    $ne: [],
+                  },
+                },
+                {
+                  variants: {
+                    $exists: true,
+                    $ne: [],
+                  },
+                },
+              ],
+            },
+            {
+              $and: [
+                {
+                  groups: {
+                    $size: 0,
+                  },
+                },
+                {
+                  variants: {
+                    $size: 0,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          count: 1,
+        },
+      },
+    ])
+    const product = await this.productsRepository.aggregate([
+      {
+        $lookup: {
+          from: "merchants",
+          localField: "merchant",
+          foreignField: "_id",
+          as: "merchant"
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categories",
+          foreignField: "_id",
+          as: "categories"
+        },
+      },
+      {
+        $lookup: {
+          from: "categorywebs",
+          localField: "categories_web",
+          foreignField: "_id",
+          as: "categories_web"
+        },
+      },
+      {
+        $match: {
+          available: true,
+          name: { $regex: productFilter.search, $options: "i" },
+          ...(productFilter.cat_ids ? { 'categories_web.catweb_id': { $all: productFilter.cat_ids } } : undefined),
+          // [type_search]: { $regex: productFilter.search, $options: "i" },
+          "merchant.status": "opened"
+        },
+      },
+      {
+        $match: {
+          $or: [
+            {
+              $and: [
+                {
+                  groups: {
+                    $exists: true,
+                    $ne: [],
+                  },
+                },
+                {
+                  variants: {
+                    $exists: true,
+                    $ne: [],
+                  },
+                },
+              ],
+            },
+            {
+              $and: [
+                {
+                  groups: {
+                    $size: 0,
+                  },
+                },
+                {
+                  variants: {
+                    $size: 0,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+          "merchant.__v": 0,
+          "merchant._id": 0
+        }
+      },
+      {
+        ...(Object.keys(sort).length > 0 ? { $sort: sort } : { $sort: { "createdAt": 1 } }),
+      },
+      {
+        $skip: (productFilter.page - 1) * productFilter.per_page,
+      },
+      {
+        $limit: productFilter.per_page
+      },
+
+
+    ])
+    return {
+      data: product,
+      page: productFilter.page,
+      per_page: productFilter.per_page,
+      total: total[0]?.count || 0,
+    }
   }
   async findAll(productFilter: GetProductDto) {
     console.log(productFilter)
@@ -201,19 +395,14 @@ export class ProductsService {
   }
 
   async findAllMerchantType(productFilter: GetProductDto) {
-    console.log(productFilter)
     const type_search = productFilter.type_search === SearchType.MERCHANT ? "merchant.name" : "name"
-
     let sort = {}
     if (productFilter.sort) {
       const sortArr = productFilter.sort.split(",")
       if (sortArr.length > 1) {
-
         sort[sortArr[0]] = sortArr[1] === "desc" ? -1 : 1
-
       }
     }
-    console.log(sort)
     const total = await this.merchantsRepository.aggregate([
       {
         $match: {
@@ -250,7 +439,44 @@ export class ProductsService {
                   }
                 } : undefined)
               }
-            }, {
+            },
+            {
+              $match: {
+                $or: [
+                  {
+                    $and: [
+                      {
+                        groups: {
+                          $exists: true,
+                          $ne: [],
+                        },
+                      },
+                      {
+                        variants: {
+                          $exists: true,
+                          $ne: [],
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    $and: [
+                      {
+                        groups: {
+                          $size: 0,
+                        },
+                      },
+                      {
+                        variants: {
+                          $size: 0,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
               $limit: 5
             }
 
@@ -313,6 +539,42 @@ export class ProductsService {
               }
             },
             {
+              $match: {
+                $or: [
+                  {
+                    $and: [
+                      {
+                        groups: {
+                          $exists: true,
+                          $ne: [],
+                        },
+                      },
+                      {
+                        variants: {
+                          $exists: true,
+                          $ne: [],
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    $and: [
+                      {
+                        groups: {
+                          $size: 0,
+                        },
+                      },
+                      {
+                        variants: {
+                          $size: 0,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
               $limit: 5
             }
           ],
@@ -349,9 +611,224 @@ export class ProductsService {
       per_page: productFilter.per_page,
       total: total[0]?.count || 0,
     }
+  }
+  async findAllMerchantsProducts(productFilter: GetProductDto) {
+    const type_search = productFilter.type_search === SearchType.MERCHANT ? "merchant.name" : "name"
+    let sort = {}
+    if (productFilter.sort) {
+      const sortArr = productFilter.sort.split(",")
+      if (sortArr.length > 1) {
+        sort[sortArr[0]] = sortArr[1] === "desc" ? -1 : 1
+      }
+    }
+    const total = await this.merchantsRepository.aggregate([
+      {
+        $match: {
+          status: "opened",
+          ...(type_search === "merchant.name" ? { name: { $regex: productFilter.search, $options: "i" } } : undefined),
+        }
+      },
+      {
+        $lookup: {
+          from: "products",
+          let: { merchantId: '$_id' },
+          pipeline: [
+
+            {
+              $match: {
+                $expr: { $eq: ['$merchant', '$$merchantId'] },
+                ...(type_search === "name" ? { name: { $regex: productFilter.search, $options: "i" } } : undefined),
+                available: true
+              },
+            },
+            {
+              $lookup: {
+                from: "categorywebs",
+                localField: "categories_web",
+                foreignField: "_id",
+                as: "categories_web",
+              },
+            },
+            {
+              $match: {
+                ...(productFilter.cat_ids && productFilter.cat_ids.length > 0 ? {
+                  "categories_web.catweb_id": {
+                    $all: productFilter.cat_ids
+                  }
+                } : undefined)
+              }
+            },
+            {
+              $match: {
+                $or: [
+                  {
+                    $and: [
+                      {
+                        groups: {
+                          $exists: true,
+                          $ne: [],
+                        },
+                      },
+                      {
+                        variants: {
+                          $exists: true,
+                          $ne: [],
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    $and: [
+                      {
+                        groups: {
+                          $size: 0,
+                        },
+                      },
+                      {
+                        variants: {
+                          $size: 0,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
+              $limit: 5
+            }
+
+          ],
+          as: "products"
+        }
+      }, {
+        $match: {
+          $expr: { $gt: [{ $size: '$products' }, 0] },
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          count: 1,
+        },
+      },
+    ])
+    const merchants = await this.merchantsRepository.aggregate([
+      {
+        $match: {
+          status: "opened",
+          ...(type_search === "merchant.name" ? { name: { $regex: productFilter.search, $options: "i" } } : undefined),
+        }
+      },
+      {
+        $lookup: {
+          from: "products",
+          let: { merchantId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$merchant', '$$merchantId'] },
+                ...(type_search === "name" ? { name: { $regex: productFilter.search, $options: "i" } } : undefined),
+                // ...(productFilter.cat_ids ? { 'categories.cat_id': { $all: productFilter.cat_ids } } : undefined),
+                available: true
+              },
+            },
+            {
+              $lookup: {
+                from: "categorywebs",
+                localField: "categories_web",
+                foreignField: "_id",
+                as: "categories_web",
+              },
+            },
+            {
+              $match: {
+                ...(productFilter.cat_ids && productFilter.cat_ids.length > 0 ? {
+                  "categories_web.catweb_id": {
+                    $all: productFilter.cat_ids
+                  }
+                } : undefined)
+              }
+            },
+            {
+              $match: {
+                $or: [
+                  {
+                    $and: [
+                      {
+                        groups: {
+                          $exists: true,
+                          $ne: [],
+                        },
+                      },
+                      {
+                        variants: {
+                          $exists: true,
+                          $ne: [],
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    $and: [
+                      {
+                        groups: {
+                          $size: 0,
+                        },
+                      },
+                      {
+                        variants: {
+                          $size: 0,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
+              $limit: 5
+            }
+          ],
+          as: "products"
+        }
+      }, {
+        $match: {
+          $expr: { $gt: [{ $size: '$products' }, 0] },
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+          "products.__v": 0,
+          "products._id": 0
+        }
+      },
+      {
+        ...(Object.keys(sort).length > 0 ? { $sort: sort } : { $sort: { "createdAt": 1 } }),
+      },
+      {
+        $skip: (productFilter.page - 1) * productFilter.per_page,
+      },
+      {
+        $limit: productFilter.per_page
+      },
 
 
-
+    ])
+    return {
+      data: merchants,
+      page: productFilter.page,
+      per_page: productFilter.per_page,
+      total: total[0]?.count || 0,
+    }
   }
   async findAllProductInMerchant(mchtId: string, productFilter: GetProductNoTypeSerchatDto) {
     const merchant = await this.merchantsRepository.findOne({ mcht_id: mchtId, status: MerchantStatus.OPENED })
@@ -609,8 +1086,13 @@ export class ProductsService {
   }
   async findOne(prodId: string) {
     //fix get product relate merchant
-    const product = await this.productsRepository.findOnePopulate({ prod_id: prodId }, ['merchant'])
-    // if (product.length <= 0) throw new NotFoundException()
+    const product: ProductDocument | undefined = await this.productsRepository.findOnePopulate({ prod_id: prodId }, ['merchant'])
+    if (!product) throw new NotFoundException()
+    try {
+      this.productsValidator.validate(product)
+    } catch (error) {
+      throw new NotFoundException()
+    }
     return product
     // return `This action returns a #${id} product`;
   }

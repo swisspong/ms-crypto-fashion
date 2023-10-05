@@ -4,7 +4,7 @@ import queryString from "query-string";
 const api = dynamicApi({ ssr: false, service: SERVICE_FORMAT.PRODUCT })
 
 export const getMerchantProducts = async (data: { mchtId: string, page: number, per_page: number, catIds: string[], search?: string }): Promise<IProducts> => {
-    return await api.get(`/products/merchant/${data.mchtId}/?page=${data.page}&per_page=${data.per_page}${data.catIds.length > 0 ? `&${queryString.stringify({ cat_ids: data.catIds })}` : ``}${data.search && data.search.trim().length > 0 ? `&search=${data.search}` : ``}`
+    return await api.get(`/merchants/${data.mchtId}/products?page=${data.page}&per_page=${data.per_page}${data.catIds.length > 0 ? `&${queryString.stringify({ cat_ids: data.catIds })}` : ``}${data.search && data.search.trim().length > 0 ? `&search=${data.search}` : ``}`
     ).then(
         (response) => response.data
     );
@@ -20,13 +20,19 @@ export const getProductById = async (prodId: string): Promise<IProductRow> => {
     );
 };
 export const getMyStoreFront = async (data: { page: number, per_page: number, catIds: string[], search?: string }): Promise<IProducts> => {
-    return await api.get(`/products/owner/?page=${data.page}&per_page=${data.per_page}
+    return await api.get(`/merchants/store-front/products?page=${data.page}&per_page=${data.per_page}
     &store_front=true${data.catIds.length > 0 ? `&${queryString.stringify({ cat_ids: data.catIds })}` : ``}${data.search && data.search.trim().length > 0 ? `&search=${data.search}` : ``}`).then(
         (response) => response.data
     );
 };
+// export const getMyStoreFront = async (data: { page: number, per_page: number, catIds: string[], search?: string }): Promise<IProducts> => {
+//     return await api.get(`/products/owner/?page=${data.page}&per_page=${data.per_page}
+//     &store_front=true${data.catIds.length > 0 ? `&${queryString.stringify({ cat_ids: data.catIds })}` : ``}${data.search && data.search.trim().length > 0 ? `&search=${data.search}` : ``}`).then(
+//         (response) => response.data
+//     );
+// };
 export const getProductStorefrontById = async (productId: string): Promise<IProductRow> => {
-    return await api.get(`/products/owner/${productId}/?store_front=true`).then(
+    return await api.get(`/merchants/store-front/products/${productId}`).then(
         (response) => response.data
     );
 };

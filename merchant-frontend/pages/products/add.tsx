@@ -75,11 +75,9 @@ const formSchema = z.object({
   image_urls: z
     .array(z.object({ url: z.string().url() }))
     .min(1, { message: "Must have at least 1 image" }),
-  categories: z
-    .array(z.object({ cat_id: z.string() })),
+  categories: z.array(z.object({ cat_id: z.string() })),
   // .min(1, { message: "Must have at least 1 category" }),
-  categories_web: z
-    .array(z.object({ cat_id: z.string() })),
+  categories_web: z.array(z.object({ cat_id: z.string() })),
   // .min(1, { message: "Must have at least 1 category" }),
   available: z.boolean(),
   payment_methods: z
@@ -136,9 +134,7 @@ export default function AddProduct() {
     console.log(values);
     mutate(values);
   }
-  
-  
-  
+
   const {
     fields: images,
     append: imageAppend,
@@ -227,15 +223,18 @@ export default function AddProduct() {
                               <FormLabel>จำนวนสินค้า</FormLabel>
                               <FormControl>
                                 <Input
-                                  type="number"
+                                  //type="number"
                                   disabled={isLoading}
                                   {...field}
-                                  onChange={(e) =>
-                                    field.onChange(
-                                      e.target.value
-                                    )
-                                  }
-                                // disabled={addLoading || updateLoading}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    const numericValue = inputValue.replace(
+                                      /[^0-9]/g,
+                                      ""
+                                    );
+                                    field.onChange(Number(numericValue));
+                                  }}
+                                  // disabled={addLoading || updateLoading}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -252,14 +251,16 @@ export default function AddProduct() {
                               <FormLabel>ราคา</FormLabel>
                               <FormControl>
                                 <Input
-                                  type="number"
                                   disabled={isLoading}
                                   {...field}
-                                  onChange={(e) =>
-                                    field.onChange(
-                                      (e.target.value)
-                                    )
-                                  }
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    const numericValue = inputValue.replace(
+                                      /[^0-9]/g,
+                                      ""
+                                    );
+                                    field.onChange(Number(numericValue));
+                                  }}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -291,7 +292,9 @@ export default function AddProduct() {
                   </Card>
                   <Card>
                     <CardHeader className="space-y-1">
-                      <CardTitle className="text-2xl">วิธีการชำระเงิน</CardTitle>
+                      <CardTitle className="text-2xl">
+                        วิธีการชำระเงิน
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                       <div className="grid gap-2">
@@ -319,15 +322,15 @@ export default function AddProduct() {
                                             onCheckedChange={(checked) => {
                                               return checked
                                                 ? field.onChange([
-                                                  ...field.value,
-                                                  item.id,
-                                                ])
+                                                    ...field.value,
+                                                    item.id,
+                                                  ])
                                                 : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) =>
-                                                      value !== item.id
-                                                  )
-                                                );
+                                                    field.value?.filter(
+                                                      (value) =>
+                                                        value !== item.id
+                                                    )
+                                                  );
                                             }}
                                           />
                                         </FormControl>
@@ -348,7 +351,9 @@ export default function AddProduct() {
                   </Card>
                   <Card>
                     <CardHeader className="space-y-1">
-                      <CardTitle className="text-2xl">เนื้อหารูปภาพสินค้า</CardTitle>
+                      <CardTitle className="text-2xl">
+                        เนื้อหารูปภาพสินค้า
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                       <div className="grid gap-2">
@@ -400,7 +405,9 @@ export default function AddProduct() {
                                 />
 
                                 <FormLabel className="items-center">
-                                  {field.value === true ? "เปิดขายสินค้า" : "ปิดการขายสินค้า"}
+                                  {field.value === true
+                                    ? "เปิดขายสินค้า"
+                                    : "ปิดการขายสินค้า"}
                                 </FormLabel>
                               </div>
                             </FormControl>
@@ -413,7 +420,7 @@ export default function AddProduct() {
                     <CardHeader>
                       <div
                         className="flex gap-2 flex-wrap justify-evenly"
-                      //className="grid grid-cols-5 gap-2"
+                        //className="grid grid-cols-5 gap-2"
                       >
                         {catFields.map((field, index) => (
                           <Badge
@@ -497,7 +504,7 @@ export default function AddProduct() {
                     <CardHeader>
                       <div
                         className="flex gap-2 flex-wrap justify-evenly"
-                      //className="grid grid-cols-5 gap-2"
+                        //className="grid grid-cols-5 gap-2"
                       >
                         {fields.map((field, index) => (
                           <Badge

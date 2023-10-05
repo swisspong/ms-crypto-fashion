@@ -46,7 +46,7 @@ import { useWishlistInfo } from "@/src/hooks/wishlist/queries";
 
 const ProductStorefrontPage = () => {
   const router = useRouter();
-  const { data } = useProductById(router.query.prodId as string);
+  const { data, isError } = useProductById(router.query.prodId as string);
   const { data: merchantInfo } = useMerchantById(router.query.mchtId as string);
   const { data: commentData } = useAllCommentById(
     router.query.prodId as string
@@ -130,6 +130,9 @@ const ProductStorefrontPage = () => {
   const { vrntSelectedHandler, vrntSelected, vrntId, vrntIdHandler } =
     userProductHook();
 
+  useEffect(() => {
+    if (isError) router.back();
+  }, [isError]);
   return (
     <div className="bg-white">
       <Navbar />
@@ -232,7 +235,7 @@ const ProductStorefrontPage = () => {
                     vrntId: vrnt.vrnt_id,
                   })) ?? []),
               ]}
-              vrntSelected={vrntSelected}
+              vrntSelected={vrntId}
             />
             <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
               <Info
