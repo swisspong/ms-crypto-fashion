@@ -69,6 +69,8 @@ export class AuthService {
 
       if (!user) throw new NotFoundException('Account not found.');
 
+      if (!user.isVerified) throw new HttpException('Not verify you email.', HttpStatus.BAD_REQUEST);
+
       if (!await this.hashService.comparePassword(signinLocalDto.password, user.password))
         throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
 
@@ -90,11 +92,12 @@ export class AuthService {
     try {
       const user = await this.usersRepository.findOne({ email: signupLocalDto.email })
 
-      if (user) throw new HttpException('Email is already exist.', HttpStatus.BAD_REQUEST);
+      if (user && user.isVerified) throw new HttpException('Email is already exist.', HttpStatus.BAD_REQUEST);
 
       const hash = await this.hashService.hashPassword(signupLocalDto.password)
       const emailToken = await this.uid.randomUUID(30)
       const newUser = await this.usersRepository.create({ ...signupLocalDto, user_id: `user_${this.uid.stamp(15)}`, password: hash, emailToken })
+
       const mailOptions = {
         from: this.configService.get('MAIL_USER', { infer: true }) as string,
         to: newUser.email,
@@ -102,7 +105,7 @@ export class AuthService {
         html: `
           <h2>${newUser.username} Thanks for registering on our site.</h2>
           <h4> Please verify you email to continue...</h4>
-          <a href="#">Verify you email</a>
+          <a href="${this.configService.get('HOST_MAIN', { infer: true }) }/verify?token='${newUser.emailToken}'">Verify you email</a>
         `
       }
 
@@ -113,13 +116,14 @@ export class AuthService {
       const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
 
       // res.cookie("token", accessToken)
-      res.cookie("token", accessToken, {
-        // secure: true, 
-        httpOnly: false,
-        // sameSite: 'none',
-        domain: 'example.com'
-      })
-      return { accessToken }
+      // res.cookie("token", accessToken, {
+      //   // secure: true, 
+      //   httpOnly: false,
+      //   // sameSite: 'none',
+      //   domain: 'example.com'
+      // })
+      // return { accessToken }
+      return { status: "success"}
 
     } catch (error) {
       throw error
@@ -267,14 +271,21 @@ export class AuthService {
   }
 
 
-  async sendMail() {
+  async verifyEmail(token: string) {
     try {
-      this.mailerService.sendMail({
-        
-      })
+      const user = await this.usersRepository.findOne({emailToken: token})
+      if (user) {
+        const updateUser = await this.usersRepository.findAndUpdate({emailToken: token},{
+          $set: {emailToken: null, isVerified: true}
+        })
+
+        return updateUser
+      }
+
+      return user
     } catch (error) {
       console.log(error);
-
+      
     }
   }
 

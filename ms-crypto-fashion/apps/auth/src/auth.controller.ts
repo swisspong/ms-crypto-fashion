@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Res, HttpCode, UseGuards, Req, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, HttpCode, UseGuards, Req, Logger, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninLocalDto } from './dto/signin-local-dto.dto';
 import { SigninMetamaskDto } from './dto/signin-metamask-dto.dto';
@@ -64,4 +64,12 @@ export class AuthController {
   signOut(@Res({ passthrough: true }) res) {
     return this.authService.signout(res)
   }
+
+  @Public()
+  @Get('email/verify')
+  verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token)
+  }
+
+  
 }
