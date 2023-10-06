@@ -29,10 +29,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
       envFilePath: './apps/auth/.env',
     }),
     MailerModule.forRootAsync({
-      // imports: [ConfigModule], // import module if not enabled globally
       useFactory: async (config: ConfigService) => ({
-        // transport: config.get("MAIL_TRANSPORT"),
-        // or
         transport: {
           host: config.get<string>('MAIL_HOST'),
           secure: false,

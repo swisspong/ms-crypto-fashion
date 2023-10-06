@@ -10,6 +10,10 @@ import { CreateMerchantData, DeleteMerchantData } from '@app/common/interfaces';
 import { ClientProxy } from '@nestjs/microservices';
 import { MERCHANT_DELETE_P, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
 import { lastValueFrom } from 'rxjs';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpdateEmailDto } from './dto/update-email.dtp';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class UsersService {
   protected readonly logger = new Logger(UsersService.name);
@@ -17,7 +21,9 @@ export class UsersService {
   constructor(
     @Inject(PRODUCTS_SERVICE) private readonly productClient: ClientProxy,
     private readonly userRepository: UsersRepository,
-    private readonly hashService: HashService
+    private readonly hashService: HashService,
+    private readonly mailerService: MailerService,
+    private readonly configService: ConfigService
   ) { }
 
   // Admin
@@ -140,6 +146,46 @@ export class UsersService {
       )
     } catch (error) {
       this.logger.error(error)
+    }
+  }
+
+  // ! user
+  async updateProfileByUser(user_id: string, data: UpdateProfileDto) {
+    try {
+      const user = await this.userRepository.findAndUpdate({user_id},{$set: {
+        ...data
+      }})
+      return {status: "success"}
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async changeEmailByUser(user_id: string, data: UpdateEmailDto) {
+    try {
+      
+      const token = await this.uid.randomUUID(50)
+      const updateUser = await this.userRepository.findOneAndUpdate({user_id}, {$set: {
+        changeToken: token,
+        changeEmail: data.email
+      }})
+      const mailOptions = {
+        from: this.configService.get('MAIL_USER', { infer: true }) as string,
+        to: updateUser.changeEmail,
+        subject: "Crypto Fashion Change you email.",
+        html: `
+          <h2> ${updateUser.username} มีการอัปเดตข้อมูลที่อยู่อีเมลของคุณบนเว็บไซต์ของเรา</h2>
+          <h4>กรุณายืนยันอีเมลของคุณเพื่อดำเนินการเปลี่ยนอีเมลต่อ...</h4>
+          <a href="${this.configService.get('HOST_MAIN', { infer: true })}/verify?token=${updateUser.changeToken}">ยืนยันการเปลี่ยนอีเมลของคุณ</a>
+        `
+      }
+
+
+      await this.mailerService.sendMail(mailOptions)
+
+      return {status: "success"}
+    } catch (error) {
+      console.log(error);
     }
   }
 }

@@ -35,3 +35,11 @@ interface IMerchantRes {
     updatedAt: string
     __v: number
 }
+
+interface IProfilePayload {
+    username: string
+}
+
+interface IEmailPayload {
+    email: string;
+}

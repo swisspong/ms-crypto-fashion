@@ -18,11 +18,20 @@ export const getInfoCsr = async (): Promise<IUserRes> => {
 };
 
 export const verifyEmail = async (token: string): Promise<IVerify> => {
-
-
     return apiSsr.get(`/auth/email/verify?token=${token}`, {
     }).then(
         (response) => response.data
     );
+}
 
+export const updateProfileCommon = async (body: IProfilePayload): Promise<void> => {
+    return apiCsr.patch(`users`, body).then(
+        (response) => response.data
+    )
+}
+
+export const changeEmil = async (body: IEmailPayload): Promise<void> => {
+    return apiCsr.post(`users/email`, body).then(
+        (response) => response.data
+    )
 }

@@ -25,7 +25,12 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import { toast } from "../ui/use-toast";
+import { useUserInfo } from "@/src/hooks/user/queries";
+import { Log } from "ethers";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
+import { useUpdateProfile } from "@/src/hooks/user/mutations";
+import { Loader2 } from "lucide-react";
 
 const profileFormSchema = z.object({
   username: z
@@ -35,55 +40,52 @@ const profileFormSchema = z.object({
     })
     .max(30, {
       message: "Username must not be longer than 30 characters.",
-    }),
-  email: z
-    .string({
-      required_error: "Please select an email to display.",
     })
-    .email(),
-  bio: z.string().max(160).min(4),
-  urls: z
-    .array(
-      z.object({
-        value: z.string().url({ message: "Please enter a valid URL." }),
-      })
-    )
-    .optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
-// This can come from your database or API.
-const defaultValues: Partial<ProfileFormValues> = {
-  bio: "I own a computer.",
-  urls: [
-    { value: "https://shadcn.com" },
-    { value: "http://twitter.com/shadcn" },
-  ],
-};
+
+
+
 
 export function ProfileForm() {
+
+  const {
+    data: me,
+    isLoading: meLoading,
+    isSuccess: meSuccess,
+  } = useUserInfo();
+
+  const { mutate: handleProdile, isSuccess, isLoading } = useUpdateProfile()
+
+  // This can come from your database or API.
+  const defaultValues: Partial<ProfileFormValues> = {
+    username: me?.username
+  };
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
     mode: "onChange",
   });
 
-  const { fields, append } = useFieldArray({
-    name: "urls",
-    control: form.control,
-  });
+  useEffect(() => {
+    if (meSuccess) {
+      form.reset({
+        username: me.username
+      })
+    }
+  }, [meSuccess])
+
 
   function onSubmit(data: ProfileFormValues) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    handleProdile(data)
   }
+
+  useEffect(() => {
+    if (isSuccess) toast.success('บันทึกชื่อผู้ใช้สำเร็จ')
+  }, [isSuccess])
 
   return (
     <Form {...form}>
@@ -104,7 +106,21 @@ export function ProfileForm() {
             </FormItem>
           )}
         />
-        <FormField
+
+        <Button disabled={isLoading} type="submit">
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : null}
+          บันทึกการเปลี่ยนแปลงชื่อผู้ใช้
+        </Button>
+      </form>
+    </Form>
+
+
+  );
+}
+
+{/* <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
@@ -141,41 +157,4 @@ export function ProfileForm() {
               <FormMessage />
             </FormItem>
           )}
-        />
-        {/* <div>
-          {fields.map((field, index) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`urls.${index}.value`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={cn(index !== 0 && "sr-only")}>
-                    URLs
-                  </FormLabel>
-                  <FormDescription className={cn(index !== 0 && "sr-only")}>
-                    Add links to your website, blog, or social media profiles.
-                  </FormDescription>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-2"
-            onClick={() => append({ value: "" })}
-          >
-            Add URL
-          </Button>
-        </div> */}
-        <Button type="submit">Update profile</Button>
-      </form>
-    </Form>
-  );
-}
+        /> */}

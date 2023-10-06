@@ -9,6 +9,8 @@ import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { CREATE_MERCHANT_EVENT, DELETE_MERCHANT_EVENT } from '@app/common/constants';
 import { RmqService } from '@app/common';
 import { CreateMerchantData, DeleteMerchantData } from '@app/common/interfaces';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpdateEmailDto } from './dto/update-email.dtp';
 @ApiTags('User')
 @Controller('users')
 export class UsersController {
@@ -17,6 +19,16 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly rmqService: RmqService,
   ) { }
+
+  @Patch()
+  updatePrdfileUser(@GetUserId() userId: string,@Body() data: UpdateProfileDto) {
+    return this.usersService.updateProfileByUser(userId, data)
+  }
+
+  @Post('email')
+  changeEmail(@GetUserId() userId: string, @Body() data: UpdateEmailDto) {
+    return this.usersService.changeEmailByUser(userId, data)
+  }
 
   // ! Admin
 

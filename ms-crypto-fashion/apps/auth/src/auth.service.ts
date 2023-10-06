@@ -110,8 +110,6 @@ export class AuthService {
       }
 
 
-      console.log(mailOptions);
-
       await this.mailerService.sendMail(mailOptions)
       // const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
 
@@ -277,7 +275,8 @@ export class AuthService {
       const user = await this.usersRepository.findOne({ emailToken: token })
       if (user) {
         updateUser = await this.usersRepository.findAndUpdate({ emailToken: token }, {
-          $set: { emailToken: null, isVerified: true }
+          $set: {  isVerified: true },
+          $unset: { emailToken: 1 } 
         })
       }
 

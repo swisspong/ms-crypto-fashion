@@ -12,6 +12,8 @@ import { Store } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ProfileForm } from "@/components/account/profile-form";
 import { SidebarNav } from "@/components/account/sidebar-nav";
+import { EmailForm } from "@/components/account/email-form"; 
+import { PasswordForm } from "@/components/account/passowrd-form";
 
 const sidebarNavItems = [
   {
@@ -48,6 +50,8 @@ const ProfilePage = () => {
                 <div className="space-y-6">
                  
                   <ProfileForm />
+                  <EmailForm />
+                  <PasswordForm />
                 </div>
               </div>
             </div>
