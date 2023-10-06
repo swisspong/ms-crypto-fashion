@@ -11,5 +11,8 @@ export interface ICartItem {
 
 export interface IDeleteChktEventPayload {
     chkt_id: string
-    user_id:string
+    user_id: string
+}
+export interface IDeleteProductId {
+    prod_id: string
 }

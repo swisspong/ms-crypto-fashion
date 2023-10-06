@@ -13,7 +13,7 @@ import { PRODUCTS_SERVICE, PRODUCTS_TCP } from '@app/common/constants/products.c
 import { IProduct } from '@app/common/interfaces/order-event.interface';
 import { ProductsUtilService } from '@app/common/utils/products/products-util.service';
 import { DeleteManyItemsDto } from './dto/delet-many-items.dto';
-import { IDeleteChktEventPayload } from '@app/common/interfaces/carts.interface';
+import { IDeleteChktEventPayload, IDeleteProductId } from '@app/common/interfaces/carts.interface';
 import { CheckoutsRepository } from './checkouts/checkouts.repository';
 import { Product } from 'apps/products/src/schemas/product.schema';
 import { ProductsValidator } from '@app/common/utils/products/products-validator';
@@ -52,7 +52,16 @@ export class CartsService {
     })
     await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { $set: { items: cart.items } })
   }
-
+  async deleteProductFormCatItem(data: IDeleteProductId) {
+    const carts = await this.cartsRepository.find({
+      items: {
+        $elemMatch: {
+          'product.prod_id': data.prod_id,
+        },
+      },
+    })
+    this.logger.warn("event delete", carts)
+  }
 
   async findCartByUserId(userId: string) {
 

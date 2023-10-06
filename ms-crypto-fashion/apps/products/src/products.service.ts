@@ -14,7 +14,7 @@ import { Product, ProductDocument } from './schemas/product.schema';
 import { StoreQueryDto } from './dto/store-query.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Types } from 'mongoose';
-import { CARTS_DELETE_ITEMS_EVENT, CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants/carts.constant';
+import { CARTS_DELETE_ITEMS_BY_PROUCT_ID_EVENT, CARTS_DELETE_ITEMS_EVENT, CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants/carts.constant';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { IProduct, OrderingEventPayload } from '@app/common/interfaces/order-event.interface';
@@ -23,7 +23,7 @@ import { CartsUtilService } from '@app/common/utils/carts/carts-util.service';
 import { PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
 import { IProductOrderingEventPayload } from '@app/common/interfaces/products-event.interface';
 import { PAID_ORDERING_EVENT, PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
-import { IDeleteChktEventPayload } from '@app/common/interfaces/carts.interface';
+import { IDeleteChktEventPayload, IDeleteProductId } from '@app/common/interfaces/carts.interface';
 import { ProductsValidator } from '@app/common/utils/products/products-validator';
 
 @Injectable()
@@ -1121,7 +1121,7 @@ export class ProductsService {
         $in: updateProductDto.categories_web.map(item => item.cat_id)
       }
     })
-    this.logger.warn("category invalid",categories,updateProductDto.categories)
+    this.logger.warn("category invalid", categories, updateProductDto.categories)
     if (categories.length !== updateProductDto.categories.length) throw new BadRequestException("Invalid Category")
     if (categoriesWeb.length !== updateProductDto.categories_web.length) throw new BadRequestException("Invalid Category")
     const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: product.prod_id, merchant: product.merchant }, {
@@ -1186,7 +1186,19 @@ export class ProductsService {
     if (!merchant) throw new ForbiddenException()
     const product = await this.productsRepository.findOne({ prod_id: catId, merchant: merchant._id })
     if (!product) throw new NotFoundException("Category not found.")
-    return await this.productsRepository.findOneAndDelete({ prod_id: catId, merchant: merchant._id })
+    await this.productsRepository.findOneAndDelete({ prod_id: catId, merchant: merchant._id })
+    const payload: IDeleteProductId = {
+      prod_id: product.prod_id
+    }
+    await lastValueFrom(
+      this.cartsClient.emit(CARTS_DELETE_ITEMS_BY_PROUCT_ID_EVENT, {
+        ...payload
+      })
+    )
+
+    return {
+      message: "success"
+    }
   }
   async removeByAdmin(prod_id: string) {
     const product = await this.productsRepository.findOne({ prod_id })
