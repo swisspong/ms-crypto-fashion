@@ -35,7 +35,7 @@ const ProductCard: React.FC<ProductCard> = ({ data, className, pushUrl }) => {
         <img
           src={data.image_urls?.[0]}
           alt=""
-          className="aspect-square object-cover rounded-md"
+          className="aspect-square object-contain object-center rounded-md h-full w-full"
         />
         {/* <Image
           src={data.image_urls?.[0]}
@@ -54,7 +54,7 @@ const ProductCard: React.FC<ProductCard> = ({ data, className, pushUrl }) => {
       </div>
       {/* Description */}
       <div>
-        <p className="font-semibold text-lg">{data.name}</p>
+        <p className="font-semibold text-lg line-clamp-1">{data.name}</p>
         {/* <p className="text-sm text-gray-500">{data.name}</p> */}
       </div>
       {/* Price & Reiew */}

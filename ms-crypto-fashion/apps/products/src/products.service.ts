@@ -180,6 +180,9 @@ export class ProductsService {
         },
       },
       {
+        $unwind: "$merchant"
+      },
+      {
         $lookup: {
           from: "categories",
           localField: "categories",
@@ -1108,7 +1111,7 @@ export class ProductsService {
 
     if (existProduct) throw new BadRequestException("Product name is existing.")
     const categories = await this.categoriesRepository.find({
-      merchant: merchant._id,
+      mcht_id: merchant.mcht_id,
       cat_id: {
         $in: updateProductDto.categories.map(item => item.cat_id)
       }
@@ -1118,6 +1121,7 @@ export class ProductsService {
         $in: updateProductDto.categories_web.map(item => item.cat_id)
       }
     })
+    this.logger.warn("category invalid",categories,updateProductDto.categories)
     if (categories.length !== updateProductDto.categories.length) throw new BadRequestException("Invalid Category")
     if (categoriesWeb.length !== updateProductDto.categories_web.length) throw new BadRequestException("Invalid Category")
     const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: product.prod_id, merchant: product.merchant }, {

@@ -28,7 +28,10 @@ const MerchantList: FC<Props> = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {!merchants.data || merchants.data.data.length <= 0 ? (
-        <NoResults />
+        <div className="col-span-1 lg:col-span-2">
+
+          <NoResults />
+        </div>
       ) : (
         merchants?.data?.data.map((merchant) => <MerchantItem merchant={merchant}/>)
       )}

@@ -19,7 +19,7 @@ export class WishListController {
         return this.wishlistService.findWishlistByUserId(userId)
     }
 
-    @Roles(RoleFormat.USER)
+   
     @Get('product/:prod_id')
     getWishlistByProductId(@Param('prod_id') prod_id: string) {
         return this.wishlistService.findWishlistByProductId(prod_id)

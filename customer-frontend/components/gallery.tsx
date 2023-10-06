@@ -42,7 +42,7 @@ const Gallery: React.FC<GalleryProps> = ({ images = [], vrntSelected }) => {
                 // fill
                 src={image.url}
                 alt="Image"
-                className="object-cover object-center"
+                className="object-contain object-center h-full w-full"
               />
             </div>
           </Tab.Panel>

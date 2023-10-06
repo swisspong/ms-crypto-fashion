@@ -255,6 +255,7 @@ const useAddItemHookNew = (data: IProductRow | undefined) => {
                     setQuantity(data.stock > 0 ? 1 : 0)
                 }
             } else {
+                console.log("test else")
                 setQuantity(0)
             }
             console.log("vrntId => ", vrntId)
@@ -265,6 +266,11 @@ const useAddItemHookNew = (data: IProductRow | undefined) => {
         useEffect(() => {
             if (data && data.groups.length > 0) {
                 setSelecteds(data.groups.map(group => ({ vgrpId: group.vgrp_id, optnId: '' })))
+            }
+            if (data) {
+                if (data.variants.length <= 0) {
+                    setQuantity(data.stock > 0 ? 1 : 0)
+                }
             }
         }, [data])
     }
@@ -366,6 +372,20 @@ const useAddItemHookNew = (data: IProductRow | undefined) => {
         return false
 
     }
+    const showCurrentVariantStock = (vrntId: string | undefined) => {
+        if (vrntId) {
+            const variant = data?.variants.find(vrnt => vrnt.vrnt_id === vrntId)
+            if (variant) return variant.stock
+        } else {
+            return undefined
+        }
+    }
+   
+    useEffect(() => {
+        if (addItemMutate.isSuccess) {
+            toast.success("เพิ่มลงตะกร้าสำเร็จ");
+        }
+    }, [addItemMutate.isSuccess]);
     return {
         disabledOption,
         selectValueChangeHandler,
@@ -386,7 +406,8 @@ const useAddItemHookNew = (data: IProductRow | undefined) => {
         setQuantity,
         whenDataChange,
         showCurrentPrice,
-        hasVariant: hasVariant()
+        hasVariant: hasVariant(),
+        showCurrentVariantStock
     }
 
 }

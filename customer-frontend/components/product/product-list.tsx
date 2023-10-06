@@ -18,13 +18,16 @@ const ProductList: FC<Props> = ({ typeSearch, search, selectedCheckboxes }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {!dataQuery.data || dataQuery.data.data.length <= 0 ? (
-        <NoResults />
+        <div className="col-span-1 sm:col-span-2 md:col-span-3">
+          <NoResults />
+        </div>
       ) : (
         dataQuery?.data?.data.map((product) => (
           <ProductCard
             data={product}
             key={product.prod_id}
-            pushUrl={`/storefront/product/${product.prod_id}`}
+            pushUrl={`/merchants/${product.merchant.mcht_id}/product/${product.prod_id}`}
+            // pushUrl={`/storefront/product/${product.prod_id}`}
           />
         ))
       )}

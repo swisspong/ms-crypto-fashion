@@ -24,11 +24,6 @@ export class MerchantsController {
     private readonly rmqService: RmqService,
     private readonly merchantsService: MerchantsService
   ) { }
-  @Public()
-  @Get(":mchtId/products")
-  getAllProductsForUser(@Param('mchtId') id: string, @Query() productFilter: GetProductNoTypeSerchatDto) {
-    return this.merchantsService.findAllProductsForUser(id, productFilter)
-  }
   @Roles(RoleFormat.MERCHANT)
   @Get('/store-front/products')
   myMerchantStorefront(@GetUserId() userId: string, @GetUser('merchant') merchantId: string, @Query() productFilter: GetProductStoreDto) {
@@ -38,6 +33,11 @@ export class MerchantsController {
   @Get('/store-front/products/:id')
   myMerchantStorefrontOneProduct(@Param('id') id: string, @GetUser('merchant') merchantId: string, @Query() productFilter: StoreQueryDto) {
     return this.merchantsService.merchantStorefrontOneProduct(id, merchantId, productFilter);
+  }
+  @Public()
+  @Get(":mchtId/products")
+  getAllProductsForUser(@Param('mchtId') id: string, @Query() productFilter: GetProductNoTypeSerchatDto) {
+    return this.merchantsService.findAllProductsForUser(id, productFilter)
   }
   @Roles(RoleFormat.MERCHANT)
   @Get("products")
