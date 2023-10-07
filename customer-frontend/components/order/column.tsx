@@ -65,7 +65,7 @@ export const columns = ({
               row.original.payment_status === PaymentFormat.PAID
                 ? "bg-[#adfa1d]"
                 : "bg-red-400"
-            } rounded-e-none border border-r text-black hover:${
+            } rounded-e-none border border-r  ${row.original.payment_status === PaymentFormat.PAID?"text-black":"text-white"} hover:${
               row.original.payment_status === PaymentFormat.PAID
                 ? "bg-[#adfa1d]"
                 : "bg-red-400"

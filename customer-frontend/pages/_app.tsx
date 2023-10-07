@@ -39,6 +39,7 @@ export default function App({ Component, pageProps }: AppProps) {
               };
 
               if (customError.response?.status === 401) {
+                console.log("custom errro", customError);
                 router.push("/signin");
               } else {
                 // console.log(customError);
@@ -95,8 +96,18 @@ export default function App({ Component, pageProps }: AppProps) {
 
               console.log(`Something went wrong: ${customError.message}`);
               console.log(`Status code: ${customError.response?.status}`);
-              if (customError.response?.status === 401) {
-              //  toast("Test error");
+              console.log(customError);
+              console.log(router.pathname);
+              const paths = [
+                "/",
+                "/merchants/[mchtId]/product/[prodId]",
+                "/merchants/[mchtId]",
+              ];
+              if (
+                customError.response?.status === 401 &&
+                !paths.includes(router.pathname)
+              ) {
+                //  toast("Test error");
                 router.push("/signin");
               }
               //  else if (customError.response?.status === 400) {

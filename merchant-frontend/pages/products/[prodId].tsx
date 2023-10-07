@@ -257,11 +257,14 @@ export default function EditProduct() {
                                     (data?.variants.length ?? 0) > 0
                                   }
                                   {...field}
-                                  onChange={(e) =>
-                                    field.onChange(
-                                      (e.target.value)
-                                    )
-                                  }
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    const numericValue = inputValue.replace(
+                                      /[^0-9]/g,
+                                      ""
+                                    );
+                                    field.onChange(Number(numericValue));
+                                  }}
                                   // disabled={addLoading || updateLoading}
                                 />
                               </FormControl>
@@ -285,11 +288,14 @@ export default function EditProduct() {
                                     (data?.variants.length ?? 0) > 0
                                   }
                                   {...field}
-                                  onChange={(e) =>
-                                    field.onChange(
-                                      (e.target.value)
-                                    )
-                                  }
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    const numericValue = inputValue.replace(
+                                      /[^0-9]/g,
+                                      ""
+                                    );
+                                    field.onChange(Number(numericValue));
+                                  }}
                                 />
                               </FormControl>
                               <FormMessage />

@@ -255,7 +255,7 @@ const Info: React.FC<InfoProps> = ({
         <h3 className="font-semibold text-xl text-black underline">
           รายละเอียดสินค้า
         </h3>
-        <p className="mt-2 text-muted-foreground">{data?.description}</p>
+        <p className="mt-2 text-muted-foreground m-auto">{data?.description}</p>
       </div>
     </div>
   );

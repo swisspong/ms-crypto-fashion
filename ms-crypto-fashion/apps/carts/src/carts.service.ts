@@ -52,15 +52,23 @@ export class CartsService {
     })
     await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { $set: { items: cart.items } })
   }
-  async deleteProductFormCatItem(data: IDeleteProductId) {
-    const carts = await this.cartsRepository.find({
-      items: {
-        $elemMatch: {
-          'product.prod_id': data.prod_id,
-        },
-      },
+  async deleteProductFormCatItemEvent(data: IDeleteProductId) {
+    // const carts = await this.cartsRepository.find({
+    //   items: {
+    //     $elemMatch: {
+    //       'product.prod_id': data.prod_id,
+    //     },
+    //   },
+    // })
+    const cartsUpdate = await this.cartsRepository.findAndUpdate({
+      "items.prod_id": data.prod_id
+    }, {
+      $set: {
+        'items.$.product.available': false,
+        //'items.$.product.$[].groups.stock': 0
+      }
     })
-    this.logger.warn("event delete", carts)
+    this.logger.warn("event delete", cartsUpdate)
   }
 
   async findCartByUserId(userId: string) {

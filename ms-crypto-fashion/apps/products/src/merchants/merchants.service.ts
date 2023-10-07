@@ -216,7 +216,7 @@ export class MerchantsService {
 
     async myMerchant(userId: string, merchantId: string, productFilter: GetProductStoreDto) {
         // const user = await this.usersRepository.findOne({ user_id: userId, merchant: new Types.ObjectId(merchantId) })
-        console.log(merchantId)
+        this.logger.log("mcht_id",merchantId)
         let sort = {}
         if (productFilter.sort) {
             const sortArr = productFilter.sort.split(",")

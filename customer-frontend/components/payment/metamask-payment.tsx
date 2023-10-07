@@ -15,7 +15,10 @@ import { Icons } from "../icons";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { formatBalance, formatChainAsNum } from "@/lib/utils";
 import Web3 from "web3";
-import { getOrderWalletByCheckoutId, postOrderWallet } from "@/src/services/order.service";
+import {
+  getOrderWalletByCheckoutId,
+  postOrderWallet,
+} from "@/src/services/order.service";
 import { useCheckoutOrdering } from "@/src/hooks/checkout/mutations";
 import { useRouter } from "next/router";
 interface Props {
@@ -28,12 +31,12 @@ function later(delay: number) {
   });
 }
 const MetamaskPayment: FC<Props> = ({ address, data }) => {
-  const router = useRouter()
+  const router = useRouter();
   const [hasProvider, setHasProvider] = useState<boolean | null>(null);
   const initialState = { accounts: [], balance: "", chainId: "" };
   const [account, setAccount] = useState<string | null>(null);
   const [wallet, setWallet] = useState(initialState);
-  const checkoutOrderMutate = useCheckoutOrdering()
+  const checkoutOrderMutate = useCheckoutOrdering();
   useEffect(() => {
     const refreshAccounts = (accounts: any) => {
       if (accounts.length > 0) {
@@ -77,11 +80,14 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
   //   };
   //   connect();
   // }, []);
-  const CONTRACT_ADDRESS = "0xf0d7dE9793Bf3cE0A2552c06041dc8eA80C08AFe"
+  const CONTRACT_ADDRESS = "0xb2720A94c56b403E02515Ed4512c0cF2831e3E2f";
   const CONTRACT_ABI = configuration;
 
   //const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
-  const web3 = new Web3(Web3.givenProvider || "https://goerli.infura.io/v3/b64de7c107a44261bb1b19536d7bed23");
+  const web3 = new Web3(
+    Web3.givenProvider ||
+      "https://goerli.infura.io/v3/b64de7c107a44261bb1b19536d7bed23"
+  );
   const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
   function convertToWei(price: number) {
     return "0x" + Number(price * 1e18).toString(16);
@@ -102,10 +108,10 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
           recipient: address.recipient,
           tel_number: address.tel_number,
           payment_method: "wallet",
-        }
-      })
+        },
+      });
 
-      await later(2000)
+      await later(2000);
       // const ordering = await postOrderWallet({
       //   address: address.address,
       //   chkt_id: data.chkt_id,
@@ -114,31 +120,51 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
       //   tel_number: address.tel_number,
       //   payment_method: "wallet",
       // });
-      const ordering = await getOrderWalletByCheckoutId(router.query.chktId as string)
-      console.log("get order => ", ordering)
-      const totalWei = ordering.data.totalWei
+      const ordering = await getOrderWalletByCheckoutId(
+        router.query.chktId as string
+      );
+      console.log("get order => ", ordering);
+      const totalWei = ordering.data.totalWei;
+      console.log(
+        convertToWeiHex(totalWei),
+        ordering.data.items.map((order) => [
+          order.id,
+          order.wei,
+          ordering.data.userId,
+          order.mchtId,
+        ])
+      );
       // const totalWei = ordering.data.reduce(
       //   (prev, acc) => prev + acc.wei.wei,
       //   0
       // );
-
-      let result = await window.ethereum!.request({
-        method: "eth_sendTransaction",
-        params: [
-          {
-            from: wallet.accounts[0],
-            to: CONTRACT_ADDRESS,
-            chainId: wallet.chainId,
-            data: (contract.methods as any)
-              .buyWithOrderArr(
-                convertToWeiHex(totalWei),
-                ordering.data.items.map((order) => [order.id, order.wei, ordering.data.userId,order.mchtId])
-              )
-              .encodeABI(),
-            value: convertToWeiHex(totalWei),
-          },
-        ],
-      })
+      try {
+        let result = await window.ethereum!.request({
+          method: "eth_sendTransaction",
+          params: [
+            {
+              from: wallet.accounts[0],
+              to: CONTRACT_ADDRESS,
+              chainId: wallet.chainId,
+              data: (contract.methods as any)
+                .buyWithOrderArr(
+                  convertToWeiHex(totalWei),
+                  ordering.data.items.map((order) => [
+                    order.id,
+                    order.wei,
+                    ordering.data.userId,
+                    order.mchtId,
+                  ])
+                )
+                .encodeABI(),
+              value: convertToWeiHex(totalWei),
+            },
+          ],
+        });
+        console.log(result)
+      } catch (error) {
+        console.log(error);
+      }
       router.replace("/account/orders");
 
       // console.log("result =>",result)

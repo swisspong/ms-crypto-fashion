@@ -51,6 +51,7 @@ export class CategoriesController {
     return this.categoriesService.createByAdmin(userId, createCategory)
   } 
 
+  @Public()
   // @Roles(RoleFormat.ADMIN)
   @Get('web')
   findAllCategories(@Query('per_page') perPage: number, @Query('page') page: number){

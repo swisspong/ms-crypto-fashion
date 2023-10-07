@@ -3,9 +3,10 @@ import { SearchType } from "@/src/types/enums/product";
 import { useQuery } from "@tanstack/react-query";
 
 
-export const useMerchantProducts = (data: { mchtId: string, page: number, per_page: number, catIds: string[], search?: string }) => {
+export const useMerchantProducts = (data: { mchtId: string | string[] | undefined, page: number, per_page: number, catIds: string[], search?: string }) => {
     return useQuery(["product-merchants", data], () => getMerchantProducts(data), {
-        keepPreviousData: true
+        keepPreviousData: true,
+        enabled:!!data.mchtId
     });
 };
 export const useProductById = (prodId?: string) => {

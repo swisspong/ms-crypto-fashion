@@ -43,6 +43,7 @@ const useCartHook = () => {
         }
         return []
     }
+  
 
     return {
         cartItems: cartItemQuery.data,

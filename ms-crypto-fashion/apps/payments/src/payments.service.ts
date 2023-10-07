@@ -702,9 +702,10 @@ export class PaymentsService {
 
       const totalDeposit = aggregate.find(item => item._id === TransactionFormat.DEPOSIT)?.totalAmount ?? 0
       const totalWithdraw = aggregate.find(item => item._id === TransactionFormat.WITHDRAW)?.totalAmount ?? 0
-      const amount = totalDeposit - totalWithdraw - fiftyInWei - tmpTotal
+      const amount = Math.ceil(totalDeposit - totalWithdraw - fiftyInWei - tmpTotal)
       // if (payload.amount * (1 * 10 ** 18) > amount) throw new BadRequestException("Insufficient balance")
-
+      this.logger.log(totalDeposit,totalWithdraw)
+      this.logger.log("amount 1",amount)
       if (amount <= 0) throw new BadRequestException("Insufficient balance")
       await this.transactionTemporaryRepository.create({
 
@@ -722,6 +723,7 @@ export class PaymentsService {
       //add withdraw web3 here
       //
       await this.web3Service.transferToMerchant(payload.address, amount)
+      this.logger.log("web3 success")
       await this.transactionTemporaryRepository.findOneAndDelete({ payment_method: PaymentMethodFormat.WALLET, type: TransactionFormat.WITHDRAW, mcht_id: mchtId, user_id: userId })
       await this.transactionPurchaseRepository.create({
         // amount: payload.amount * (1 * 10 ** 18),
@@ -732,8 +734,12 @@ export class PaymentsService {
         user_id: userId,
         tx_id: `tx_${this.uid.stamp(15)}`
       })
+      return {
+        message: "success"
+      }
     } catch (error) {
-
+      this.logger.warn(error)
+      throw error
     }
   }
   async getAccountDetail(recpId: string) {

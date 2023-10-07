@@ -146,10 +146,11 @@ export class Web3Service implements OnModuleInit {
       const signer = new ethers.Wallet(this.configService.get<string>("PRIVATE_KEY"), provider);
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer)
       this.logger.warn(this.configService.get<string>("PRIVATE_KEY"), CONTRACT_ADDRESS)
-      const tx = await contract.withdraw(address, amount)
+      this.logger.warn("amount",amount)
+      const tx = await contract.withdraw(address, Number(amount))
       await tx.wait();
       this.logger.log('Transaction Hash:', tx.hash);
-      this.logger.log('Refund successful.');
+      this.logger.log('With draw success successful.');
     } catch (error) {
       throw error
     }

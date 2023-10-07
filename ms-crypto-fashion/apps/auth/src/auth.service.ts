@@ -255,7 +255,7 @@ export class AuthService {
         );
         return;
       } else {
-        const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, permission: user.permission })
+        const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, permission: user.permission ,merchant:user.mcht_id})
         res.cookie("token", accessToken, {
           // secure: true, 
           httpOnly: false,

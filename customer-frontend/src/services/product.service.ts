@@ -3,7 +3,7 @@ import queryString from "query-string";
 
 const api = dynamicApi({ ssr: false, service: SERVICE_FORMAT.PRODUCT })
 
-export const getMerchantProducts = async (data: { mchtId: string, page: number, per_page: number, catIds: string[], search?: string }): Promise<IProducts> => {
+export const getMerchantProducts = async (data: { mchtId: string | string[] | undefined, page: number, per_page: number, catIds: string[], search?: string }): Promise<IProducts> => {
     return await api.get(`/merchants/${data.mchtId}/products?page=${data.page}&per_page=${data.per_page}${data.catIds.length > 0 ? `&${queryString.stringify({ cat_ids: data.catIds })}` : ``}${data.search && data.search.trim().length > 0 ? `&search=${data.search}` : ``}`
     ).then(
         (response) => response.data

@@ -7,7 +7,7 @@ export const getMyCategories = async (data: { page: number, per_page: number }):
         (response) => response.data
     );
 };
-export const getAllCategoryByMerchantId = async (data: { mchtId: string, pagination: { page: number, per_page: number } }): Promise<ICategories> => {
+export const getAllCategoryByMerchantId = async (data: { mchtId: string | string[] | undefined, pagination: { page: number, per_page: number } }): Promise<ICategories> => {
     return await api.get(`/categories/merchant/${data.mchtId}?page=${data.pagination.page}&per_page=${data.pagination.per_page}`).then(
         (response) => response.data
     );

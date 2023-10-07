@@ -34,16 +34,18 @@ export class MerchantsController {
   myMerchantStorefrontOneProduct(@Param('id') id: string, @GetUser('merchant') merchantId: string, @Query() productFilter: StoreQueryDto) {
     return this.merchantsService.merchantStorefrontOneProduct(id, merchantId, productFilter);
   }
-  @Public()
-  @Get(":mchtId/products")
-  getAllProductsForUser(@Param('mchtId') id: string, @Query() productFilter: GetProductNoTypeSerchatDto) {
-    return this.merchantsService.findAllProductsForUser(id, productFilter)
-  }
+
   @Roles(RoleFormat.MERCHANT)
   @Get("products")
   getAllProducts(@GetUserId() userId: string, @GetUser('merchant') merchantId: string, @Query() productFilter: GetProductStoreDto) {
     return this.merchantsService.myMerchant(userId, merchantId, productFilter)
   }
+  @Public()
+  @Get(":mchtId/products")
+  getAllProductsForUser(@Param('mchtId') id: string, @Query() productFilter: GetProductNoTypeSerchatDto) {
+    return this.merchantsService.findAllProductsForUser(id, productFilter)
+  }
+  
   @Roles(RoleFormat.USER)
   @Post("/start")
   create(@Res({ passthrough: true }) res, @GetUserId() userId: string, @GetUser('role') role: string, @GetUser('permission') permission: string[], @GetUser('merchant') merchant: string | undefined, @Body() createMerchantDto: CreateMerchantDto) {
@@ -84,7 +86,7 @@ export class MerchantsController {
   getDashboard() {
     return this.merchantsService.getDashboard()
   }
-
+  @Public()
   @Get(':id')
   findMerchantById(@Param('id') id: string) {
     return this.merchantsService.findMerchantById(id)

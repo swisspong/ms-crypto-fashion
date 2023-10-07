@@ -58,7 +58,7 @@ const CategoryPage = ({}) => {
   //   per_page: pageSize,
   // });
   const { data: categories } = useCategoryByMchtId({
-    mchtId: router.query.mchtId as string,
+    mchtId: router.query.mchtId,
     pagination: { page: pageIndex + 1, per_page: 100 },
   });
 
@@ -116,46 +116,46 @@ const CategoryPage = ({}) => {
 
 export default CategoryPage;
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const queryClient = new QueryClient();
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(["me"], () =>
-    getInfoSsr(context.req.headers.cookie)
-  );
-  const me = queryClient.getQueryData(["me"]);
-  if (!me) {
-    return {
-      redirect: {
-        destination: `${process.env.HOST_CUSTOMER}/signin`,
-        permanent: false,
-      },
-    };
-  }
+//   await queryClient.prefetchQuery(["me"], () =>
+//     getInfoSsr(context.req.headers.cookie)
+//   );
+//   const me = queryClient.getQueryData(["me"]);
+//   if (!me) {
+//     return {
+//       redirect: {
+//         destination: `${process.env.HOST_CUSTOMER}/signin`,
+//         permanent: false,
+//       },
+//     };
+//   }
   
-  // console.log(me);
-  // if (me && (me as any).role !== "merchant") {
-  //   return {
-  //     redirect: {
-  //       destination: `${process.env.HOST_CUSTOMER}`,
-  //       permanent: false,
-  //     },
-  //   };
-  // }
+//   // console.log(me);
+//   // if (me && (me as any).role !== "merchant") {
+//   //   return {
+//   //     redirect: {
+//   //       destination: `${process.env.HOST_CUSTOMER}`,
+//   //       permanent: false,
+//   //     },
+//   //   };
+//   // }
 
 
 
 
-  // await queryClient.prefetchQuery(
-  //   ["my-products", { page: 1, per_page: 20 }],
-  //   () => getMyStoreFront({ page: 1, per_page: 20, catIds: [] })
-  // );
-  // await queryClient.prefetchQuery(
-  //   ["my-categories", { page: 1, per_page: 100 }],
-  //   () => getMyCategories({ page: 1, per_page: 100 })
-  // );
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-};
+//   // await queryClient.prefetchQuery(
+//   //   ["my-products", { page: 1, per_page: 20 }],
+//   //   () => getMyStoreFront({ page: 1, per_page: 20, catIds: [] })
+//   // );
+//   // await queryClient.prefetchQuery(
+//   //   ["my-categories", { page: 1, per_page: 100 }],
+//   //   () => getMyCategories({ page: 1, per_page: 100 })
+//   // );
+//   return {
+//     props: {
+//       dehydratedState: dehydrate(queryClient),
+//     },
+//   };
+// };

@@ -55,7 +55,7 @@ export class CartsController {
   @EventPattern(CARTS_DELETE_ITEMS_BY_PROUCT_ID_EVENT)
   async removeProduct(@Payload() data: IDeleteProductId, @Ctx() context: RmqContext) {
     this.logger.warn("Recevied from Cart")
-    await this.cartsService.deleteProductFormCatItem(data)
+    await this.cartsService.deleteProductFormCatItemEvent(data)
     this.rmqService.ack(context);
   }
 }

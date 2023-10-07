@@ -20,6 +20,7 @@ import CartDataTable from "@/components/cart/cart-data-table";
 
 import useCartHook from "@/components/cart/use-cart-hook";
 import CartItemNew from "@/components/cart/cart-item/cart-item-new";
+import { withUser } from "@/src/hooks/auth/auth-hook";
 const RemoveItemDialog = dynamic(
   () => import("@/components/remove-item-dialog"),
   { ssr: false }
@@ -30,7 +31,7 @@ const formSchema = z.object({
   }),
 });
 
-const CartPage = () => {
+export default function CartPage() {
   // const [selecteds, setSelecteds] = useState<string[]>([]);
   // const [isNormalPay, setIsNormalPay] = useState<boolean | undefined>();
   // const paymentMethodHandler = (val: boolean | undefined) => {
@@ -133,6 +134,6 @@ const CartPage = () => {
       <Footer />
     </div>
   );
-};
+}
+export const getServerSideProps = withUser();
 
-export default CartPage;

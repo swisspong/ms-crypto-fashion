@@ -24,16 +24,33 @@ export class CronService {
     // private readonly transactionPurchaseRepository: TransactionPurchaseRepository,
   ) { }
 
-  @Cron(CronExpression.EVERY_2_HOURS)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   // @Cron('1 * * * * *')
   async handleCron() {
     // this.logger.debug('Called when the current minute is 1');
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+   // sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    sevenDaysAgo.setMinutes(sevenDaysAgo.getMinutes() - 1)
     const orders = await this.ordersRepository.find({
-      shipped_at: { lte: sevenDaysAgo }
-    })
+      $and: [
+        {
 
+          shipped_at: { $lte: sevenDaysAgo.toISOString() }
+        },
+        //{ status: { $ne: StatusFormat.RECEIVED } }
+        { status: StatusFormat.FULLFILLMENT }
+      ]
+    })
+    const ordersUpdate = await this.ordersRepository.findAndUpdate({
+      $and: [{
+
+        shipped_at: { $lte: sevenDaysAgo.toISOString() }
+      },
+      //{ status: { $ne: StatusFormat.RECEIVED } }
+      { status: StatusFormat.FULLFILLMENT }]
+    }, { status: StatusFormat.RECEIVED })
+
+    this.logger.warn("corn", sevenDaysAgo.toISOString(), orders, ordersUpdate)
     if (orders.length > 0) {
       await Promise.all(orders.map(async (order) => {
         await this.ordersRepository.findAndUpdate({ order_id: order.order_id }, { $set: { status: StatusFormat.RECEIVED } })

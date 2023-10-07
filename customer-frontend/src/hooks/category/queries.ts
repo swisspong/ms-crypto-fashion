@@ -12,8 +12,9 @@ export const useCategoriesMain = (data: { page: number, per_page: number }) => {
         keepPreviousData: true
     });
 };
-export const useCategoryByMchtId = (data: { mchtId: string, pagination: { page: number, per_page: number } }) => {
+export const useCategoryByMchtId = (data: { mchtId: string | string[] | undefined, pagination: { page: number, per_page: number } }) => {
     return useQuery(["categories", data.pagination], () => getAllCategoryByMerchantId(data), {
-        keepPreviousData: true
+        keepPreviousData: true,
+        enabled: !!data.mchtId
     });
 };
