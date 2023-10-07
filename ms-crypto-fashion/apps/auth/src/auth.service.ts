@@ -91,12 +91,18 @@ export class AuthService {
   async signupLocal(signupLocalDto: SignupLocalDto, res: any) {
     try {
       const user = await this.usersRepository.findOne({ email: signupLocalDto.email })
-
-      if (user && user.isVerified) throw new HttpException('Email is already exist.', HttpStatus.BAD_REQUEST);
+      
+      if ((user && user.isVerified) || (user && user.google_id)) throw new HttpException('Email is already exist.', HttpStatus.BAD_REQUEST);
 
       const hash = await this.hashService.hashPassword(signupLocalDto.password)
       const emailToken = await this.uid.randomUUID(30)
-      const newUser = await this.usersRepository.create({ ...signupLocalDto, user_id: `user_${this.uid.stamp(15)}`, password: hash, emailToken })
+
+      // newUser or Update Email Token
+
+      const newUser = (user && user.emailToken) ? await this.usersRepository.findOneAndUpdate({emailToken: user.emailToken}, {$set: {
+        emailToken
+      }}):
+      await this.usersRepository.create({ ...signupLocalDto, user_id: `user_${this.uid.stamp(15)}`, password: hash, emailToken })  
 
       const mailOptions = {
         from: this.configService.get('MAIL_USER', { infer: true }) as string,
@@ -274,7 +280,7 @@ export class AuthService {
       let updateUser = undefined
       const user = await this.usersRepository.findOne({ emailToken: token })
       if (user) {
-        updateUser = await this.usersRepository.findAndUpdate({ emailToken: token }, {
+        updateUser = await this.usersRepository.findOneAndUpdate({ user_id: user.user_id }, {
           $set: {  isVerified: true },
           $unset: { emailToken: 1 } 
         })
@@ -286,6 +292,8 @@ export class AuthService {
 
     }
   }
+
+  
 
 
 }

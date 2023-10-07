@@ -40,10 +40,10 @@ export const useChangeEmail = () => {
             // When mutate is called:
             onMutate: async (info) => {
                 // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-                await queryClient.cancelQueries(["user"]);
+                await queryClient.cancelQueries(["useremail"]);
 
                 // Snapshot the previous value
-                const previousInfos = queryClient.getQueryData(["user"]);
+                const previousInfos = queryClient.getQueryData(["useremail"]);
 
                 return { previousInfos };
             },
@@ -51,12 +51,12 @@ export const useChangeEmail = () => {
             onError: (err: any, variables, context) => {
                 // displayError(err.response?.data?.message)
                 if (context?.previousInfos) {
-                    queryClient.setQueryData(["user"], context.previousInfos);
+                    queryClient.setQueryData(["useremail"], context.previousInfos);
                 }
             },
 
             onSettled: () => {
-                queryClient.invalidateQueries(["user"]);
+                queryClient.invalidateQueries(["useremail"]);
             },
         }
     );

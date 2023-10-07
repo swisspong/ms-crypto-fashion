@@ -13,6 +13,3 @@ interface ISignupPayload {
     password: string
 }
 
-interface IVerify {
-    status: string
-}
