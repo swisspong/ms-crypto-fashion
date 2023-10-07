@@ -161,8 +161,10 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
             },
           ],
         });
+        console.log("============ success ==========")
         console.log(result)
       } catch (error) {
+        console.log("============ error ===========")
         console.log(error);
       }
       router.replace("/account/orders");

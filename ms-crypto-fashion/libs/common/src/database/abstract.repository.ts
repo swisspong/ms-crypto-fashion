@@ -89,10 +89,10 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
             new: true,
         });
 
-        if (!document) {
-            this.logger.warn(`Document not found with filterQuery:`, filterQuery);
-            throw new NotFoundException('Document not found.');
-        }
+        // if (!document) {
+        //     this.logger.warn(`Document not found with filterQuery:`, filterQuery);
+        //     throw new NotFoundException('Document not found.');
+        // }
 
         return document;
     }

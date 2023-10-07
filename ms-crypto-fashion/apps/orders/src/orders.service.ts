@@ -142,97 +142,101 @@ export class OrdersService {
   }
 
   async ordering(data: OrderingEventPayload) {
-
-    const groupByMchtId = {}
-    data.items.forEach(checkoutItem => {
-      const proudct = checkoutItem.product
-      const merchant = proudct.merchant
-      groupByMchtId[merchant.mcht_id] = groupByMchtId[merchant.mcht_id] ?? []
-      groupByMchtId[merchant.mcht_id].push(checkoutItem)
-    })
-    const groups = Object.entries<CheckoutItem[]>(groupByMchtId)
-
-
-
-    const orders = await Promise.all(groups.map(async group => {
-      const order = new Order()
-      const product = (group[1][0]).product
-      const merchant = product.merchant
-      if (data.payment_method === PaymentMethodFormat.WALLET) {
-        order.payment_status = PaymentFormat.PENDING
-      }
-      order.user_id = data.user_id
-      order.order_id = `order_${this.uid.stamp(15)}`
-      order.address = data.address
-      order.post_code = data.post_code
-      order.recipient = data.recipient
-      order.tel_number = data.tel_number
-      order.items = group[1].map(chktItem => {
-        const orderItem = new OrderItem()
-        orderItem.item_id = chktItem.item_id
-        orderItem.name = chktItem.product.name
-        orderItem.price = chktItem.price
-        orderItem.quantity = chktItem.quantity
-        orderItem.total = chktItem.total
-        console.log("product => ", chktItem)
-        orderItem.prod_id = (chktItem as any).product.prod_id as string
-        orderItem.variant = chktItem.variant
-        orderItem.vrnt_id = chktItem.vrnt_id
-        orderItem.image = chktItem.image
-
-        return orderItem
+    try {
+      const groupByMchtId = {}
+      data.items.forEach(checkoutItem => {
+        const proudct = checkoutItem.product
+        const merchant = proudct.merchant
+        groupByMchtId[merchant.mcht_id] = groupByMchtId[merchant.mcht_id] ?? []
+        groupByMchtId[merchant.mcht_id].push(checkoutItem)
       })
+      const groups = Object.entries<CheckoutItem[]>(groupByMchtId)
 
-      order.payment_status = PaymentFormat.PENDING
-      order.total = order.items.reduce((prev, curr) => curr.total + prev, 0)
-      order.total_quantity = order.items.reduce((prev, curr) => curr.quantity + prev, 0)
-      order.mcht_id = merchant.mcht_id
-      order.mcht_name = merchant.name
-      order.payment_method = data.payment_method
-      order.chkt_id = data.chkt_id
-      if (data.payment_method === PaymentMethodFormat.WALLET) {
-        order.wei = (await this.getWei(order.total)).wei
+
+
+      const orders = await Promise.all(groups.map(async group => {
+        const order = new Order()
+        const product = (group[1][0]).product
+        const merchant = product.merchant
+        if (data.payment_method === PaymentMethodFormat.WALLET) {
+          order.payment_status = PaymentFormat.PENDING
+        }
+        order.user_id = data.user_id
+        order.order_id = `order_${this.uid.stamp(15)}`
+        order.address = data.address
+        order.post_code = data.post_code
+        order.recipient = data.recipient
+        order.tel_number = data.tel_number
+        order.items = group[1].map(chktItem => {
+          const orderItem = new OrderItem()
+          orderItem.item_id = chktItem.item_id
+          orderItem.name = chktItem.product.name
+          orderItem.price = chktItem.price
+          orderItem.quantity = chktItem.quantity
+          orderItem.total = chktItem.total
+          console.log("product => ", chktItem)
+          orderItem.prod_id = (chktItem as any).product.prod_id as string
+          orderItem.variant = chktItem.variant
+          orderItem.vrnt_id = chktItem.vrnt_id
+          orderItem.image = chktItem.image
+
+          return orderItem
+        })
+
+        order.payment_status = PaymentFormat.PENDING
+        order.total = order.items.reduce((prev, curr) => curr.total + prev, 0)
+        order.total_quantity = order.items.reduce((prev, curr) => curr.quantity + prev, 0)
+        order.mcht_id = merchant.mcht_id
+        order.mcht_name = merchant.name
+        order.payment_method = data.payment_method
+        order.chkt_id = data.chkt_id
+        if (data.payment_method === PaymentMethodFormat.WALLET) {
+          order.wei = (await this.getWei(order.total)).wei
+        }
+        return order
+      }))
+
+
+      await this.ordersRepository.createMany(orders)
+      // - event to product to cut stock
+      //    - event to payment 
+      //         - event to cart to remove item
+
+      const payload: IProductOrderingEventPayload = {
+        payment_method: data.payment_method,
+        user_id: data.user_id,
+        chkt_id: data.chkt_id,
+        items: data.items,
+        orders: orders.map(order => ({ orderId: order.order_id, total: order.total, mchtId: order.mcht_id })),
+        token: data.token,
+        total: orders.reduce((prev, curr) => prev + curr.total, 0)
       }
-      return order
-    }))
+      this.logger.warn("Emit to product")
+      await lastValueFrom(this.productsClient.emit(PRODUCTS_ORDERING_EVENT, { ...payload }))
+      //return { message: "success" }
 
+      // wait this.checkoutsRepository.findOneAndDelete({ chkt_id: checkout.chkt_id }, session)
 
-    await this.ordersRepository.createMany(orders)
-    // - event to product to cut stock
-    //    - event to payment 
-    //         - event to cart to remove item
+      // const cart = await this.cartsRepository.findOne({ user_id: userId })
 
-    const payload: IProductOrderingEventPayload = {
-      payment_method: data.payment_method,
-      user_id: data.user_id,
-      chkt_id: data.chkt_id,
-      items: data.items,
-      orders: orders.map(order => ({ orderId: order.order_id, total: order.total, mchtId: order.mcht_id })),
-      token: data.token,
-      total: orders.reduce((prev, curr) => prev + curr.total, 0)
+      // await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { items: cart.items.filter(item => newCheckoutItem.find(chktItem => chktItem.item_id === item.item_id) ? false : true) }, session)
+      // if (createOrderDto.payment_method !== PaymentMethodFormat.WALLET) {
+      //   const payment = await this.paymentsService.creditCard(userId, { amount_: checkout.total, token: createOrderDto.token })
+      //   console.log(payment)
+      //   await this.ordersRepository.update({ _id: { $in: newOrders.map(order => order._id) } }, { $set: { chrg_id: payment.id } }, session)
+      // }
+
+      // if (createOrderDto.payment_method === PaymentMethodFormat.WALLET) {
+      //   const orders = await Promise.all(newOrders.map(async order => ({ orderId: order.order_id, total: order.total, wei: await this.getWei(order.total) })))
+      //   return { data: orders }
+      // } else {
+      //   return newOrders
+
+      // }  
+    } catch (error) {
+      this.logger.log(error)
     }
-    this.logger.warn("Emit to product")
-    await lastValueFrom(this.productsClient.emit(PRODUCTS_ORDERING_EVENT, { ...payload }))
-    //return { message: "success" }
 
-    // wait this.checkoutsRepository.findOneAndDelete({ chkt_id: checkout.chkt_id }, session)
-
-    // const cart = await this.cartsRepository.findOne({ user_id: userId })
-
-    // await this.cartsRepository.findOneAndUpdate({ cart_id: cart.cart_id }, { items: cart.items.filter(item => newCheckoutItem.find(chktItem => chktItem.item_id === item.item_id) ? false : true) }, session)
-    // if (createOrderDto.payment_method !== PaymentMethodFormat.WALLET) {
-    //   const payment = await this.paymentsService.creditCard(userId, { amount_: checkout.total, token: createOrderDto.token })
-    //   console.log(payment)
-    //   await this.ordersRepository.update({ _id: { $in: newOrders.map(order => order._id) } }, { $set: { chrg_id: payment.id } }, session)
-    // }
-
-    // if (createOrderDto.payment_method === PaymentMethodFormat.WALLET) {
-    //   const orders = await Promise.all(newOrders.map(async order => ({ orderId: order.order_id, total: order.total, wei: await this.getWei(order.total) })))
-    //   return { data: orders }
-    // } else {
-    //   return newOrders
-
-    // }  
   }
   async updateStatus(data: IUpdateOrderStatusEventPayload) {
     await Promise.all(
@@ -856,5 +860,7 @@ export class OrdersService {
       console.log(error)
     }
   }
-
+  async orderSetTxHash(orderIds: string[], txHash: string) {
+    
+  }
 }

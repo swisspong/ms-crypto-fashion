@@ -1315,4 +1315,60 @@ export class ProductsService {
     }))
   }
 
+  async returnStock(productPayloads: { prodId: string, mchtId: string, vrntId?: string, stock: number }[]) {
+    await Promise.all(productPayloads.map(async productPayload => {
+      const merchant = await this.merchantsRepository.findOne({ mcht_id: productPayload.mchtId })
+      if (merchant) {
+
+        if (productPayload.vrntId) {
+          const newProduct = await this.productsRepository.findOneAndUpdate({
+            $and: [{ prod_id: productPayload.prodId }, {
+              groups: {
+                $exists: true,
+                $ne: [],
+              },
+            },
+            {
+              variants: {
+                $exists: true,
+                $ne: [],
+              },
+            },
+            { "variants.$.vrnt_id": productPayload.vrntId }]
+          }, { $inc: { "variants.$.stock": productPayload.stock } })
+          if (newProduct) {
+
+            await lastValueFrom(
+              this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+                ...newProduct, merchant
+              })
+            )
+          }
+        } else {
+          const newProduct = await this.productsRepository.findOneAndUpdate({
+            $and: [{ prod_id: productPayload.prodId }, {
+              groups: {
+                $size: 0,
+              },
+            },
+            {
+              variants: {
+                $size: 0,
+              },
+            },]
+          }, { $inc: { stock: productPayload.stock } })
+          if (newProduct) {
+            await lastValueFrom(
+              this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+                ...newProduct, merchant
+              })
+            )
+          }
+        }
+      }
+
+
+    }))
+
+  }
 }

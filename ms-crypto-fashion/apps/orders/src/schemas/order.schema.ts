@@ -96,6 +96,10 @@ export class Order extends AbstractDocument {
 
     @Prop({})
     chrg_id: string
+
+    @Prop({})
+    tx_hash: string
+
     // @Prop({ enum: StatusFormat, default: StatusFormat.CHECKOUT })
     // status?: string
 }
