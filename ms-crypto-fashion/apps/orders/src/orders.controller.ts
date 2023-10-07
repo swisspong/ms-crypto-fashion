@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Query, Res } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { GetUser, GetUserId, Roles } from '@app/common/decorators';
 import { PaymentMethodFormat, RoleFormat } from '@app/common/enums';
@@ -16,6 +16,7 @@ import { RefundOrderDto } from './dto/refund-order.dto';
 import { RECEIVED_ORDER_EVENT } from '@app/common/constants/payment.constant';
 import { IReceivedOrder } from '@app/common/interfaces/payment.event.interface';
 import { TxHashDto } from './dto/tx-hash.dto';
+import { OrderIdsDto } from './dto/order-ids.dto';
 
 
 
@@ -396,6 +397,10 @@ export class OrdersController {
   @Post('txhash')
   orderTxHash(@GetUserId() userId: string, @Body() dto: TxHashDto) {
     return this.ordersService.orderSetTxHash(userId, dto)
+  }
+  @Delete("error")
+  orderWalletDelete(@GetUserId() userId: string, @Body() dto: OrderIdsDto) {
+    return this.ordersService.deleteOrder(userId, dto.orderIds)
   }
 
 

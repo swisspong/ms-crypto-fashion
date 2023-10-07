@@ -6,10 +6,10 @@ import { RmqService } from '@app/common';
 import { CheckoutItem, FindOrderById, IOrderStatusRefundEvent, IUpdateOrderStatusEventPayload, OrderingEventPayload, PaymentMethodFormat, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
 import { Order, OrderItem, PaymentFormat, StatusFormat } from './schemas/order.schema';
 import ShortUniqueId from 'short-unique-id';
-import { PRODUCTS_ORDERING_EVENT, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
+import { PRODUCTS_ORDERING_EVENT, PRODUCTS_SERVICE, RETURN_STOCK_EVENT } from '@app/common/constants/products.constant';
 import { lastValueFrom } from 'rxjs';
 import { CartsUtilService } from '@app/common/utils/carts/carts-util.service';
-import { IProductOrderingEventPayload } from '@app/common/interfaces/products-event.interface';
+import { IProductOrderingEventPayload, IProductReturnStockEventPayload } from '@app/common/interfaces/products-event.interface';
 import { ORDER_SERVICE } from '@app/common/constants/order.constant';
 import { CARTS_DELETE_ITEMS_EVENT, CARTS_SERVICE } from '@app/common/constants/carts.constant';
 import { IDeleteChktEventPayload } from '@app/common/interfaces/carts.interface';
@@ -875,6 +875,26 @@ export class OrdersService {
         $set: { tx_hash: dto.txHash }
       }
     )
+    return {
+      message: "success"
+    }
+  }
+  async deleteOrder(userId: string, orderIds: string[]) {
+    const orders = await this.ordersRepository.find({
+      payment_status: PaymentFormat.PENDING,
+      payment_method: PaymentMethodFormat.WALLET,
+      txHash: { $ne: null, $exists: true, },
+      order_id: { $in: orderIds },
+      user_id: userId
+    })
+    const productErrorPayload: IProductReturnStockEventPayload = { data: [] }
+    orders.map(order => {
+      order.items.map(item => {
+        productErrorPayload.data.push({ mchtId: order.mcht_id, prodId: item.prod_id, vrntId: item.vrnt_id, stock: item.quantity })
+      })
+    })
+    await this.ordersRepository.deleteMany({ order_id: { $in: orders.map(order => order.order_id) } })
+    await lastValueFrom(this.productsClient.emit(RETURN_STOCK_EVENT, productErrorPayload))
     return {
       message: "success"
     }
