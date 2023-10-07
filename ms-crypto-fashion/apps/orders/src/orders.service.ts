@@ -22,6 +22,7 @@ import { ObserverArrayListenerService } from './observer-array-listener.service'
 import { ObserverArrayService } from './observer-array.service';
 import { Response } from 'express';
 import { IReceivedOrder, IRefundEvent } from '@app/common/interfaces/payment.event.interface';
+import { TxHashDto } from './dto/tx-hash.dto';
 
 @Injectable()
 export class OrdersService {
@@ -860,7 +861,22 @@ export class OrdersService {
       console.log(error)
     }
   }
-  async orderSetTxHash(orderIds: string[], txHash: string) {
-    
+  async orderSetTxHash(userId: string, dto: TxHashDto) {
+    await this.ordersRepository.findAndUpdate({
+      $and: [
+        { order_id: { $in: dto.orderIds } },
+        { user_id: userId },
+        { payment_status: PaymentFormat.PENDING },
+        { payment_method: PaymentMethodFormat.WALLET },
+        { tx_hash: { $in: [null, undefined, ''] } }
+      ]
+    },
+      {
+        $set: { tx_hash: dto.txHash }
+      }
+    )
+    return {
+      message: "success"
+    }
   }
 }

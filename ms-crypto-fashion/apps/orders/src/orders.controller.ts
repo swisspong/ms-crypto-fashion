@@ -15,6 +15,7 @@ import { Response } from 'express';
 import { RefundOrderDto } from './dto/refund-order.dto';
 import { RECEIVED_ORDER_EVENT } from '@app/common/constants/payment.constant';
 import { IReceivedOrder } from '@app/common/interfaces/payment.event.interface';
+import { TxHashDto } from './dto/tx-hash.dto';
 
 
 
@@ -259,10 +260,10 @@ export class OrdersController {
     // this.clients = new ObservableArray([])
   }
 
-  
 
 
-  
+
+
   @EventPattern(UPDATEREVIEW_ORDER_EVENT)
   async handlerOrder(@Payload() data: UpdateStatusOrder, @Ctx() context: RmqContext) {
     this.logger.warn("Received from reviewed", data)
@@ -392,7 +393,10 @@ export class OrdersController {
     return this.ordersService.myOrderById(orderId, userId);
   }
 
-
+  @Post('txhash')
+  orderTxHash(@GetUserId() userId: string, @Body() dto: TxHashDto) {
+    return this.ordersService.orderSetTxHash(userId, dto)
+  }
 
 
   // // find order check comment in prodict
