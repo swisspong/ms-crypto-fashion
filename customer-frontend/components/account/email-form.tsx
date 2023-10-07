@@ -5,9 +5,10 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useChangeEmail } from "@/src/hooks/user/mutations";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
+import { StatusFormat } from "@/src/types/enums/common";
 
 const emailFormSchema = z.object({
     email: z
@@ -24,8 +25,7 @@ const defaultValues: Partial<EmailFormValues> = {
 };
 
 export function EmailForm() {
-
-    const { mutate: handleEmail, isSuccess, isLoading } = useChangeEmail()
+    const { mutateAsync: handleEmail, isSuccess, isLoading } = useChangeEmail()
 
     const form = useForm<EmailFormValues>({
         resolver: zodResolver(emailFormSchema),
@@ -33,8 +33,13 @@ export function EmailForm() {
         mode: "onChange",
     });
 
-    function onSubmit(data: EmailFormValues) {
-        handleEmail(data)
+    async function onSubmit(data: EmailFormValues) {
+        const result = await handleEmail(data)
+        if (result.status === StatusFormat.SUCCESS) {
+            toast.success('ส่งข้อมูลสำเร็จ กรุณาตรวจสอบอีเมล')
+        } else {
+            toast('เกิดข้อผิดพลาด อีเมลนี้ถูกใช้ไปแล้ว')
+        }
     }
 
     useEffect(() => {
@@ -43,7 +48,8 @@ export function EmailForm() {
                 email: ""
             })
 
-            toast.success('ส่งข้อมูลสำเร็จ กรุณาตรวจสอบอีเมล')
+            
+            
         }
     }, [isSuccess])
 

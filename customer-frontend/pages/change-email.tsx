@@ -1,18 +1,24 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { withoutUserVerify } from "@/src/hooks/auth/auth-hook"
-import { StatusFormat } from "@/src/types/enums/common"
-import { CheckIcon, Loader2, X } from "lucide-react"
 import { NextPage } from "next"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { CheckIcon, Loader2, X } from "lucide-react"
+import { withoutUserChangeEmail } from "@/src/hooks/auth/auth-hook"
+import { StatusFormat } from "@/src/types/enums/common"
+import { useSignout } from "@/src/hooks/auth/mutations"
+import { useEffect } from "react"
 
-
-
-const VerifyPage: NextPage<{ data: IStatus | undefined }> = ({ data }) => {
+const ChangeEmailPage: NextPage<{ data: IStatus | undefined }> = ({ data }) => {
     const router = useRouter()
+    const {
+        mutate: signoutHandler,
+        isLoading: siginoutLoading,
+        isSuccess,
+    } = useSignout();
 
-
+    useEffect(() => {
+        signoutHandler()
+    }, [data])
     return (
         <div className="min-h-screen h-full ">
             <div className="border-t">
@@ -46,12 +52,12 @@ const VerifyPage: NextPage<{ data: IStatus | undefined }> = ({ data }) => {
                                     </div>
                                     <div className="text-center">
                                         <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-                                            <span>ยืนยันอีเมลสำเร็จ</span>
+                                            <span>เปลี่ยนอีเมลสำเร็จ</span>
                                         </h2>
                                     </div>
                                     <div className="text-center">
                                         <p className="text-xl text-muted-foreground">
-                                            <span>ยินดีด้วย! คุณได้ทำการยืนยันตัวตนเรียบร้อยแล้ว คุณสามารถเข้าใช้บัญชีของคุณตอนนี้และเพลิดเพลินกับบริการของเรา</span>
+                                            <span>คุณได้ทำการเปลี่ยนแปลงอีเมลเรียบร้อยแล้ว คุณสามารถเข้าใช้บัญชีของคุณตอนนี้ด้วยอีเมลใหม่</span>
                                         </p>
                                     </div>
                                 </CardHeader>
@@ -77,7 +83,7 @@ const VerifyPage: NextPage<{ data: IStatus | undefined }> = ({ data }) => {
                                     </div>
                                     <div className="text-center">
                                         <p className="text-xl text-muted-foreground">
-                                            <span>ขออภัยในความไม่สะดวก ดูเหมือนว่ามีข้อผิดพลาดเกิดขึ้นในระบบยืนยันตัวตน</span>
+                                            <span>ขออภัยในความไม่สะดวก ดูเหมือนว่ามีข้อผิดพลาดเกิดขึ้นในการเปลี่ยนแปลงอีเมล</span>
                                         </p>
                                     </div>
                                 </CardHeader>
@@ -87,13 +93,12 @@ const VerifyPage: NextPage<{ data: IStatus | undefined }> = ({ data }) => {
                             <Loader2 className="mr-2 h-16 w-16 animate-spin" />
                         )
                     }
-
                 </div>
             </div>
         </div>
     )
 }
 
-export default VerifyPage
+export default ChangeEmailPage
 
-export const getServerSideProps = withoutUserVerify()
+export const getServerSideProps = withoutUserChangeEmail()

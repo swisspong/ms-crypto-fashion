@@ -17,7 +17,7 @@ export const getInfoCsr = async (): Promise<IUserRes> => {
     );
 };
 
-export const verifyEmail = async (token: string): Promise<IVerify> => {
+export const verifyEmail = async (token: string): Promise<IStatus> => {
     return apiSsr.get(`/auth/email/verify?token=${token}`, {
     }).then(
         (response) => response.data
@@ -30,8 +30,17 @@ export const updateProfileCommon = async (body: IProfilePayload): Promise<void> 
     )
 }
 
-export const changeEmil = async (body: IEmailPayload): Promise<void> => {
+export const changeEmil = async (body: IEmailPayload): Promise<IStatus> => {
     return apiCsr.post(`users/email`, body).then(
         (response) => response.data
     )
+}
+
+
+export const changeEmailUser = async (token: string): Promise<IStatus> => {
+    return apiSsr.get(`users/email?token=${token}`, {
+    }).then(
+        (response) => response.data
+    );
+   
 }

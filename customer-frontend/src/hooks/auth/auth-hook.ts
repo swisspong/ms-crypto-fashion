@@ -1,4 +1,4 @@
-import { getInfoSsr, verifyEmail } from "@/src/services/user.service";
+import { changeEmailUser, getInfoSsr, verifyEmail } from "@/src/services/user.service";
 import { GetServerSideProps } from "next";
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { useRouter } from "next/router";
@@ -59,14 +59,46 @@ export const withoutUserVerify =()=>{
         const queryClient = new QueryClient();
         
         const token = context.query.token as string
-        console.log(token);
         
         await queryClient.prefetchQuery(["verify"], () =>
             verifyEmail(token)
         );
 
-        const data: IVerify | undefined = queryClient.getQueryData(["verify"]);
+        const data: IStatus | undefined = queryClient.getQueryData(["verify"]);
         console.log("data",data)
+        if (!token) {
+            return {
+                redirect: {
+                    destination: "/",
+                    permanent: false,
+                },
+            };
+        }else if (data) {
+            return {
+                props: {data}
+            }
+        }
+        return {
+            props: {
+                dehydratedState: dehydrate(queryClient),
+            },
+        };
+    };
+    return getServerSideProps
+}
+
+export const withoutUserChangeEmail =()=>{
+    const getServerSideProps: GetServerSideProps = async (context) => {
+        const queryClient = new QueryClient();
+        
+        const token = context.query.token as string
+        
+        await queryClient.prefetchQuery(["change-email"], () =>
+            changeEmailUser(token)
+        );
+
+        const data: IStatus | undefined = queryClient.getQueryData(["change-email"]);
+
         if (!token) {
             return {
                 redirect: {

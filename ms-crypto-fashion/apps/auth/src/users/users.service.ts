@@ -14,6 +14,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateEmailDto } from './dto/update-email.dtp';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
 @Injectable()
 export class UsersService {
   protected readonly logger = new Logger(UsersService.name);
@@ -99,7 +100,7 @@ export class UsersService {
       console.log("create admin")
       const newAdmin = await this.userRepository.create({ ...createAdmin, user_id: `user_${this.uid.stamp(15)}`, password: hash, role: RoleFormat.ADMIN, permission })
       console.log(newAdmin);
-      
+
       return newAdmin
     } catch (error) {
       console.log(error)
@@ -139,7 +140,7 @@ export class UsersService {
   async deleteMerchantIdInUser(data: DeleteMerchantData) {
     try {
       this.logger.warn("update_merchant", data)
-      const result = await this.userRepository.findAndUpdate({mcht_id: data.mcht_id}, {$set: {mcht_id: "", role: RoleFormat.USER}})
+      const result = await this.userRepository.findAndUpdate({ mcht_id: data.mcht_id }, { $set: { mcht_id: "", role: RoleFormat.USER } })
       this.logger.warn("update to merchant =>", result)
       await lastValueFrom(
         this.productClient.emit(MERCHANT_DELETE_P, data)
@@ -152,23 +153,30 @@ export class UsersService {
   // ! user
   async updateProfileByUser(user_id: string, data: UpdateProfileDto) {
     try {
-      const user = await this.userRepository.findAndUpdate({user_id},{$set: {
-        ...data
-      }})
-      return {status: "success"}
+      const user = await this.userRepository.findAndUpdate({ user_id }, {
+        $set: {
+          ...data
+        }
+      })
+      return { status: "success" }
     } catch (error) {
       console.log(error);
     }
   }
 
-  async changeEmailByUser(user_id: string, data: UpdateEmailDto) {
+  async sendChangeEmail(user_id: string, data: UpdateEmailDto) {
     try {
-      
+      const user = await this.userRepository.findOne({email: data.email}) 
+
+      if (user) return { status: "failure" }
+
       const token = await this.uid.randomUUID(50)
-      const updateUser = await this.userRepository.findOneAndUpdate({user_id}, {$set: {
-        changeToken: token,
-        changeEmail: data.email
-      }})
+      const updateUser = await this.userRepository.findOneAndUpdate({ user_id }, {
+        $set: {
+          changeToken: token,
+          changeEmail: data.email
+        }
+      })
       const mailOptions = {
         from: this.configService.get('MAIL_USER', { infer: true }) as string,
         to: updateUser.changeEmail,
@@ -176,16 +184,39 @@ export class UsersService {
         html: `
           <h2> ${updateUser.username} มีการอัปเดตข้อมูลที่อยู่อีเมลของคุณบนเว็บไซต์ของเรา</h2>
           <h4>กรุณายืนยันอีเมลของคุณเพื่อดำเนินการเปลี่ยนอีเมลต่อ...</h4>
-          <a href="${this.configService.get('HOST_MAIN', { infer: true })}/verify?token=${updateUser.changeToken}">ยืนยันการเปลี่ยนอีเมลของคุณ</a>
+          <a href="${this.configService.get('HOST_MAIN', { infer: true })}/change-email?token=${updateUser.changeToken}">ยืนยันการเปลี่ยนอีเมลของคุณ</a>
         `
       }
 
 
       await this.mailerService.sendMail(mailOptions)
 
-      return {status: "success"}
+      return { status: "success" }
     } catch (error) {
       console.log(error);
     }
   }
+  async changeEmailByUser(token: string) {
+    try {
+      
+      const user = await this.userRepository.findOne({ changeToken: token })
+      if (!user) return { status: "failure" }
+
+      const changeEmail = await this.userRepository.findOneAndUpdate({ user_id: user.user_id }, {
+        $set: {
+          email: user.changeEmail
+        },
+        $unset: {
+          changeToken: 1,
+          changeEmail: 1
+        }
+      })
+      
+      return { status: changeEmail ? "success" : "failure" }
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+ 
 }

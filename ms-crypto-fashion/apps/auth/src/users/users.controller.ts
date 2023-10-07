@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, HttpCode } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateAdminDto } from './dto/create-user-admin.dto';
 import { UpdateUserAdvancedDto } from './dto/update-user-advanced.dto';
 import { PermissionFormat, RoleFormat } from '@app/common/enums';
-import { GetUserId, Permission, Roles } from '@app/common/decorators';
+import { GetUserId, Permission, Public, Roles } from '@app/common/decorators';
 import { ApiTags } from '@nestjs/swagger';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { CREATE_MERCHANT_EVENT, DELETE_MERCHANT_EVENT } from '@app/common/constants';
@@ -26,8 +26,14 @@ export class UsersController {
   }
 
   @Post('email')
-  changeEmail(@GetUserId() userId: string, @Body() data: UpdateEmailDto) {
-    return this.usersService.changeEmailByUser(userId, data)
+  sendChangeEmail(@GetUserId() userId: string, @Body() data: UpdateEmailDto) {
+    return this.usersService.sendChangeEmail(userId, data)
+  }
+
+  @Public()
+  @Get('email')
+  changeEmail(@Query('token') token: string) {
+    return this.usersService.changeEmailByUser(token)
   }
 
   // ! Admin
