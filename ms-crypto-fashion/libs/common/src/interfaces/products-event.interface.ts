@@ -65,10 +65,14 @@ interface IVariant {
 
 export interface IProductOrderingEventPayload {
     chkt_id: string
-    payment_method:string
-    user_id:string
+    payment_method: string
+    user_id: string
     total: number;
     token: string;
     orders: IOrderItemsEvent[]
     items: ICartItem[]
 }
+export interface IProductReturnStockEventPayload {
+    data: { prodId: string, mchtId: string, vrntId?: string, stock: number }[]
+}
+

@@ -21,7 +21,7 @@ import { IProduct, OrderingEventPayload } from '@app/common/interfaces/order-eve
 import { ProductsUtilService } from '@app/common/utils/products/products-util.service';
 import { CartsUtilService } from '@app/common/utils/carts/carts-util.service';
 import { PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
-import { IProductOrderingEventPayload } from '@app/common/interfaces/products-event.interface';
+import { IProductOrderingEventPayload, IProductReturnStockEventPayload } from '@app/common/interfaces/products-event.interface';
 import { PAID_ORDERING_EVENT, PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
 import { IDeleteChktEventPayload, IDeleteProductId } from '@app/common/interfaces/carts.interface';
 import { ProductsValidator } from '@app/common/utils/products/products-validator';
@@ -1315,8 +1315,8 @@ export class ProductsService {
     }))
   }
 
-  async returnStock(productPayloads: { prodId: string, mchtId: string, vrntId?: string, stock: number }[]) {
-    await Promise.all(productPayloads.map(async productPayload => {
+  async returnStock(payload: IProductReturnStockEventPayload) {
+    await Promise.all(payload.data.map(async productPayload => {
       const merchant = await this.merchantsRepository.findOne({ mcht_id: productPayload.mchtId })
       if (merchant) {
 

@@ -11,10 +11,10 @@ import { GetProductNoTypeSerchatDto } from './dto/get-product-no-type-search.dto
 import { GetProductStoreDto } from './dto/get-product-store.dto';
 import { StoreQueryDto } from './dto/store-query.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { PRODUCTS_ORDERING_EVENT } from '@app/common/constants/products.constant';
+import { PRODUCTS_ORDERING_EVENT, RETURN_STOCK_EVENT } from '@app/common/constants/products.constant';
 import { OrderingEventPayload } from '@app/common/interfaces/order-event.interface';
 import { RmqService } from '@app/common';
-import { IProductOrderingEventPayload } from '@app/common/interfaces/products-event.interface';
+import { IProductOrderingEventPayload, IProductReturnStockEventPayload } from '@app/common/interfaces/products-event.interface';
 
 @ApiTags("Products")
 @Controller('products')
@@ -80,8 +80,11 @@ export class ProductsController {
     this.rmqService.ack(context);
   }
 
-
-
+  @MessagePattern(RETURN_STOCK_EVENT)
+  async handleReturnStock(@Payload() data: IProductReturnStockEventPayload, @Ctx() context: RmqContext) {
+    await this.productsService.returnStock(data)
+    this.rmqService.ack(context);
+  }
 
   @Roles(RoleFormat.MERCHANT)
   @Patch(':id')
