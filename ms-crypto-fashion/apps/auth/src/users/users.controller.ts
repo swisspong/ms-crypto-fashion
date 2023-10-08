@@ -11,6 +11,10 @@ import { RmqService } from '@app/common';
 import { CreateMerchantData, DeleteMerchantData } from '@app/common/interfaces';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateEmailDto } from './dto/update-email.dtp';
+import path from 'path';
+import { ChangePasswordUserDto } from './dto/change-password-user.dto';
+import { SendEmailResetDto } from './dto/send-email-reset-pass.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 @ApiTags('User')
 @Controller('users')
 export class UsersController {
@@ -34,6 +38,30 @@ export class UsersController {
   @Get('email')
   changeEmail(@Query('token') token: string) {
     return this.usersService.changeEmailByUser(token)
+  }
+
+  @Patch('password')
+  changePasswordNew(@GetUserId() userId: string, @Body() data: ChangePasswordUserDto) {
+    return this.usersService.changePasswordUser(userId, data)
+  }
+
+  // * Reset Password
+  @Public()
+  @Post('password/reset')
+  sendEmailResetPassword( @Body() data: SendEmailResetDto) {
+    return this.usersService.sendEmailResetPass(data)
+  }
+
+  @Public()
+  @Get('password/reset')
+  checkTokeResetPass(@Query('token') token: string) {
+    return this.usersService.checkTokenResetPassword(token)
+  }
+
+  @Public()
+  @Patch('password/reset')
+  resetPassword(@Query('token') token: string, @Body() data: ResetPasswordDto){
+    return this.usersService.resetPasswordByUser(token, data);
   }
 
   // ! Admin

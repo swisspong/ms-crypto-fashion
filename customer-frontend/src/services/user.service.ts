@@ -42,5 +42,29 @@ export const changeEmailUser = async (token: string): Promise<IStatus> => {
     }).then(
         (response) => response.data
     );
-   
+}
+
+export const changePasswordUser = async (data: IPasswordPayload): Promise<IStatus> => {
+    return apiCsr.patch(`users/password`, data).then(
+        (response) => response.data
+    );
+}
+
+export const sendResetPassword = async (body: IEmailPayload): Promise<IStatus> => {
+    return apiCsr.post(`users/password/reset`, body).then(
+        (response) => response.data
+    )
+}
+
+export const checkResetPassword = async (token: string): Promise<IStatus> => {
+    return apiSsr.get(`users/password/reset?token=${token}`, {
+    }).then(
+        (response) => response.data
+    );
+}
+
+export const resetPassword = async (token: string, data: IResetPassPayload): Promise<IStatus> => {
+    return apiCsr.patch(`users/password/reset?token=${token}`, data).then(
+        (response) => response.data
+    );
 }

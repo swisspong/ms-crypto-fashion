@@ -1,7 +1,8 @@
-import { changeEmailUser, getInfoSsr, verifyEmail } from "@/src/services/user.service";
+import { changeEmailUser, checkResetPassword, getInfoSsr, verifyEmail } from "@/src/services/user.service";
 import { GetServerSideProps } from "next";
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+import { StatusFormat } from "@/src/types/enums/common";
 
 export const withUser = () => {
     const getServerSideProps: GetServerSideProps = async (context) => {
@@ -28,10 +29,10 @@ export const withUser = () => {
     return getServerSideProps
 }
 
-export const withoutUser =()=>{
+export const withoutUser = () => {
     const getServerSideProps: GetServerSideProps = async (context) => {
         const queryClient = new QueryClient();
-        console.log('context => ',context.req.headers)
+        console.log('context => ', context.req.headers)
         await queryClient.prefetchQuery(["me"], () =>
             getInfoSsr(context.req.headers.cookie)
         );
@@ -54,18 +55,18 @@ export const withoutUser =()=>{
     return getServerSideProps
 }
 
-export const withoutUserVerify =()=>{
+export const withoutUserVerify = () => {
     const getServerSideProps: GetServerSideProps = async (context) => {
         const queryClient = new QueryClient();
-        
+
         const token = context.query.token as string
-        
+
         await queryClient.prefetchQuery(["verify"], () =>
             verifyEmail(token)
         );
 
         const data: IStatus | undefined = queryClient.getQueryData(["verify"]);
-        console.log("data",data)
+        console.log("data", data)
         if (!token) {
             return {
                 redirect: {
@@ -73,9 +74,9 @@ export const withoutUserVerify =()=>{
                     permanent: false,
                 },
             };
-        }else if (data) {
+        } else if (data) {
             return {
-                props: {data}
+                props: { data }
             }
         }
         return {
@@ -87,12 +88,12 @@ export const withoutUserVerify =()=>{
     return getServerSideProps
 }
 
-export const withoutUserChangeEmail =()=>{
+export const withoutUserChangeEmail = () => {
     const getServerSideProps: GetServerSideProps = async (context) => {
         const queryClient = new QueryClient();
-        
+
         const token = context.query.token as string
-        
+
         await queryClient.prefetchQuery(["change-email"], () =>
             changeEmailUser(token)
         );
@@ -106,9 +107,9 @@ export const withoutUserChangeEmail =()=>{
                     permanent: false,
                 },
             };
-        }else if (data) {
+        } else if (data) {
             return {
-                props: {data}
+                props: { data }
             }
         }
         return {
@@ -119,3 +120,40 @@ export const withoutUserChangeEmail =()=>{
     };
     return getServerSideProps
 }
+
+export const withoutUserResetPassword = () => {
+    const getServerSideProps: GetServerSideProps = async (context) => {
+        const queryClient = new QueryClient();
+
+        const token = context.query.token as string
+
+        await queryClient.prefetchQuery(["resetpassword"], () =>
+            checkResetPassword(token)
+        );
+
+        const data: IStatus | undefined = queryClient.getQueryData(["resetpassword"]);
+
+        if (!token) {
+            return {
+                redirect: {
+                    destination: "/",
+                    permanent: false,
+                },
+            };
+        } else if (data?.status != StatusFormat.SUCCESS ) {
+            return {
+                redirect: {
+                    destination: "/",
+                    permanent: false,
+                },
+            };
+        }
+        return {
+            props: {
+                dehydratedState: dehydrate(queryClient),
+            },
+        };
+    };
+    return getServerSideProps
+}
+
