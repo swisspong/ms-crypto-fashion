@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -13,15 +13,17 @@ import { TransactionFormat } from '../schemas/transaction.schema';
 import ShortUniqueId from 'short-unique-id';
 import { IRefundEvent } from '@app/common/interfaces/payment.event.interface';
 import { TransactionTemporaryRepository } from '../transaction-temporary.repository';
+import BigNumber from 'bignumber.js';
 // import { OrdersRepository } from 'src/orders/orders.repository';
 // import { PaymentFormat } from 'src/orders/schemas/order.schema';
 
 
 @Injectable()
-export class Web3Service implements OnModuleInit {
+export class Web3Service implements OnApplicationBootstrap {
   private readonly logger = new Logger(Web3Service.name)
   private readonly uid = new ShortUniqueId()
   private provider: ethers.InfuraWebSocketProvider;
+  // private provider = new ethers.InfuraWebSocketProvider('goerli', "b64de7c107a44261bb1b19536d7bed23",)
   CONTRACT_ADDRESS: string
   CONTRACT_ABI: string
   constructor(
@@ -39,18 +41,26 @@ export class Web3Service implements OnModuleInit {
     this.logger.log(this.CONTRACT_ADDRESS, this.CONTRACT_ABI, this.configService.get<string>("PRIVATE_KEY"))
     this.logger.warn("end con---------------------------------")
 
+
   }
-  onModuleInit() {
+  onApplicationBootstrap() {
     console.log("init")
     this.startListening()
   }
+
+  // onModuleInit() {
+  //   console.log("init")
+  //   this.startListening()
+  // }
+
 
   async startListening() {
     // const provider = new ethers.JsonRpcProvider(this.configService.get<string>("WEB3_RPC"))
 
     //const CONTRACT_ADDRESS = configuration.networks["5777"].address
     //const CONTRACT_ABI = configuration.abi;
-
+    const output = await this.provider.getBlockNumber();
+    console.log(output);
     // contract.listeners("PaymentDone")
     const contract = new ethers.Contract(this.CONTRACT_ADDRESS, this.CONTRACT_ABI, this.provider)
     contract.on('PaymentDone', async (tx, amount, orderId, userId, mchtId, timestamp) => {
@@ -66,44 +76,55 @@ export class Web3Service implements OnModuleInit {
       //     mcht_id: mchtId
       //   }
       // )
-      await this.transactionTemporaryRepository.create({
+      try {
+        await this.transactionTemporaryRepository.create({
 
-        tx_id: `tx_${this.uid.stamp(15)}`,
-        amount: Number(amount),
-        order_id: orderId,
-        payment_method: PaymentMethodFormat.WALLET,
-        user_id: userId,
-        mcht_id: mchtId,
-        type: TransactionFormat.DEPOSIT
-      })
-      const payload: IUpdateOrderStatusEventPayload = {
-        user_id: userId,
-        orderIds: [orderId],
-        chargeId: tx,
-        sucess: true
+          tx_id: `tx_${this.uid.stamp(15)}`,
+          amount: Number(amount),
+          order_id: orderId,
+          payment_method: PaymentMethodFormat.WALLET,
+          user_id: userId,
+          mcht_id: mchtId,
+          type: TransactionFormat.DEPOSIT
+        })
+        const payload: IUpdateOrderStatusEventPayload = {
+          user_id: userId,
+          orderIds: [orderId],
+          chargeId: tx,
+          sucess: true
+        }
+
+        await lastValueFrom(this.orderClient.emit(UPDATE_ORDER_STATUS_EVENT, payload))
+      } catch (error) {
+        this.logger.error(error)
       }
 
-      await lastValueFrom(this.orderClient.emit(UPDATE_ORDER_STATUS_EVENT, payload))
     })
     contract.on('RefundDone', async (tx, amount, orderId, userId, mchtId, timestamp) => {
-      this.logger.log(tx, amount, orderId, userId, mchtId, timestamp)
-      await this.transactionPurchaseRepository.findOneAndDelete({ order_id: orderId })
-      await this.transactionTemporaryRepository.findOneAndDelete({ order_id: orderId, payment_method: PaymentMethodFormat.WALLET, type: TransactionFormat.DEPOSIT })
-      // await this.transactionPurchaseRepository.create(
-      //   {
-      //     tx_id: `tx_${this.uid.stamp(15)}`,
-      //     amount: Number(amount),
-      //     type: TransactionFormat.REFUND,
-      //     order_id: orderId,
-      //     payment_method: PaymentMethodFormat.WALLET,
-      //     user_id: userId,
-      //     mcht_id: mchtId
-      //   }
-      // )
-      const payload: IOrderStatusRefundEvent = {
-        orderId: orderId
+      try {
+        this.logger.log(tx, amount, orderId, userId, mchtId, timestamp)
+        await this.transactionPurchaseRepository.findOneAndDelete({ order_id: orderId })
+        await this.transactionTemporaryRepository.findOneAndDelete({ order_id: orderId, payment_method: PaymentMethodFormat.WALLET, type: TransactionFormat.DEPOSIT })
+        // await this.transactionPurchaseRepository.create(
+        //   {
+        //     tx_id: `tx_${this.uid.stamp(15)}`,
+        //     amount: Number(amount),
+        //     type: TransactionFormat.REFUND,
+        //     order_id: orderId,
+        //     payment_method: PaymentMethodFormat.WALLET,
+        //     user_id: userId,
+        //     mcht_id: mchtId
+        //   }
+        // )
+        const payload: IOrderStatusRefundEvent = {
+          orderId: orderId
+        }
+        await lastValueFrom(this.orderClient.emit(UPDATE_STATUS_REFUND_EVENT, payload))
+      } catch (error) {
+        this.logger.error(error)
       }
-      await lastValueFrom(this.orderClient.emit(UPDATE_STATUS_REFUND_EVENT, payload))
+
+
     })
 
   }
@@ -198,14 +219,18 @@ export class Web3Service implements OnModuleInit {
   }
   async transferToMerchant(address: string, amount: number) {
     try {
+
+      const valueInWei = new BigNumber(amount.toString()); // 1e19 in Wei
+      const valueHex = "0x" + valueInWei.toString(16);
       const signer = new ethers.Wallet(this.configService.get<string>("PRIVATE_KEY"), this.provider);
       const contract = new ethers.Contract(this.CONTRACT_ADDRESS, this.CONTRACT_ABI, signer)
       this.logger.warn("amount", amount)
-      const tx = await contract.withdraw(address, Number(amount))
+      const tx = await contract.withdraw(address, valueHex)
       await tx.wait();
       this.logger.log('Transaction Hash:', tx.hash);
       this.logger.log('With draw success successful.');
     } catch (error) {
+      this.logger.log(error)
       throw error
     }
   }

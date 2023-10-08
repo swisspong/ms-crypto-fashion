@@ -90,3 +90,7 @@ interface Variant {
 interface IOrderWalletError{
     orderIds: string[]
 }
+interface IOrderSetTxHash{
+    orderIds: string[]
+    txHash:string
+}

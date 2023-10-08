@@ -51,3 +51,6 @@ export const receiveOrderReq = async (orderId: string): Promise<void> => {
 export const deleteOrderWalletError = async (body: IOrderWalletError) => {
     return await api.post(`/orders/error`, body).then(response => response.data)
 }
+export const patchOrderTxHash = async (body: IOrderSetTxHash) => {
+    return await api.patch(`/orders/txhash`, body).then(response => response.data)
+}

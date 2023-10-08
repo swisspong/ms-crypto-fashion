@@ -21,7 +21,12 @@ import {
 } from "@/src/services/order.service";
 import { useCheckoutOrdering } from "@/src/hooks/checkout/mutations";
 import { useRouter } from "next/router";
-import { useDeleteOrderWalletError } from "@/src/hooks/order/mutations";
+import {
+  useDeleteOrderWalletError,
+  useSetTxHashOrder,
+} from "@/src/hooks/order/mutations";
+import BigNumber from "bignumber.js";
+import { Banknote, User2 } from "lucide-react";
 interface Props {
   data?: ICheckoutResponse;
   address: IAddress | undefined;
@@ -39,6 +44,7 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
   const [wallet, setWallet] = useState(initialState);
   const checkoutOrderMutate = useCheckoutOrdering();
   const orderDeleteMutate = useDeleteOrderWalletError();
+  const setTxHashMutate = useSetTxHashOrder();
   useEffect(() => {
     const refreshAccounts = (accounts: any) => {
       if (accounts.length > 0) {
@@ -97,7 +103,25 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
   function convertToWeiHex(price: number) {
     return "0x" + price.toString(16);
   }
-
+  function convertToWeiHex2(price: string): string {
+    //const weiValue = web3.utils.toWei(price.toString(), "ether");
+    const valueInWei = new BigNumber(price); // 1e19 in Wei
+    return "0x" + valueInWei.toString(16);
+    // return "0x" + BigInt(weiValue).toString(16);
+  }
+  function convertToWeiHex1(price: number | bigint): string {
+    const web3 = new Web3();
+    const weiValue = web3.utils.toWei(price.toString(), "ether");
+    const hexString = BigInt(weiValue).toString(16);
+    return "0x" + hexString;
+  }
+  function convertWeiToHexString(weiValue: string): string {
+    return Web3.utils.toHex(weiValue);
+  }
+  function convertWeiToHexString1(weiValue: string): string {
+    const weiNumber = new BigNumber(weiValue);
+    return "0x" + weiNumber.toString(16);
+  }
   const buyProduct = async () => {
     //console.log(convertToWei(1));
     if (data && address) {
@@ -128,15 +152,18 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
       );
       console.log("get order => ", ordering);
       const totalWei = ordering.data.totalWei;
+      const amountInEther = web3.utils.fromWei(totalWei, "ether");
+      //0x760ddc41af762c
       console.log(
-        convertToWeiHex(totalWei),
-        ordering.data.items.map((order) => [
-          order.id,
-          order.wei,
-          ordering.data.userId,
-          order.mchtId,
-        ])
+        "check balance",
+        wallet.balance,
+        totalWei,
+        amountInEther,
+        convertWeiToHexString1(totalWei.toString()),
+        convertWeiToHexString(totalWei.toString()),
+        convertToWeiHex2("33219026662587372")
       );
+
       ordering.data.items.forEach((order) => {
         orderIds.push(order.id);
       });
@@ -144,38 +171,65 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
       //   (prev, acc) => prev + acc.wei.wei,
       //   0
       // );
-      try {
-        let result = await window.ethereum!.request({
-          method: "eth_sendTransaction",
-          params: [
-            {
-              from: wallet.accounts[0],
-              to: CONTRACT_ADDRESS,
-              chainId: wallet.chainId,
-              data: (contract.methods as any)
-                .buyWithOrderArr(
-                  convertToWeiHex(totalWei),
-                  ordering.data.items.map((order) => [
-                    order.id,
-                    order.wei,
-                    ordering.data.userId,
-                    order.mchtId,
-                  ])
-                )
-                .encodeABI(),
-              value: convertToWeiHex(totalWei),
-            },
-          ],
-        });
-        console.log("============ success ==========");
-        console.log(result);
-      } catch (error) {
-        console.log("============ error ===========");
-        console.log(error);
-        console.log({ orderIds });
-        await orderDeleteMutate.mutateAsync({ orderIds });
+      if (orderIds.length > 0) {
+        // console.log(
+        //   convertToWeiHex(totalWei),
+        //   ordering.data.items.map((order) => [
+        //     order.id,
+        //     order.wei,
+        //     ordering.data.userId,
+        //     order.mchtId,
+        //   ])
+        // );
+        try {
+          // console.log(totalWei.toString(), "36462652051330800", "");
+          // const str = "10000000000000000000";
+          // const valueInWei = new BigNumber(str); // 1e19 in Wei
+          // const valueHex = "0x" + valueInWei.toString(16);
+          let result = await window.ethereum!.request({
+            method: "eth_sendTransaction",
+            params: [
+              {
+                from: wallet.accounts[0],
+                to: CONTRACT_ADDRESS,
+                chainId: wallet.chainId,
+                data: (contract.methods as any)
+                  .buyWithOrderArr(
+                    //convertToWeiHex(totalWei),
+                    // convertToWeiHex1(BigInt(totalWei / 1e18)),
+                    //convertWeiToHexString(totalWei.toString()),
+                    //convertWeiToHexString1(totalWei.toString()),
+                    //totalWei.toString(),
+                    convertToWeiHex2(totalWei.toString()),
+                    // valueHex,
+                    ordering.data.items.map((order) => [
+                      order.id,
+                      convertToWeiHex2(order.wei.toString()),
+                      //valueHex,
+                      ordering.data.userId,
+                      order.mchtId,
+                    ])
+                  )
+                  .encodeABI(),
+                //value: convertWeiToHexString(totalWei.toString()),
+                //value: convertWeiToHexString1(totalWei.toString()),
+                //value: totalWei.toString(),
+                value: convertToWeiHex2(totalWei.toString()),
+                //value: convertWeiToHexString1(totalWei.toString()),
+              },
+            ],
+          });
+          console.log("============ success ==========");
+          console.log(result);
+          await setTxHashMutate.mutateAsync({ orderIds, txHash: result });
+        } catch (error) {
+          console.log("============ error ===========");
+          console.log(error);
+          console.log({ orderIds });
+          await orderDeleteMutate.mutateAsync({ orderIds });
+        }
+        router.replace("/account/orders");
       }
-      router.replace("/account/orders");
 
       // console.log("result =>",result)
     }
@@ -277,6 +331,32 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
             Metamask
           </Label>
         </RadioGroup>
+        {wallet.accounts.length > 0 && (
+          <Card>
+            <CardContent className="pt-6 grid gap-1">
+              <div className="-mx-2 flex items-start space-x-4 rounded-md p-1 transition-all hover:bg-accent hover:text-accent-foreground">
+                <Banknote className="mt-px h-5 w-5" />
+                <div className="space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    จำนวน ETH ของคุณ
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    ETH {wallet.balance}
+                  </p>
+                </div>
+              </div>
+              <div className="-mx-2 flex items-start space-x-4 rounded-md p-1 transition-all hover:bg-accent hover:text-accent-foreground">
+                <User2 className="mt-px h-5 w-5" />
+                <div className="space-y-1">
+                  <p className="text-sm font-medium leading-none">บัญชี</p>
+                  <p className="text-sm text-muted-foreground">
+                    {wallet.accounts[0]}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </CardContent>
       <CardFooter>
         {hasProvider && wallet.accounts.length > 0 ? (
@@ -290,14 +370,15 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
             Pay with metamask
           </Button>
         )}
+
         {wallet.accounts.length > 0 /* New */ && (
-          <>
-            <div>Wallet Accounts: {wallet.accounts[0]}</div>
-            <div>Wallet Balance: {wallet.balance}</div> {/* New */}
-            <div>Hex ChainId: {wallet.chainId}</div> {/* New */}
-            <div>Numeric ChainId: {formatChainAsNum(wallet.chainId)}</div>{" "}
-            {/* New */}
-          </>
+          <></>
+          // <>
+          //   <div>Wallet Accounts: {wallet.accounts[0]}</div>
+          //   <div>Wallet Balance: {wallet.balance}</div>
+          //   <div>Hex ChainId: {wallet.chainId}</div>
+          //   <div>Numeric ChainId: {formatChainAsNum(wallet.chainId)}</div>
+          // </>
         )}
       </CardFooter>
     </Card>

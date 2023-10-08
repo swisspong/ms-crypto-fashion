@@ -86,10 +86,29 @@ export class OrdersService {
   }
   async myOrders(userId: string, filter: OrderPaginationDto) {
     //const total = await this.ordersRepository.countDoc({ user_id: userId })
+    const timeAgo = new Date();
+    timeAgo.setMinutes(timeAgo.getMinutes() - 4)
     const total = await this.ordersRepository.aggregate([
       {
         $match: {
-          user_id: userId
+          user_id: userId,
+          $nor: [{
+
+            $and: [
+              { payment_status: PaymentFormat.PENDING },
+              { payment_method: PaymentMethodFormat.WALLET },
+              { tx_hash: { $in: [null, undefined, ''] } },
+              { createdAt: { $gte: timeAgo } }
+            ],
+          }]
+          // user_id: userId
+          // $and: [
+          //   { user_id: userId },
+          //   { payment_status: { $ne: PaymentFormat.PENDING } },
+          //   // { payment_method: { $ne: PaymentMethodFormat.WALLET } },
+          //   // { tx_hash: { $ne: { $in: [null, undefined, ''] } } },
+          //   // { createdAt: { $ne: { $lte: timeAgo.toISOString() } } }
+          // ]
         },
       },
 
@@ -109,7 +128,57 @@ export class OrdersService {
     const orders = await this.ordersRepository.aggregate([
       {
         $match: {
-          user_id: userId
+          //user_id: userId,
+          // user_id: userId,
+          // $nor: [
+          //   { payment_status: PaymentFormat.PENDING },
+          //   { payment_method: PaymentMethodFormat.WALLET },
+          //   // { tx_hash: { $ne: { $in: [null, undefined, ''] } } },
+          //   // { createdAt: { $ne: { $lte: timeAgo.toISOString() } } }
+          // ]
+
+          user_id: userId,
+          $nor: [{
+
+            $and: [
+              { payment_status: PaymentFormat.PENDING },
+              { payment_method: PaymentMethodFormat.WALLET },
+              { tx_hash: { $in: [null, undefined, ''] } },
+              { createdAt: { $gte: timeAgo } }
+            ],
+          }]
+          // $and: [
+
+          // {
+          //   $and: [
+          //     { user_id: userId },
+          //     { payment_status: { $ne: PaymentFormat.PENDING } }
+          //   ]
+          // }
+          // {
+          //   $and: [
+          //     { payment_status: PaymentFormat.PENDING },
+          //     { payment_method: PaymentMethodFormat.WALLET },
+          //     { tx_hash: { $in: [null, undefined, ''] } },
+          //     { createdAt: { $gte: timeAgo.toISOString() } }
+          //   ]
+          // }
+          // {
+          //   $nor: [
+          //     {
+          //       $and: [
+          //         { payment_status: PaymentFormat.PENDING },
+          //         { payment_method: PaymentMethodFormat.WALLET },
+          //         { tx_hash: { $in: [null, undefined, ''] } },
+          //         { createdAt: { $gte: timeAgo.toISOString() } }
+          //       ]
+          //     }
+
+          //     //{ tx_hash: { $in: [null, undefined, ''] } },
+          //     // { createdAt: { $lte: timeAgo.toISOString() } }
+          //   ]
+          // }
+          // ]
         },
       },
 
@@ -741,6 +810,8 @@ export class OrdersService {
   }
   async ordersPollingNew(userId: string | undefined, mchtId: string | undefined, res: Response) {
     // const orders = await this.ordersRepository.find({ user_id: userId, mcht_id: mchtId, $or: [{ payment_status: PaymentFormat.PENDING }, { payment_status: PaymentFormat.INPROGRESS }] })
+    const timeAgo = new Date();
+    timeAgo.setMinutes(timeAgo.getMinutes() - 4)
     const orders = await this.ordersRepository.find({
       $and: [{
         $or: [
@@ -749,8 +820,18 @@ export class OrdersService {
         ]
       }, {
         $or: [
-          { payment_status: PaymentFormat.PENDING },
-          { payment_status: PaymentFormat.INPROGRESS }
+          {
+            payment_status: PaymentFormat.PENDING,
+            $nor: [{
+              $and: [
+                { payment_method: PaymentMethodFormat.WALLET },
+                { tx_hash: { $in: [null, undefined, ''] } },
+                { createdAt: { $gte: timeAgo } }
+              ],
+            }]
+          },
+          { payment_status: PaymentFormat.INPROGRESS },
+
         ]
       }]
     })
@@ -883,19 +964,21 @@ export class OrdersService {
     const orders = await this.ordersRepository.find({
       payment_status: PaymentFormat.PENDING,
       payment_method: PaymentMethodFormat.WALLET,
-      txHash: { $in: [null, undefined, ''] },
+      tx_hash: { $in: [null, undefined, ''] },
       order_id: { $in: orderIds },
       user_id: userId
     })
-    if (orders.length <= 0) throw new BadRequestException("Order not found.")
-    const productErrorPayload: IProductReturnStockEventPayload = { data: [] }
-    orders.map(order => {
-      order.items.map(item => {
-        productErrorPayload.data.push({ mchtId: order.mcht_id, prodId: item.prod_id, vrntId: item.vrnt_id, stock: item.quantity })
+    //if (orders.length <= 0) throw new BadRequestException("Order not found.")
+    if (orders.length > 0) {
+      const productErrorPayload: IProductReturnStockEventPayload = { data: [] }
+      orders.map(order => {
+        order.items.map(item => {
+          productErrorPayload.data.push({ mchtId: order.mcht_id, prodId: item.prod_id, vrntId: item.vrnt_id, stock: item.quantity })
+        })
       })
-    })
-    await this.ordersRepository.deleteMany({ order_id: { $in: orders.map(order => order.order_id) } })
-    await lastValueFrom(this.productsClient.emit(RETURN_STOCK_EVENT, productErrorPayload))
+      await this.ordersRepository.deleteMany({ order_id: { $in: orders.map(order => order.order_id) } })
+      await lastValueFrom(this.productsClient.emit(RETURN_STOCK_EVENT, productErrorPayload))
+    }
 
     return {
       message: "success"
