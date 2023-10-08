@@ -43,3 +43,12 @@ interface IProfilePayload {
 interface IEmailPayload {
     email: string;
 }
+
+interface IPasswordPayload {
+    old_password: string
+    new_password: string
+}
+
+interface IResetPassPayload {
+    password: string
+}

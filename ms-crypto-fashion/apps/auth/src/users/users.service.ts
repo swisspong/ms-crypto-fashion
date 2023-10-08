@@ -15,6 +15,9 @@ import { UpdateEmailDto } from './dto/update-email.dtp';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
+import { ChangePasswordUserDto } from './dto/change-password-user.dto';
+import { SendEmailResetDto } from './dto/send-email-reset-pass.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 @Injectable()
 export class UsersService {
   protected readonly logger = new Logger(UsersService.name);
@@ -166,7 +169,7 @@ export class UsersService {
 
   async sendChangeEmail(user_id: string, data: UpdateEmailDto) {
     try {
-      const user = await this.userRepository.findOne({email: data.email}) 
+      const user = await this.userRepository.findOne({ email: data.email })
 
       if (user) return { status: "failure" }
 
@@ -198,7 +201,7 @@ export class UsersService {
   }
   async changeEmailByUser(token: string) {
     try {
-      
+
       const user = await this.userRepository.findOne({ changeToken: token })
       if (!user) return { status: "failure" }
 
@@ -211,12 +214,116 @@ export class UsersService {
           changeEmail: 1
         }
       })
-      
+
       return { status: changeEmail ? "success" : "failure" }
     } catch (error) {
       console.log(error);
 
     }
   }
- 
+
+  async changePasswordUser(user_id: string, data: ChangePasswordUserDto) {
+    try {
+      const { new_password, old_password } = data
+
+
+      const user = await this.userRepository.findOne({ user_id })
+
+      if (!user) throw new NotFoundException('Account not found.');
+
+      if (!await this.hashService.comparePassword(old_password, user.password))
+        return { status: "failure" }
+
+      const hash = await this.hashService.hashPassword(new_password)
+      const newPassword = await this.userRepository.findOneAndUpdate({
+        user_id
+      }, {
+        $set: {
+          password: hash
+        }
+      })
+
+
+      return { status: newPassword ? "success" : "failure" }
+
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  // * Reset Password
+
+  async sendEmailResetPass(data: SendEmailResetDto) {
+    try {
+      const { email } = data
+
+      const user = await this.userRepository.findOne({ email })
+
+      if (!(user && user.isVerified)) throw new NotFoundException('Account not found.');
+
+      const token = await this.uid.randomUUID(60)
+
+      const updateUser = await this.userRepository.findOneAndUpdate({
+        user_id: user.user_id
+      }, {
+        $set: {
+          passToken: token
+        }
+      })
+
+      const mailOptions = {
+        from: this.configService.get('MAIL_USER', { infer: true }) as string,
+        to: updateUser.email,
+        subject: "Crypto Fashion Reset Password.",
+        html: `
+          <h2> ${updateUser.username} มีการรีเซ็ตรหัสผ่านของคุณบนเว็บไซต์ของเรา</h2>
+          <h4>กรุณายืนยันการรีเซ็ตรหัสผ่านของคุณเพื่อดำเนินการรีเซ็ตรหัสผ่าน...</h4>
+          <a href="${this.configService.get('HOST_MAIN', { infer: true })}/password_reset?token=${updateUser.passToken}">เปลี่ยนรหัสผ่าน</a>
+        `
+      }
+
+
+      await this.mailerService.sendMail(mailOptions)
+
+      return { status: "success" }
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  async checkTokenResetPassword(token: string) {
+    try {
+      const user = await this.userRepository.findOne({ passToken: token })
+      if (!user) return { status: "failure" }
+
+      return { status: "success" }
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  async resetPasswordByUser(token: string, data: ResetPasswordDto) {
+    try {
+      const user = await this.userRepository.findOne({ passToken: token })
+      if (!user) return { status: "failure" }
+
+      const hash = await this.hashService.hashPassword(data.password)
+      const newPass = await this.userRepository.findOneAndUpdate({
+        user_id: user.user_id
+      }, {
+        $set: {
+          password: hash
+        }
+      })
+
+      return {status: "success"}
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
 }
