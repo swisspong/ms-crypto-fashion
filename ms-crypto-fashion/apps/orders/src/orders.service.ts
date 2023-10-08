@@ -883,10 +883,11 @@ export class OrdersService {
     const orders = await this.ordersRepository.find({
       payment_status: PaymentFormat.PENDING,
       payment_method: PaymentMethodFormat.WALLET,
-      txHash: { $ne: null, $exists: true, },
+      txHash: { $in: [null, undefined, ''] },
       order_id: { $in: orderIds },
       user_id: userId
     })
+    if (orders.length <= 0) throw new BadRequestException("Order not found.")
     const productErrorPayload: IProductReturnStockEventPayload = { data: [] }
     orders.map(order => {
       order.items.map(item => {
@@ -895,6 +896,7 @@ export class OrdersService {
     })
     await this.ordersRepository.deleteMany({ order_id: { $in: orders.map(order => order.order_id) } })
     await lastValueFrom(this.productsClient.emit(RETURN_STOCK_EVENT, productErrorPayload))
+
     return {
       message: "success"
     }

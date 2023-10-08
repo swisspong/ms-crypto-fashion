@@ -86,3 +86,7 @@ interface Variant {
     option_name: string
     group_name: string
 }
+
+interface IOrderWalletError{
+    orderIds: string[]
+}

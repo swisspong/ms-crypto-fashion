@@ -47,3 +47,7 @@ export const receiveOrderReq = async (orderId: string): Promise<void> => {
         (response) => response.data
     );
 }
+
+export const deleteOrderWalletError = async (body: IOrderWalletError) => {
+    return await api.post(`/orders/error`, body).then(response => response.data)
+}

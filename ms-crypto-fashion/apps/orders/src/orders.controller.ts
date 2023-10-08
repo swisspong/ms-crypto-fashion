@@ -398,7 +398,7 @@ export class OrdersController {
   orderTxHash(@GetUserId() userId: string, @Body() dto: TxHashDto) {
     return this.ordersService.orderSetTxHash(userId, dto)
   }
-  @Delete("error")
+  @Post("error")
   orderWalletDelete(@GetUserId() userId: string, @Body() dto: OrderIdsDto) {
     return this.ordersService.deleteOrder(userId, dto.orderIds)
   }

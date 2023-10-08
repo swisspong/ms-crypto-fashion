@@ -21,6 +21,7 @@ import {
 } from "@/src/services/order.service";
 import { useCheckoutOrdering } from "@/src/hooks/checkout/mutations";
 import { useRouter } from "next/router";
+import { useDeleteOrderWalletError } from "@/src/hooks/order/mutations";
 interface Props {
   data?: ICheckoutResponse;
   address: IAddress | undefined;
@@ -37,6 +38,7 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
   const [account, setAccount] = useState<string | null>(null);
   const [wallet, setWallet] = useState(initialState);
   const checkoutOrderMutate = useCheckoutOrdering();
+  const orderDeleteMutate = useDeleteOrderWalletError();
   useEffect(() => {
     const refreshAccounts = (accounts: any) => {
       if (accounts.length > 0) {
@@ -120,6 +122,7 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
       //   tel_number: address.tel_number,
       //   payment_method: "wallet",
       // });
+      const orderIds: string[] = [];
       const ordering = await getOrderWalletByCheckoutId(
         router.query.chktId as string
       );
@@ -134,6 +137,9 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
           order.mchtId,
         ])
       );
+      ordering.data.items.forEach((order) => {
+        orderIds.push(order.id);
+      });
       // const totalWei = ordering.data.reduce(
       //   (prev, acc) => prev + acc.wei.wei,
       //   0
@@ -161,11 +167,13 @@ const MetamaskPayment: FC<Props> = ({ address, data }) => {
             },
           ],
         });
-        console.log("============ success ==========")
-        console.log(result)
+        console.log("============ success ==========");
+        console.log(result);
       } catch (error) {
-        console.log("============ error ===========")
+        console.log("============ error ===========");
         console.log(error);
+        console.log({ orderIds });
+        await orderDeleteMutate.mutateAsync({ orderIds });
       }
       router.replace("/account/orders");
 

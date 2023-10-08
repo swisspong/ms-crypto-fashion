@@ -34,7 +34,7 @@ export class CronService {
     this.provider = new ethers.InfuraWebSocketProvider('goerli', "b64de7c107a44261bb1b19536d7bed23",)
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_MINUTE)
   // @Cron('1 * * * * *')
   async handleCron() {
     // this.logger.debug('Called when the current minute is 1');
