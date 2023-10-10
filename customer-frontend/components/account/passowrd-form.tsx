@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { StatusFormat } from "@/src/types/enums/common";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
+import Link from "next/link";
 const formSchema = z.object({
     old_password: z
         .string({ required_error: "ต้องกรอก" })
@@ -126,15 +127,23 @@ export function PasswordForm() {
                         </FormItem>
                     )}
                 />
-                <Button
-                    disabled={isLoading}
-                    type="submit"
-                >
-                    {isLoading ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : null}
-                    เปลี่ยนแปลงรหัสผ่าน
-                </Button>
+                 <Button
+                        disabled={isLoading}
+                        type="submit"
+                    >
+                        {isLoading ? (
+                            <Loader2 className=" h-4 w-4 animate-spin" />
+                        ) : null}
+                        เปลี่ยนแปลงรหัสผ่าน
+                    </Button>
+                <span className=" ml-2 pt-3 text-center text-sm text-muted-foreground">
+                    <Link
+                        href="/reset"
+                        className="underline underline-offset-4 hover:text-primary"
+                    >
+                        ลีมรหัสผ่าน
+                    </Link>
+                </span>
             </form>
         </Form >
     )

@@ -45,7 +45,7 @@ const DialogAlert: FC<Props> = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>ยกเลิก</AlertDialogCancel>
           <Button
             onClick={() => {
               handler();
@@ -55,7 +55,7 @@ const DialogAlert: FC<Props> = ({
             {isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : null}
-            Continue
+            ดำเนินการต่อ
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

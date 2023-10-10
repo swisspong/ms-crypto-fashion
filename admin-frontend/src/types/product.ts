@@ -10,7 +10,7 @@ interface IProduct {
     price: number
     image_urls: string[]
     categories: ICategoryRow[]
-    merchant: IMerchant[]
+    merchant: IMerchant
     groups: IGroup[]
     variants: IVariant[]
     createdAt: string

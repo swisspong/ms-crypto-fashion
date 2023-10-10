@@ -65,7 +65,7 @@ export function ProfileForm({
 
   // This can come from your database or API.
   const defaultValues: Partial<ProfileFormValues> = {
-    username: me.username
+    username: me?.username
   };
 
   const form = useForm<ProfileFormValues>({
@@ -77,7 +77,7 @@ export function ProfileForm({
   useEffect(() => {
     if (meSuccess) {
       form.reset({
-        username: me.username
+        username: me?.username
       })
     }
   }, [meSuccess])

@@ -112,14 +112,7 @@ export class CommentsService {
       const skip = (Number(page) - 1) * Number(per_page)
       const limit = per_page
       const comments = await this.commentRepository.aggregate([
-        {
-          $lookup: {
-            from: "users",
-            localField: "user_id",
-            foreignField: "user_id",
-            as: "user"
-          },
-        },
+        
         {
           $lookup: {
             from: "products",
@@ -137,7 +130,8 @@ export class CommentsService {
             text: 1,
             rating: 1,
             comment_id: 1,
-            message: '$mcht_message'
+            message: '$mcht_message',
+            user_name: 1
           }
         },
         {

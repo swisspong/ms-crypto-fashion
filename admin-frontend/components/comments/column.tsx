@@ -19,14 +19,16 @@ export const columns = ({
       accessorKey: "user",
       header: () => <div>#ผู้แสดงความคิดเห็น</div>,
       cell: ({ row }) => (
-        <div>{row.original.user.username}</div>
+        <div>{row.original.user_name}</div>
       )
     },
     {
       accessorKey: "product",
       header: () => <div>#ชื่อสินค้า</div>,
       cell: ({ row }) => (
-        <div>{row.original.product.name}</div>
+        <div>
+          {row.original.product?.name ?? "สินค้านี้ถูกลบแล้ว"}
+        </div>
       )
     },
     {

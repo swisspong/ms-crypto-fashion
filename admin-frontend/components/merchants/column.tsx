@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { headers } from "next/dist/client/components/headers";
 import { Badge } from "../ui/badge";
+import { MerchantFormat } from "@/src/types/enums/merchant";
 
 interface columnProps {
   setIdHandler: (id: string | undefined) => void;
@@ -31,10 +32,10 @@ export const columns = ({
     {
       accessorKey: "image_url",
       header: () => <div>#ร้านค้า</div>,
-      cell: ({row}) => (
+      cell: ({ row }) => (
         <div className="flex items-center space-x-3">
           <img src={row.original.banner_url ??
-              "https://t4.ftcdn.net/jpg/04/99/93/31/360_F_499933117_ZAUBfv3P1HEOsZDrnkbNCt4jc3AodArl.jpg"} className="object-cover h-14 w-14 rounded-md" alt="img_merchant" />
+            "https://t4.ftcdn.net/jpg/04/99/93/31/360_F_499933117_ZAUBfv3P1HEOsZDrnkbNCt4jc3AodArl.jpg"} className="object-cover h-14 w-14 rounded-md" alt="img_merchant" />
           <div>{row.original.name}</div>
         </div>
       )
@@ -46,9 +47,19 @@ export const columns = ({
     {
       accessorKey: "status",
       header: () => <div>#สถานะ</div>,
-      cell: ({row}) => (
-        <Badge variant="secondary">{row.original.status?? "No Status"}</Badge>
-    )
+      cell: ({ row }) => {
+        
+        const status = row.original.status
+        return (
+          <Badge variant="secondary">
+            {status === MerchantFormat.DISAPPROVAL ? "ไม่อนุมัติ":
+            status === MerchantFormat.APPROVED? "อนุมัติ": 
+            status === MerchantFormat.IN_PROGRESS? "กำลังรอการอนุมัติ":
+            status === MerchantFormat.OPENED? "เปิดร้านค้า" : "ปิด"
+            }
+          </Badge>
+        )
+      }
     },
     {
       id: "actions",

@@ -6,7 +6,7 @@ interface IComplaint {
     prod_id: string | null;
     detail: string
     type: "PRODUCT" | "MERCHANT"
-    status: "PENDING" | "PROGRESS" | "RESOLVED"
+    status: "PENDING" | "PROGRESS" | "RESOLVED" | "CLOSING"
     created_at: string;
 }
 
