@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 
 export const useMyWishlist = () => {
-    return useQuery(["wishlists"], () => getMyWishlist());
+    return useQuery(["wishlist"], () => getMyWishlist());
 };
 
 export const useWishlistInfo = (prod_id: string) => {

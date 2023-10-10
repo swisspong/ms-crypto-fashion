@@ -66,10 +66,13 @@ export class UsersService {
 
 
 
-  async updateAdvanced(id: string, updateUserDto: UpdateUserAdvancedDto) {
+  async updateAdvanced(user_current: string, id: string, updateUserDto: UpdateUserAdvancedDto) {
     try {
       const { permissions, email, google_id, password, username, role } = updateUserDto
       const admin = await this.userRepository.findOne({ user_id: id })
+
+      if (user_current === admin.user_id) throw new HttpException("You can't fix yourself.", HttpStatus.BAD_REQUEST);
+
       if (admin.email !== email) {
         const owner = await this.userRepository.findOne({ email })
         if (owner) throw new HttpException('Email is already exise.', HttpStatus.BAD_REQUEST);

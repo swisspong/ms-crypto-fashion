@@ -7,10 +7,12 @@ import { Button } from "./ui/button";
 import UserNav from "./user-nav";
 import { useUserInfo } from "@/src/hooks/user/queries";
 import { useMyCart } from "@/src/hooks/cart/queries";
+import { useMyWishlist } from "@/src/hooks/wishlist/queries";
 
 const NavbarActions = () => {
   const router = useRouter();
   const cartItemQuery = useMyCart();
+  const wishlistItem = useMyWishlist();
   return (
     <div className="ml-auto flex items-center gap-x-4">
       <Button
@@ -19,7 +21,9 @@ const NavbarActions = () => {
       >
         <Heart size={20} color="white" />
         {/* <ShoppingBag size={20} color="white" /> */}
-        <span className="ml-2 text-sm font-medium text-white">{0}</span>
+        <span className="ml-2 text-sm font-medium text-white">{
+          wishlistItem.data?.items.length ?? 0
+        }</span>
       </Button>
       <Button
         onClick={() => router.push("/cart")}

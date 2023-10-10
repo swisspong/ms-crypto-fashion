@@ -12,8 +12,9 @@ import { Store } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ProfileForm } from "@/components/account/profile-form";
 import { SidebarNav } from "@/components/account/sidebar-nav";
-import { EmailForm } from "@/components/account/email-form"; 
+import { EmailForm } from "@/components/account/email-form";
 import { PasswordForm } from "@/components/account/passowrd-form";
+import { useUserInfo } from "@/src/hooks/user/queries";
 
 const sidebarNavItems = [
   {
@@ -24,10 +25,18 @@ const sidebarNavItems = [
     title: "Address",
     href: "/account/address",
   },
- 
+
 ];
 
+
+
 const ProfilePage = () => {
+  const {
+    data: me,
+    isLoading: meLoading,
+    isSuccess: meSuccess,
+  } = useUserInfo();
+
   return (
     <div className="bg-white">
       <Navbar />
@@ -45,14 +54,32 @@ const ProfilePage = () => {
               <aside className="-mx-4 lg:w-1/5">
                 <SidebarNav items={sidebarNavItems} />
               </aside>
-              <div className="flex-1 lg:max-w-4xl">
-                {" "}
-                <div className="space-y-6">
-                 
-                  <ProfileForm />
-                  <EmailForm />
-                  <PasswordForm />
-                </div>
+
+              {" "}
+              <div className="space-y-6">
+                {(!me?.address) && (!me?.google_id) ? (
+                  <div className="flex-1 lg:max-w-4xl">
+                    <ProfileForm
+                      me={me!}
+                      meLoading={meLoading}
+                      meSuccess={meSuccess}
+                      key={me?.user_id}
+                    />
+                    <EmailForm />
+                    <PasswordForm />
+                  </div>
+                ) : (
+                  <div className="flex-1 lg:max-w-4xl">
+                    <ProfileForm
+                      me={me!}
+                      meLoading={meLoading}
+                      meSuccess={meSuccess}
+                      key={me?.user_id}
+                    />
+                  </div>
+                )}
+
+
               </div>
             </div>
           </div>

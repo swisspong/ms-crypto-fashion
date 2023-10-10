@@ -45,23 +45,27 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
+interface ProfileProps {
+  meLoading: boolean;
+  meSuccess: boolean;
+  me: IUserRes;
+}
 
 
 
+export function ProfileForm({
+  meLoading,
+  meSuccess,
+  me
+}: ProfileProps) {
 
-export function ProfileForm() {
-
-  const {
-    data: me,
-    isLoading: meLoading,
-    isSuccess: meSuccess,
-  } = useUserInfo();
+  
 
   const { mutate: handleProdile, isSuccess, isLoading } = useUpdateProfile()
 
   // This can come from your database or API.
   const defaultValues: Partial<ProfileFormValues> = {
-    username: me?.username
+    username: me.username
   };
 
   const form = useForm<ProfileFormValues>({

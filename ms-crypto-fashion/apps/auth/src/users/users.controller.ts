@@ -81,8 +81,8 @@ export class UsersController {
   @Roles(RoleFormat.ADMIN)
   @Permission(PermissionFormat.UPDATE_ADMIN)
   @Patch('admin/:id')
-  updateAdvanced(@Param('id') id: string, @Body() updateUserDto: UpdateUserAdvancedDto) {
-    return this.usersService.updateAdvanced(id, updateUserDto)
+  updateAdvanced(@GetUserId() user_current: string, @Param('id') id: string, @Body() updateUserDto: UpdateUserAdvancedDto) {
+    return this.usersService.updateAdvanced(user_current, id, updateUserDto)
   }
 
   @Roles(RoleFormat.ADMIN)

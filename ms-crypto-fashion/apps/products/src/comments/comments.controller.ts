@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { GetUserId, Roles } from '@app/common/decorators';
+import { GetUserId, Public, Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
 
 @Controller('comments')
@@ -21,6 +21,7 @@ export class CommentsController {
   }
 
 
+  @Public()
   @Get('product/:productId')
   allProductById(@Param('productId') prod_id: string) {
     return this.commentsService.allProductById(prod_id);

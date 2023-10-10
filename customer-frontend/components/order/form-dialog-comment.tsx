@@ -87,8 +87,6 @@ const FormCommentDialog: FC<Props> = ({
     }));
 
     commentHandler(reviews)
-
-
   }
 
 

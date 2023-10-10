@@ -43,6 +43,7 @@ import {
 import { comment } from "postcss";
 import userProductHook from "@/components/product/use-product-hook";
 import { useWishlistInfo } from "@/src/hooks/wishlist/queries";
+import { count } from "console";
 
 const ProductStorefrontPage = () => {
   const router = useRouter();
@@ -133,6 +134,11 @@ const ProductStorefrontPage = () => {
   useEffect(() => {
     if (isError) router.back();
   }, [isError]);
+
+  const dataCount = commentData?.length ?? 0
+  
+
+
   return (
     <div className="bg-white">
       <Navbar />
@@ -243,16 +249,16 @@ const ProductStorefrontPage = () => {
                 vrntIdHandler={vrntIdHandler}
                 data={data}
                 // setVrntSelected={setVrntSelected}
-               // vrntSelectedHandler={vrntSelectedHandler}
+                // vrntSelectedHandler={vrntSelectedHandler}
                 canAddToCart={true}
-               // vrntSelected={vrntSelected}
+                // vrntSelected={vrntSelected}
                 wishlist={wishlist}
               />
             </div>
           </div>
           <hr className="my-10" />
           <h4 className="text-lg font-bold leading-none">ความคิดเห็น</h4>
-          {commentData?.map((comment) => {
+          {dataCount > 0 ? commentData?.map((comment) => {
             // console.log(comment.created_at)
             const commentDate = new Date(comment.created_at);
             // ดึงค่าวันที่, เดือน, และปี
@@ -265,16 +271,29 @@ const ProductStorefrontPage = () => {
             return (
               <>
                 <div className="bg-white p-4 rounded-lg shadow-xl mb-4">
+                  <div className="flex items-center">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src="/avatars/03.png" alt="@shadcn" />
+                      <AvatarFallback>
+                        {comment.user_name.split(" ")
+                          .map((word) => word.substring(0, 1).toUpperCase())
+                          .filter((word, index) => index <= 1)
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <p className="text-gray-600 text-sm font-medium ml-2">{comment.user_name}</p>
+
+                  </div>
                   {[1, 2, 3, 4, 5].map((value) => (
                     <button
                       key={value}
                       type="button"
                       disabled={true}
-                      className={`text-1xl focus:outline-none ${
-                        value <= comment.rating
-                          ? "text-yellow-400"
-                          : "text-gray-300"
-                      }`}
+                      className={`text-1xl focus:outline-none ${value <= comment.rating
+                        ? "text-yellow-400"
+                        : "text-gray-300"
+                        }`}
                     >
                       ★
                     </button>
@@ -355,7 +374,11 @@ const ProductStorefrontPage = () => {
                 </div>
               </>
             );
-          })}
+          }) : dataCount === 0 ? (
+            <Alert className="mt-2">
+              <AlertTitle className="text-center">ไม่มีความคิดเห็น</AlertTitle>
+            </Alert>
+          ) : (<></>)}
         </div>
       </Container>
       <Footer />
