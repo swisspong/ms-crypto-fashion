@@ -61,7 +61,7 @@ class UpsertOptionDto {
     @Transform(({ value }) => typeof value === "string" ? value?.trim() : value)
     @IsString()
     @IsNotEmpty()
-    @Length(3)
+    @Length(1)
     name: string
 }
 class UpsertGroupDto {
@@ -77,7 +77,7 @@ class UpsertGroupDto {
     @Transform(({ value }) => typeof value === "string" ? value?.trim() : value)
     @IsString()
     @IsNotEmpty()
-    @Length(3)
+    @Length(1)
     name: string
 
     @ApiProperty({ isArray: true, type: UpsertOptionDto })

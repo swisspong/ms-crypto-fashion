@@ -19,6 +19,7 @@ import {
   BanknoteIcon,
   BellIcon,
   CreditCard,
+  Loader2,
   User2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -125,7 +126,14 @@ export function WithdrawMetamaskDialog() {
     }
   }, [withdraw.isSuccess]);
   return (
-    <Dialog onOpenChange={(val) => setOpen(val)} open={open}>
+    <Dialog
+      onOpenChange={(val) => {
+        if (!withdraw.isLoading) {
+          setOpen(val);
+        }
+      }}
+      open={open}
+    >
       <DialogTrigger asChild>
         <Button
           size={"sm"}
@@ -178,8 +186,11 @@ export function WithdrawMetamaskDialog() {
           )}
           <Button
             onClick={() => withdraw.mutate({ address: wallet.accounts[0] })}
-            disabled={!wallet.accounts[0]}
+            disabled={!wallet.accounts[0] || withdraw.isLoading}
           >
+            {withdraw.isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : undefined}
             ถอน
           </Button>
           {/* <WithdrawMetamaskForm setOpen={setOpen} /> */}

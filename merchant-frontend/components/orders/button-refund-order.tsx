@@ -43,7 +43,7 @@ const ButtonRefundOrder = ({}) => {
       variant={"outline"}
       size={"sm"}
     >
-      Refund
+      คืนเงิน
     </Button>
   );
 };

@@ -13,8 +13,9 @@ import { Separator } from "@/components/ui/separator";
 import { ProfileForm } from "@/components/account/profile-form";
 import { SidebarNav } from "@/components/account/sidebar-nav";
 import AddressList from "@/components/account/address-list";
-import { AddAddressForm } from "@/components/account/add-address-form";
+//import { AddAddressForm } from "@/components/account/add-address-form";
 import { useMyAddress } from "@/src/hooks/address/queries";
+import { AddAddressForm } from "@/components/account/address/add/add-address-form";
 
 const sidebarNavItems = [
   {
@@ -28,7 +29,7 @@ const sidebarNavItems = [
 ];
 
 const AddressPage = () => {
-  const addresses = useMyAddress()
+  const addresses = useMyAddress();
   return (
     <div className="bg-white">
       <Navbar />

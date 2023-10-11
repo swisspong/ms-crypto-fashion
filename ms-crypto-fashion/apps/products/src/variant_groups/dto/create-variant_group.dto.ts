@@ -8,7 +8,7 @@ export class OptionDto {
     @Transform(({ value }) => typeof value === "string" ? value?.trim() : value)
     @IsString()
     @IsNotEmpty()
-    @Length(3)
+    @Length(1)
     name: string
 }
 export class GroupDto {
@@ -17,7 +17,7 @@ export class GroupDto {
     @Transform(({ value }) => typeof value === "string" ? value?.trim() : value)
     @IsString()
     @IsNotEmpty()
-    @Length(3)
+    @Length(1)
     name: string
 
     @ApiProperty({ isArray: true, type: OptionDto })

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "../ui/textarea";
+import { Textarea } from "../../../ui/textarea";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/form";
 import { useCreateAddress } from "@/src/hooks/address/mutations";
 import { FC, useEffect } from "react";
+import useAddAddressHook from "./use-add-address-hook";
+import { Loader2 } from "lucide-react";
 const formSchema = z.object({
   recipient: z.string().trim(),
   post_code: z.string().trim(),
@@ -34,35 +36,38 @@ interface Props {
   children?: JSX.Element | JSX.Element[];
 }
 export function AddAddressForm({ children }: Props) {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      address: '',
-      post_code: '',
-      recipient: '',
-      tel_number: ''
-    }
-  });
-  const addresMutate = useCreateAddress();
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    addresMutate.mutate(values);
-    // signinHandler(values);
-  }
-  useEffect(() => {
-    if (addresMutate.isSuccess) {
-      form.reset({
-        address: '',
-        post_code: '',
-        recipient: '',
-        tel_number: ''
-      });
-    }
-  }, [addresMutate.isSuccess]);
+  const { addressLoading, form, onSubmit, onOpenChange, open } =
+    useAddAddressHook();
+  // const form = useForm<z.infer<typeof formSchema>>({
+  //   resolver: zodResolver(formSchema),
+  //   defaultValues: {
+  //     address: '',
+  //     post_code: '',
+  //     recipient: '',
+  //     tel_number: ''
+  //   }
+  // });
+  // const addresMutate = useCreateAddress();
+  // function onSubmit(values: z.infer<typeof formSchema>) {
+  //   console.log(values);
+  //   addresMutate.mutate(values);
+  //   // signinHandler(values);
+  // }
+  // useEffect(() => {
+  //   if (addresMutate.isSuccess) {
+  //     form.reset({
+  //       address: '',
+  //       post_code: '',
+  //       recipient: '',
+  //       tel_number: ''
+  //     });
+  //   }
+  // }, [addresMutate.isSuccess]);
   return (
     <Dialog
+      open={open}
       onOpenChange={(open) => {
-        form.reset({});
+        onOpenChange(open);
       }}
     >
       <DialogTrigger asChild>
@@ -126,7 +131,9 @@ export function AddAddressForm({ children }: Props) {
                   name="address"
                   render={({ field }) => (
                     <FormItem className="w-full grid grid-cols-4 items-center  gap-4">
-                      <FormLabel className="text-right">รายละเอียดที่อยู่</FormLabel>
+                      <FormLabel className="text-right">
+                        รายละเอียดที่อยู่
+                      </FormLabel>
                       <FormControl>
                         <Textarea className="col-span-3" {...field} />
                       </FormControl>
@@ -158,7 +165,12 @@ export function AddAddressForm({ children }: Props) {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">บันทึก</Button>
+              <Button type="submit" disabled={addressLoading}>
+                {addressLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : undefined}
+                บันทึก
+              </Button>
             </DialogFooter>
           </form>
         </Form>

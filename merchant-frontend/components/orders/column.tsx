@@ -68,7 +68,15 @@ export const columns = ({
                 : "bg-red-400"
             }`}
           >
-            {row.original.payment_status.toUpperCase()}
+            {row.original.payment_status==="paid" ? "จ่ายแล้ว" : undefined}
+            {row.original.payment_status === "refund"
+              ? "คืนเงิน"
+              : row.original.payment_status === "pending"
+              ? "รอดำเนินการ"
+              : row.original.payment_status === "in_progress"
+              ? "กำลังดำเนินการ"
+              : undefined}
+            {/* {row.original.payment_status.toUpperCase()} */}
           </Badge>
           <Badge
             className={`${
@@ -88,7 +96,17 @@ export const columns = ({
                 : ""
             }`}
           >
-            {row.original.status.toUpperCase()}
+            {row.original.status === StatusFormat.FULLFILLMENT
+              ? "สมบูรณ์"
+              : row.original.status === StatusFormat.RECEIVED
+              ? "รับสินค้าแล้ว"
+              : undefined}
+            {row.original.status === "not fullfillment"
+              ? "ยังไม่สมบูรณ์"
+              : row.original.status === "cancel"
+              ? "ยกเลิก"
+              : undefined}
+            {/* {row.original.status.toUpperCase()} */}
           </Badge>
           {/* <div>{moment(row.original.created_at).format("hh:mm a")}</div> */}
         </div>

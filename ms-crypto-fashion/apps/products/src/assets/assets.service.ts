@@ -11,6 +11,6 @@ export class AssetsService {
     return { image_url: "http://localhost:5000/merchant/" + file.filename }
   }
   createBanner(file: Express.Multer.File) {
-    return { image_url: "http://localhost:5000/banner/" + file.filename }
+    return { image_url: "http://api.example.com/banner/" + file.filename }
   }
 }

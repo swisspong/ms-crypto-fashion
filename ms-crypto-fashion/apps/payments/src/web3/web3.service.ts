@@ -200,11 +200,14 @@ export class Web3Service implements OnApplicationBootstrap {
   }
   async refund(data: IRefundEvent) {
     try {
+      const valueInWei = new BigNumber(data.amount.toString()); // 1e19 in Wei
+      const valueHex = "0x" + valueInWei.toString(16);
       const signer = new ethers.Wallet(this.configService.get<string>("PRIVATE_KEY"), this.provider);
       const contract = new ethers.Contract(this.CONTRACT_ADDRESS, this.CONTRACT_ABI, signer)
       const order = {
         orderId: data.orderId,
-        amount: data.amount,
+        amount: valueHex,
+        //amount: data.amount,
         userId: data.userId,
         mchtId: data.mchtId,
       };

@@ -127,7 +127,9 @@ export default function EditOrder() {
     <Layout>
       <div className="space-between flex items-center mb-4">
         <div className="">
-          <h1 className="text-xl font-bold tracking-tight">Order Detail</h1>
+          <h1 className="text-xl font-bold tracking-tight">
+            รายละเอียดการสั่งซื้อ
+          </h1>
         </div>
       </div>
       <Form {...form}>
@@ -136,7 +138,7 @@ export default function EditOrder() {
             <div className="col-span-3 grid gap-4">
               <Card>
                 <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
-                  <CardTitle className="text-2xl">Details</CardTitle>
+                  <CardTitle className="text-2xl">รายละเอียด</CardTitle>
                   <div className="flex space-x-2">
                     {dataQuery.data?.status !== StatusFormat.FULLFILLMENT &&
                     dataQuery.data?.status !== StatusFormat.RECEIVED &&
@@ -158,11 +160,11 @@ export default function EditOrder() {
                 <CardContent className="grid gap-4">
                   <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex justify-between items-center p-3">
                     <div className="flex-col">
-                      <p className="text-xs">REFERENCE</p>
+                      <p className="text-xs">อ้างอิง</p>
                       <p className="text-sm">{dataQuery.data?.order_id}</p>
                     </div>
                     <div className="flex-col items-end">
-                      <p className="text-xs text-end">PLACED</p>
+                      <p className="text-xs text-end">การสั่งซื้อ</p>
                       <p className="text-sm">
                         {" "}
                         {moment(dataQuery?.data?.createdAt).format(
@@ -176,10 +178,10 @@ export default function EditOrder() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="">PRODUCT</TableHead>
-                          <TableHead>QTY</TableHead>
-                          <TableHead>PRICE</TableHead>
-                          <TableHead className="text-right">AMOUNT</TableHead>
+                          <TableHead className="">สินค้า</TableHead>
+                          <TableHead>จำนวน</TableHead>
+                          <TableHead>ราคา</TableHead>
+                          <TableHead className="text-right">ยอดรวม</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -222,14 +224,14 @@ export default function EditOrder() {
                       <TableBody>
                         <TableRow>
                           <TableCell className="font-medium">
-                            <div>{"Subtotal"}</div>
+                            <div>{"ยอดรวม"}</div>
                           </TableCell>
                           <TableCell></TableCell>
                           <TableCell className="text-right">
                             ฿{dataQuery.data?.total.toFixed(2)}
                           </TableCell>
                         </TableRow>
-                        <TableRow>
+                        {/* <TableRow>
                           <TableCell className="font-medium">
                             <div>{"Shipping"}</div>
                           </TableCell>
@@ -237,10 +239,10 @@ export default function EditOrder() {
                           <TableCell className="text-right">
                             ฿{"0.00"}
                           </TableCell>
-                        </TableRow>
+                        </TableRow> */}
                         <TableRow>
                           <TableCell className="font-medium">
-                            <div>{"Total paid"}</div>
+                            <div>{"ยอดสุทธิ"}</div>
                           </TableCell>
                           <TableCell></TableCell>
                           <TableCell className="text-right">
@@ -289,7 +291,9 @@ export default function EditOrder() {
               {!dataQuery.data?.shipping_carier ? (
                 <Card>
                   <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
-                    <CardTitle className="text-2xl">Unfullfillment</CardTitle>
+                    <CardTitle className="text-2xl">
+                      การเตรียมสินค้าไม่สมบูรณ์
+                    </CardTitle>
 
                     {/* <Button variant={"outline"} size={"sm"}>
                     Fullfill
@@ -316,9 +320,9 @@ export default function EditOrder() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="">PRODUCT</TableHead>
+                            <TableHead className="">สินค้า</TableHead>
                             {/* <TableHead>QTY</TableHead> */}
-                            <TableHead className="text-right">QTY</TableHead>
+                            <TableHead className="text-right">จำนวน</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -347,7 +351,8 @@ export default function EditOrder() {
                                 </div>
                               </TableCell>
                               <TableCell className="text-right">
-                                {orderItem.quantity} of {orderItem.quantity}
+                                {orderItem.quantity}
+                                {/* {orderItem.quantity} of {orderItem.quantity} */}
                               </TableCell>
                             </TableRow>
                           ))}
@@ -394,7 +399,7 @@ export default function EditOrder() {
               ) : (
                 <Card>
                   <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
-                    <CardTitle className="text-2xl">Shipment</CardTitle>
+                    <CardTitle className="text-2xl">การจัดส่ง</CardTitle>
 
                     {/* <Button variant={"outline"} size={"sm"}>
                   Fullfill
@@ -417,7 +422,7 @@ export default function EditOrder() {
                           <Truck className="w-8 h-8" />
                         </div>
                         <div className="flex-col items-end">
-                          <p className="text-xs text-end">DATE SHIPPED</p>
+                          <p className="text-xs text-end">วันที่จัดส่ง</p>
                           <p className="text-sm">
                             {" "}
                             {moment(dataQuery?.data?.shipped_at).format(
@@ -443,7 +448,7 @@ export default function EditOrder() {
                               .join(" ")}
                           </p>
                           <p className="text-sm">
-                            TRACKING #{dataQuery.data?.tracking}
+                            การติดตาม #{dataQuery.data?.tracking}
                           </p>
                         </div>
                       </div>
@@ -674,7 +679,7 @@ export default function EditOrder() {
                     </TableRow> */}
                     <TableRow>
                       <TableCell className="font-medium">
-                        <div>{"Fullfillment"}</div>
+                        <div>การเตรียมสินค้า</div>
                       </TableCell>
                       <TableCell></TableCell>
                       <TableCell className="text-right">
@@ -683,11 +688,24 @@ export default function EditOrder() {
                             StatusFormat.FULLFILLMENT ||
                           dataQuery.data?.status === StatusFormat.RECEIVED ? (
                             <Badge className="bg-[#adfa1d] text-foreground hover:bg-[#adfa1d]">
-                              {dataQuery.data.status.toUpperCase()}
+                              {/* {dataQuery.data.status.toUpperCase()} */}
+                              {dataQuery.data?.status ===
+                              StatusFormat.FULLFILLMENT
+                                ? "สมบูรณ์"
+                                : dataQuery.data?.status ===
+                                  StatusFormat.RECEIVED
+                                ? "รับสินค้าแล้ว"
+                                : undefined}
                             </Badge>
                           ) : (
                             <Badge className="bg-red-400 hover:bg-red-400">
-                              {dataQuery?.data?.status.toUpperCase()}
+                              {/* {dataQuery?.data?.status.toUpperCase()} */}
+                              {dataQuery?.data?.status === "not fullfillment"
+                                ? "ยังไม่สมบูรณ์"
+                                : dataQuery?.data?.status === "cancel"
+                                ? "ยกเลิก"
+                                : undefined}
+                              {/* ไม่สมบูรณ์ */}
                             </Badge>
                           )}
                         </div>
@@ -695,7 +713,7 @@ export default function EditOrder() {
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium">
-                        <div>{"Payment"}</div>
+                        <div>การจ่ายเงิน</div>
                       </TableCell>
                       <TableCell></TableCell>
                       <TableCell className="text-right">
@@ -703,11 +721,20 @@ export default function EditOrder() {
                           {dataQuery.data?.payment_status ===
                           PaymentFormat.PAID ? (
                             <Badge className="bg-[#adfa1d] text-foreground hover:bg-[#adfa1d]">
-                              {dataQuery.data.payment_status.toUpperCase()}
+                              {/* {dataQuery.data.payment_status.toUpperCase()} */}
+                              จ่ายแล้ว
                             </Badge>
                           ) : (
                             <Badge className="bg-red-400 hover:bg-red-400">
-                              {dataQuery?.data?.payment_status.toUpperCase()}
+                              {/* {dataQuery?.data?.payment_status.toUpperCase()} */}
+                              {dataQuery?.data?.payment_status === "refund"
+                                ? "คืนเงิน"
+                                : dataQuery?.data?.payment_status === "pending"
+                                ? "รอดำเนินการ"
+                                : dataQuery?.data?.payment_status ===
+                                  "in_progress"
+                                ? "กำลังดำเนินการ"
+                                : undefined}
                             </Badge>
                           )}
                         </div>
@@ -719,8 +746,8 @@ export default function EditOrder() {
 
               <Card>
                 <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
-                  <CardTitle className="text-lg">Customer</CardTitle>
-                  <CustomerForm />
+                  <CardTitle className="text-lg">ข้อมูลลูกค้า</CardTitle>
+                  {/* <CustomerForm /> */}
                 </CardHeader>
                 <CardContent className="">
                   <p className="font-medium">swiss</p>
@@ -728,7 +755,7 @@ export default function EditOrder() {
                   <p className="">0944070021</p>
                 </CardContent>
               </Card>
-              <div>
+              {/* <div>
                 <Card>
                   <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
                     <CardTitle className="text-lg">Payment Mehtod</CardTitle>
@@ -740,11 +767,11 @@ export default function EditOrder() {
                     </p>
                   </CardContent>
                 </Card>
-              </div>
+              </div> */}
               <Card>
                 <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
-                  <CardTitle className="text-lg">Address</CardTitle>
-                  <AddressForm />
+                  <CardTitle className="text-lg">ที่อยู่</CardTitle>
+                  {/* <AddressForm /> */}
                 </CardHeader>
                 <CardContent className="">
                   <p className="font-medium">swiss</p>

@@ -31,7 +31,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
-import { AddAddressForm } from "./add-address-form";
+import { AddAddressForm } from "./address/add/add-address-form";
 
 interface Props {
   selected?: string;

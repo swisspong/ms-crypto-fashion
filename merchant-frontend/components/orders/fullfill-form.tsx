@@ -78,7 +78,9 @@ const FullfillForm: FC<Props> = ({ data }) => {
     // if (!con) {
     //   setIdHandler(undefined);
     // }
-    setOpen(con);
+    if (!fullfillMutate.isLoading) {
+      setOpen(con);
+    }
   };
   //   useEffect(() => {
   //     if (id > 0) {
@@ -118,7 +120,7 @@ const FullfillForm: FC<Props> = ({ data }) => {
       }}
     >
       <SheetTrigger asChild>
-        <Button size={"sm"}>Fullfill</Button>
+        <Button size={"sm"}>การเตรียมสินค้า</Button>
       </SheetTrigger>
       <SheetContent
         position={"right"}
@@ -127,9 +129,9 @@ const FullfillForm: FC<Props> = ({ data }) => {
       >
         <ScrollArea className="h-full w-full rounded-md border p-6">
           <SheetHeader className="pb-4">
-            <SheetTitle>Fullfillment Item</SheetTitle>
+            <SheetTitle>การเตรียมสินค้า</SheetTitle>
             <SheetDescription>
-              {`Make changes to your ${name} here. Click save when you're done.`}
+              {`จัดเตรียมสินค้า และบันทึกการติดตาม`}
             </SheetDescription>
           </SheetHeader>
           <Form {...form}>
@@ -141,9 +143,9 @@ const FullfillForm: FC<Props> = ({ data }) => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="">PRODUCT</TableHead>
+                      <TableHead className="">สินค้า</TableHead>
                       {/* <TableHead>QTY</TableHead> */}
-                      <TableHead className="text-right">QTY</TableHead>
+                      <TableHead className="text-right">จำนวน</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -172,7 +174,8 @@ const FullfillForm: FC<Props> = ({ data }) => {
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          {orderItem.quantity} of {orderItem.quantity}
+                          {/* {orderItem.quantity} of {orderItem.quantity} */}
+                          {orderItem.quantity}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -186,7 +189,7 @@ const FullfillForm: FC<Props> = ({ data }) => {
                     name="shipping_carier"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Shipping carier</FormLabel>
+                        <FormLabel>ขนส่ง</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -194,7 +197,7 @@ const FullfillForm: FC<Props> = ({ data }) => {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a shipping carier." />
+                              <SelectValue placeholder="เลือกขนส่ง" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -216,10 +219,10 @@ const FullfillForm: FC<Props> = ({ data }) => {
                     name="tracking"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Tracking</FormLabel>
+                        <FormLabel>การติดตาม</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Tracking number or url (required)"
+                            placeholder="รหัสการติดตาม หรือลิงค์ (ต้องกรอก)"
                             {...field}
                             //   disabled={addLoading || updateLoading}
                           />
@@ -276,10 +279,10 @@ const FullfillForm: FC<Props> = ({ data }) => {
                 type="submit"
                 className="w-full"
               >
-                {/* {addLoading || updateLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : null} */}
-                Submit
+                {fullfillMutate.isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                ยืนยัน
               </Button>
             </form>
           </Form>

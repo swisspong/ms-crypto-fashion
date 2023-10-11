@@ -14,7 +14,7 @@ class UpsertOptionDto {
     @Transform(({ value }) => typeof value === "string" ? value?.trim() : value)
     @IsString()
     @IsNotEmpty()
-    @Length(3)
+    @Length(1)
     name: string
 }
 
