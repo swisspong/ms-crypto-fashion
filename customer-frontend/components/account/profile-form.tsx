@@ -45,17 +45,21 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
+interface ProfileProps {
+  meLoading: boolean;
+  meSuccess: boolean;
+  me: IUserRes;
+}
 
 
 
+export function ProfileForm({
+  meLoading,
+  meSuccess,
+  me
+}: ProfileProps) {
 
-export function ProfileForm() {
-
-  const {
-    data: me,
-    isLoading: meLoading,
-    isSuccess: meSuccess,
-  } = useUserInfo();
+  
 
   const { mutate: handleProdile, isSuccess, isLoading } = useUpdateProfile()
 
@@ -73,7 +77,7 @@ export function ProfileForm() {
   useEffect(() => {
     if (meSuccess) {
       form.reset({
-        username: me.username
+        username: me?.username
       })
     }
   }, [meSuccess])

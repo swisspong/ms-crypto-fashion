@@ -152,7 +152,7 @@ export const columns = ({
 
                   // console.log(filteredItems)
 
-                  await setDataItems(data);
+                  await setDataItems(data );
                   setIdHandler(row.original.order_id as string);
                   openSheetHandler();
                 }}

@@ -25,6 +25,8 @@ export class CommentDto {
     @Min(1)
     @Max(5)
     rating: number
+
+    
 }
 
 export class CreateCommentDto {
@@ -40,4 +42,12 @@ export class CreateCommentDto {
     @IsNotEmpty()
     @Length(3)
     order_id: string
+
+    @ApiProperty()
+    @IsOptional()
+    @Transform(({ value }) => typeof value === "string" ? value?.trim() : value)
+    @IsString()
+    @IsNotEmpty()
+    @Length(3)
+    user_name: string;
 }

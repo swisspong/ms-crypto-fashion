@@ -73,12 +73,12 @@ export default function Signin() {
                 <CardContent className="grid gap-4">
                   <div className="grid grid-cols-2 gap-6">
                     <MetaMask />
-                    
+
                     {/* <Button variant="outline">
                       <Icons.google className="mr-2 h-4 w-4" />
                       Google
                     </Button> */}
-                    <GoogleButton/>
+                    <GoogleButton />
                   </div>
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
@@ -140,14 +140,31 @@ export default function Signin() {
                     ) : null}
                     เข้าสู่ระบบด้วยบัญชี
                   </Button>
-                  <p className="pt-3 text-center text-sm text-muted-foreground">
-                    <Link
-                      href="/signup"
-                      className="underline underline-offset-4 hover:text-primary"
-                    >
-                      ไปที่หน้าสร้างบัญชี
-                    </Link>
-                  </p>
+
+
+                  <div className="w-full grid grid-cols-2 gap-6">
+                    <div>
+                      <p className="pt-3 text-center text-sm text-muted-foreground">
+                        <Link
+                          href="/signup"
+                          className="underline underline-offset-4 hover:text-primary"
+                        >
+                          ไปที่หน้าสร้างบัญชี
+                        </Link>
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="pt-3 text-center text-sm text-muted-foreground">
+                        <Link
+                          href="/reset"
+                          className="underline underline-offset-4 hover:text-primary"
+                        >
+                          ลีมรหัสผ่าน
+                        </Link>
+                      </p>
+                    </div>
+                  </div>
                 </CardFooter>
               </form>
             </Form>

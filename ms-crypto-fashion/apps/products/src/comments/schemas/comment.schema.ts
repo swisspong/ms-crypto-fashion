@@ -26,6 +26,10 @@ export class Comment extends AbstractDocument{
 
     @Prop({type: String, trim: true})
     mcht_message?: string
+
+    @Prop({type: String, required: true})
+    user_name: string
+
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment)

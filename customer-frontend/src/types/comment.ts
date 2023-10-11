@@ -1,6 +1,7 @@
 interface TCommentPayload {
     comments: TComment[],
     order_id: string
+    user_name: string
 }
 
 interface TComment {
@@ -17,6 +18,7 @@ interface TCommentResponse {
     rating: number
     created_at: string
     message: string
+    user_name: string
 }
 
 interface TReplyPayload {

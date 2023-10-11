@@ -10,7 +10,7 @@ interface TComment {
     comment_id: string
     text: string
     product: IProduct
-    user: IUserRes
+    user_name: string
     rating: number
     created_at: string
     message: string

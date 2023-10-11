@@ -31,6 +31,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import FormCommentDialog from "@/components/order/form-dialog-comment";
 import { useCreateCommnt } from "@/src/hooks/comment/mutations";
+import { useUserInfo } from "@/src/hooks/user/queries";
 const OrderListPage = () => {
   const router = useRouter();
   // TODO: Set column in DataTable
@@ -40,6 +41,14 @@ const OrderListPage = () => {
   const [items, setItems] = useState<Item[] | undefined>(undefined);
   const { mutate: commentsHandler, isLoading, isSuccess } = useCreateCommnt();
   const [username, setUsername] = useState<string | undefined>(undefined);
+
+  const {
+    data: me,
+    isLoading: meLoading,
+    isSuccess: meSuccess,
+    isError,
+  } = useUserInfo();
+
   const orderPolling = useGetOrdersPolling();
   const openDialogHandlerParam = (open: boolean) => {
     if (!open) {
@@ -74,6 +83,7 @@ const OrderListPage = () => {
     const payload: TCommentPayload = await {
       comments: body,
       order_id: idToUpdate!,
+      user_name: me?.username!
     };
     commentsHandler(payload);
   };

@@ -19,6 +19,7 @@ interface IUserRes {
     updatedAt: string
     __v: number
     mcht_id: string
+    google_id: string
     cart: string
 }
 

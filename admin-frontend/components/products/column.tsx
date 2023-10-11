@@ -32,7 +32,7 @@ export const columns = ({
       accessorKey: "merchant",
       header: () => <div>#ร้านค้า</div>,
       cell: ({ row }) => (
-        <div>{row.original.merchant[0].name}</div>
+        <div>{row.original.merchant.name}</div>
       ),
     },
     {

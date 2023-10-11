@@ -16,6 +16,7 @@ interface comment {
   order_id: string
   text: string
   rating: number
+  user_name: string
 }
 
 @Injectable()
@@ -29,7 +30,7 @@ export class CommentsService {
 
   async create(user_id: string, createCommentDto: CreateCommentDto) {
     try {
-      const { comments, order_id } = createCommentDto
+      const { comments, order_id, user_name } = createCommentDto
       // ! Check status order | if status paid == true
 
       // // return data from order service
@@ -45,7 +46,8 @@ export class CommentsService {
           comment_id: `comment_${this.uid.stamp(15)}`,
           ...comment,
           user_id: user_id,
-          order_id
+          order_id,
+          user_name
         }
 
         return object
@@ -90,7 +92,8 @@ export class CommentsService {
             rating: 1,
             created_at: '$createdAt',
             comment_id: 1,
-            message: '$mcht_message'
+            message: '$mcht_message',
+            user_name: 1
           }
         }
       ])
@@ -109,14 +112,7 @@ export class CommentsService {
       const skip = (Number(page) - 1) * Number(per_page)
       const limit = per_page
       const comments = await this.commentRepository.aggregate([
-        {
-          $lookup: {
-            from: "users",
-            localField: "user_id",
-            foreignField: "user_id",
-            as: "user"
-          },
-        },
+        
         {
           $lookup: {
             from: "products",
@@ -134,7 +130,8 @@ export class CommentsService {
             text: 1,
             rating: 1,
             comment_id: 1,
-            message: '$mcht_message'
+            message: '$mcht_message',
+            user_name: 1
           }
         },
         {
