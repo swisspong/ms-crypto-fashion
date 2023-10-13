@@ -17,7 +17,7 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
   const [file, setFile] = useState<{ url: string }[]>([]);
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     console.log(e.target.files);
-    if (e.target.files) {
+    if (e.target.files && e.target.files.length>0) {
       //  onChange(URL.createObjectURL(e.target.files[0]));
       //setFile([{ url: URL.createObjectURL(e.target.files[0]) }]);
 
@@ -40,11 +40,11 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
     <div className="flex flex-col shrink-0 items-center justify-center rounded-md border border-dashed px-3">
       <div className="grid grid-cols-4 gap-2 w-full py-2">
         {image_url ? (
-          <div className="aspect-square group rounded-xl bg-gray-100 relative">
+          <div className="aspect-square group rounded-md bg-muted relative">
             <img
               src={image_url as string}
               alt=""
-              className="aspect-square object-cover rounded-md h-40 w-40"
+              className="aspect-square object-contain rounded-md h-full w-full"
             />
             {/* <Image
               src={image_url as string}

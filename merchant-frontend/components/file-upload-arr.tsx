@@ -16,7 +16,7 @@ const FileUploadArr: FC<Props> = ({ image_url = [], onChange, remove }) => {
   const [file, setFile] = useState<{ url: string }[]>([]);
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     console.log(e.target.files);
-    if (e.target.files) {
+    if (e.target.files && e.target.files.length > 0) {
       //  onChange(URL.createObjectURL(e.target.files[0]));
       //setFile([{ url: URL.createObjectURL(e.target.files[0]) }]);
 
@@ -32,16 +32,17 @@ const FileUploadArr: FC<Props> = ({ image_url = [], onChange, remove }) => {
       <div className="grid grid-cols-4 gap-2 w-full py-2">
         {image_url.length > 0
           ? image_url.map(({ url }, index) => (
-              <div className="aspect-square group rounded-xl bg-gray-100 relative">
+              <div className="aspect-square group rounded-md bg-muted relative">
                 <img
                   src={url}
                   alt=""
                   // fill
-                  className="aspect-square object-cover rounded-md"
+                  className="aspect-square object-contain rounded-md h-full w-full"
                 />
                 <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
                   <div className="flex gap-x-6 justify-center">
                     <Button
+                      type="button"
                       variant={"destructive"}
                       className=""
                       onClick={() => remove(index)}
@@ -70,9 +71,11 @@ const FileUploadArr: FC<Props> = ({ image_url = [], onChange, remove }) => {
         ) : (
           <>
             <Upload className="h-10 w-10 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold">ยังไม่มีการเพิ่มเนื้อหา</h3>
+            <h3 className="mt-4 text-lg font-semibold">
+              ยังไม่มีการเพิ่มเนื้อหา
+            </h3>
             <p className="mb-4 mt-2 text-sm text-muted-foreground">
-            คุณยังไม่ได้เพิ่มเนื้อหาใดๆ เพิ่มหนึ่งรายการด้านล่าง
+              คุณยังไม่ได้เพิ่มเนื้อหาใดๆ เพิ่มหนึ่งรายการด้านล่าง
             </p>
           </>
         )}
@@ -84,7 +87,7 @@ const FileUploadArr: FC<Props> = ({ image_url = [], onChange, remove }) => {
             onClick={() => fileRef.current?.click()}
           >
             <Plus className="mr-2 h-4 w-4" />
-            เพิ่มเนื้อหา  
+            เพิ่มเนื้อหา
           </Button>
           <Input
             className="hidden"

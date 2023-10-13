@@ -111,8 +111,10 @@ services:
     restart: always
     build:
       context: ./admin-frontend
+      # dockerfile: ./Dockerfile.dev
       dockerfile: ./Dockerfile
-      target: deps
+      # target: deps
+      target: builder
     command: npm run dev
     ports:
       - '3001:3001'
@@ -126,8 +128,10 @@ services:
     restart: always
     build:
       context: ./merchant-frontend
+      # dockerfile: ./Dockerfile.dev
       dockerfile: ./Dockerfile
-      target: deps
+      # target: deps
+      target: builder
     command: npm run dev
     ports:
       - '3002:3002'
@@ -141,8 +145,10 @@ services:
     restart: always
     build:
       context: ./customer-frontend
+      # dockerfile: ./Dockerfile.dev
       dockerfile: ./Dockerfile
-      target: deps
+      # target: deps
+      target: builder
     command: npm run dev
     ports:
       - '3000:3000'

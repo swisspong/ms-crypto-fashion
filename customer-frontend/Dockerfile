@@ -1,18 +1,21 @@
 FROM node:18-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-
-COPY package.json package-lock.json ./
-RUN  npm install -g npm@10.1.0
-RUN  npm install --production
+COPY package*.json ./
+#COPY package.json package-lock.json ./
+# RUN  npm install -g npm@10.1.0
+RUN npm install -g npm@10.2.0
+#RUN  npm install --production
+RUN  npm install
+# COPY . .
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ENV NEXT_TELEMETRY_DISABLED 1
+# ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN npm run build
+# RUN npm run build
 
 FROM node:18-alpine AS runner
 WORKDIR /app

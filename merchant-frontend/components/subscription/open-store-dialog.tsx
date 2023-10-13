@@ -25,36 +25,39 @@ import {
 import FileUploadOne from "../file-upload-one";
 import { useCredentialMerchant } from "@/src/hooks/merchant/mutations";
 import { useRouter } from "next/router";
-const formSchema = z.object({
-  first_name: z
-    .string()
-    .trim()
-    .min(2, { message: "First name must be at least 2 characters." }),
-  last_name: z
-    .string()
-    .trim()
-    .min(2, { message: "Last name must be at least 2 characters." }),
-  image_url: z.string().url(),
-});
+import useOpenStoreHook from "./open-store/use-open-store-hook";
+import { Loader2 } from "lucide-react";
+// const formSchema = z.object({
+//   first_name: z
+//     .string()
+//     .trim()
+//     .min(2, { message: "First name must be at least 2 characters." }),
+//   last_name: z
+//     .string()
+//     .trim()
+//     .min(2, { message: "Last name must be at least 2 characters." }),
+//   image_url: z.string().url(),
+// });
 const OpenStoreDialog = () => {
-  const router = useRouter()
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
-  const credentialMutate = useCredentialMerchant();
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    credentialMutate.mutate(values);
-    // mutate(values)
-  }
-  
-  useEffect(() => {
-    if (credentialMutate.isSuccess) router.push('/');
-  },[credentialMutate.isSuccess])
+  // const router = useRouter();
+  // const form = useForm<z.infer<typeof formSchema>>({
+  //   resolver: zodResolver(formSchema),
+  // });
+  // const credentialMutate = useCredentialMerchant();
+  // function onSubmit(values: z.infer<typeof formSchema>) {
+  //   console.log(values);
+  //   credentialMutate.mutate(values);
+  //   // mutate(values)
+  // }
+
+  // useEffect(() => {
+  //   if (credentialMutate.isSuccess) router.push("/");
+  // }, [credentialMutate.isSuccess]);
+  const { form, loading, onSubmit, success } = useOpenStoreHook();
   return (
     <>
-      {!credentialMutate.isSuccess && (
-        <Dialog >
+      {!success && (
+        <Dialog>
           <DialogTrigger asChild>
             <Button className="w-full">เปิดร้าน</Button>
           </DialogTrigger>
@@ -62,7 +65,8 @@ const OpenStoreDialog = () => {
             <DialogHeader>
               <DialogTitle>คำร้องเปิดร้านค้า</DialogTitle>
               <DialogDescription>
-                กรอกข้อมูลรับรองตัวตนเพื่อยืนยันร้านค้า กดบันทึกเมื่อกรอกข้อมูลเสร็จสิ้น 
+                กรอกข้อมูลรับรองตัวตนเพื่อยืนยันร้านค้า
+                กดบันทึกเมื่อกรอกข้อมูลเสร็จสิ้น
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -91,7 +95,10 @@ const OpenStoreDialog = () => {
                         <FormItem>
                           <FormLabel>นามสกุล</FormLabel>
                           <FormControl>
-                            <Input placeholder="นามสกุล (ต้องกรอก)" {...field} />
+                            <Input
+                              placeholder="นามสกุล (ต้องกรอก)"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -109,7 +116,7 @@ const OpenStoreDialog = () => {
                             <FileUploadOne
                               onChange={field.onChange}
                               image_url={field.value}
-                            //   remove={imageRemove}
+                              //   remove={imageRemove}
                             />
                           </FormControl>
 
@@ -120,16 +127,19 @@ const OpenStoreDialog = () => {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">บันทึก</Button>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : undefined}
+                    บันทึก
+                  </Button>
                 </DialogFooter>
               </form>
             </Form>
           </DialogContent>
         </Dialog>
       )}
-
     </>
-
   );
 };
 

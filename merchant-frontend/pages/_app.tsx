@@ -9,9 +9,10 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AxiosError } from "axios";
+import { Loader2 } from "lucide-react";
 import { ThemeProvider } from "next-themes";
 import type { AppProps } from "next/app";
-import { useRouter } from "next/router";
+import { Router, useRouter } from "next/router";
 import React from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -111,26 +112,43 @@ export default function App({ Component, pageProps }: AppProps) {
         }),
       })
   );
+  const [loading, setLoading] = React.useState(false);
+
+  Router.events.on("routeChangeStart", (url) => {
+    setLoading(true);
+  });
+  Router.events.on("routeChangeComplete", (url) => {
+    setLoading(false);
+  });
   return (
     <ThemeProvider enableSystem={true} attribute="class">
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools />
-        <MyThemeProvider>
-          <Component {...pageProps} />
-          <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={true}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme={"light"}
-          />
-        </MyThemeProvider>
-      </QueryClientProvider>
+      {loading ? (
+        <div className="h-screen w-screen rounded-lg p-8 flex justify-center items-center">
+          <div className="flex space-x-2 items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <h1 className="text-xl font-bold tracking-tight">Please wait...</h1>
+          </div>
+        </div>
+      ) : (
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools />
+          <MyThemeProvider>
+            <Component {...pageProps} />
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={true}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme={"light"}
+            />
+          </MyThemeProvider>
+        </QueryClientProvider>
+      )}
     </ThemeProvider>
   );
 }
