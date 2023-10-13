@@ -132,7 +132,7 @@ const VariantAdvancedForm: FC<Props> = ({ variant, open, toggleHandler }) => {
                     )}
                   />
                 ))}
-                
+
                 {form.formState.errors.variant_selecteds?.message && (
                   <p className="text-sm font-medium text-destructive">
                     {form.formState.errors.variant_selecteds?.message}
@@ -147,11 +147,16 @@ const VariantAdvancedForm: FC<Props> = ({ variant, open, toggleHandler }) => {
                       <FormControl>
                         <Input
                           placeholder="Price"
-                          type="number"
+                          //type="number"
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const numericValue = inputValue.replace(
+                              /[^0-9]/g,
+                              ""
+                            );
+                            field.onChange(Number(numericValue));
+                          }}
                           //   disabled={addLoading || updateLoading}
                         />
                       </FormControl>
@@ -169,11 +174,16 @@ const VariantAdvancedForm: FC<Props> = ({ variant, open, toggleHandler }) => {
                       <FormControl>
                         <Input
                           placeholder="Stock"
-                          type="number"
+                         // type="number"
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const numericValue = inputValue.replace(
+                              /[^0-9]/g,
+                              ""
+                            );
+                            field.onChange(Number(numericValue));
+                          }}
                           //   disabled={addLoading || updateLoading}
                         />
                       </FormControl>

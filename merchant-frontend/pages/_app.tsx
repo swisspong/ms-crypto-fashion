@@ -43,7 +43,7 @@ export default function App({ Component, pageProps }: AppProps) {
               };
 
               if (customError.response?.status === 401) {
-                router.push("http://localhost:3000/signin");
+                router.push("http://example.com/signin");
               } else {
                 console.log(customError);
                 const data:
@@ -101,7 +101,7 @@ export default function App({ Component, pageProps }: AppProps) {
               console.log(`Status code: ${customError.response?.status}`);
               if (customError.response?.status === 401) {
                 // toast("Please sigin");
-                router.push("http://localhost:3000/signin");
+                router.push("http://example.com/signin");
               }
               //  else if (customError.response?.status === 400) {
               //   toast.error(customError.message)

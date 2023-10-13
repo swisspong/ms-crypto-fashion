@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,13 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+} from "../../ui/dialog";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+
 import {
   Form,
   FormControl,
@@ -21,38 +18,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import FileUploadOne from "../file-upload-one";
-import { useCredentialMerchant } from "@/src/hooks/merchant/mutations";
-import { useRouter } from "next/router";
-import useOpenStoreHook from "./open-store/use-open-store-hook";
-import { Loader2 } from "lucide-react";
-// const formSchema = z.object({
-//   first_name: z
-//     .string()
-//     .trim()
-//     .min(2, { message: "First name must be at least 2 characters." }),
-//   last_name: z
-//     .string()
-//     .trim()
-//     .min(2, { message: "Last name must be at least 2 characters." }),
-//   image_url: z.string().url(),
-// });
-const OpenStoreDialog = () => {
-  // const router = useRouter();
-  // const form = useForm<z.infer<typeof formSchema>>({
-  //   resolver: zodResolver(formSchema),
-  // });
-  // const credentialMutate = useCredentialMerchant();
-  // function onSubmit(values: z.infer<typeof formSchema>) {
-  //   console.log(values);
-  //   credentialMutate.mutate(values);
-  //   // mutate(values)
-  // }
+} from "../../ui/form";
+import FileUploadOne from "../../file-upload-one";
 
-  // useEffect(() => {
-  //   if (credentialMutate.isSuccess) router.push("/");
-  // }, [credentialMutate.isSuccess]);
+import useOpenStoreHook from "./use-open-store-hook";
+import { Loader2 } from "lucide-react";
+const OpenStoreDialog = () => {
   const { form, loading, onSubmit, success } = useOpenStoreHook();
   return (
     <>

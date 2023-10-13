@@ -36,8 +36,7 @@ export function Menu() {
     .toUpperCase()
     .replace("/", " > ");
   const { data, isLoading, isSuccess } = useUserInfo();
-  const {data: merchantInfo} = useMerchantById(data?.mcht_id)
-  
+  const { data: merchantInfo } = useMerchantById(data?.mcht_id);
 
   const {
     mutate,
@@ -46,9 +45,8 @@ export function Menu() {
   } = useSignout();
 
   useEffect(() => {
-
     if (logoutSuccess) {
-      router.push(`${process.env.HOST_CUSTOMER}/signin`);
+      router.push(`http://example.com/signin`);
     }
   }, [logoutSuccess]);
   return (

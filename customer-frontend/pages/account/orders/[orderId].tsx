@@ -115,7 +115,6 @@ export default function Order() {
                       // </Button>
                       <ButtonCancelOrder />
                     ) : undefined}
-                   
                   </div>
                 </CardHeader>
                 <CardContent className="grid gap-4">
@@ -338,7 +337,7 @@ export default function Order() {
                       </TableCell>
                       <TableCell></TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end items-center">
+                        {/* <div className="flex justify-end items-center">
                           {dataQuery.data?.status ===
                           StatusFormat.FULLFILLMENT || dataQuery.data?.status ===
                           StatusFormat.RECEIVED ? (
@@ -350,6 +349,32 @@ export default function Order() {
                               {dataQuery?.data?.status.toUpperCase()}
                             </Badge>
                           )}
+                        </div> */}
+                        <div className="flex justify-end items-center">
+                          {dataQuery.data?.status ===
+                            StatusFormat.FULLFILLMENT ||
+                          dataQuery.data?.status === StatusFormat.RECEIVED ? (
+                            <Badge className="bg-[#adfa1d] text-foreground hover:bg-[#adfa1d]">
+                              {/* {dataQuery.data.status.toUpperCase()} */}
+                              {dataQuery.data?.status ===
+                              StatusFormat.FULLFILLMENT
+                                ? "สมบูรณ์"
+                                : dataQuery.data?.status ===
+                                  StatusFormat.RECEIVED
+                                ? "รับสินค้าแล้ว"
+                                : undefined}
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-red-400 hover:bg-red-400">
+                              {/* {dataQuery?.data?.status.toUpperCase()} */}
+                              {dataQuery?.data?.status === "not fullfillment"
+                                ? "ยังไม่สมบูรณ์"
+                                : dataQuery?.data?.status === "cancel"
+                                ? "ยกเลิก"
+                                : undefined}
+                              {/* ไม่สมบูรณ์ */}
+                            </Badge>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -359,15 +384,36 @@ export default function Order() {
                       </TableCell>
                       <TableCell></TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end items-center">
+                        {/* <div className="flex justify-end items-center">
                           {dataQuery.data?.payment_status ===
-                            PaymentFormat.PAID ? (
+                          PaymentFormat.PAID ? (
                             <Badge className="bg-[#adfa1d] text-foreground hover:bg-[#adfa1d]">
                               {dataQuery.data.payment_status.toUpperCase()}
                             </Badge>
                           ) : (
                             <Badge className="bg-red-400 hover:bg-red-400">
                               {dataQuery?.data?.payment_status.toUpperCase()}
+                            </Badge>
+                          )}
+                        </div> */}
+                        <div className="flex justify-end items-center">
+                          {dataQuery.data?.payment_status ===
+                          PaymentFormat.PAID ? (
+                            <Badge className="bg-[#adfa1d] text-foreground hover:bg-[#adfa1d]">
+                              {/* {dataQuery.data.payment_status.toUpperCase()} */}
+                              จ่ายแล้ว
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-red-400 hover:bg-red-400">
+                              {/* {dataQuery?.data?.payment_status.toUpperCase()} */}
+                              {dataQuery?.data?.payment_status === "refund"
+                                ? "คืนเงิน"
+                                : dataQuery?.data?.payment_status === "pending"
+                                ? "รอดำเนินการ"
+                                : dataQuery?.data?.payment_status ===
+                                  "in_progress"
+                                ? "กำลังดำเนินการ"
+                                : undefined}
                             </Badge>
                           )}
                         </div>

@@ -17,7 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { MessageCircle } from "lucide-react";
+import { ChevronRight, MessageCircle } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useReplyCommnt } from "@/src/hooks/comment/mutations";
 import {
@@ -44,6 +44,7 @@ import { comment } from "postcss";
 import userProductHook from "@/components/product/use-product-hook";
 import { useWishlistInfo } from "@/src/hooks/wishlist/queries";
 import { count } from "console";
+import Link from "next/link";
 
 const ProductStorefrontPage = () => {
   const router = useRouter();
@@ -135,9 +136,7 @@ const ProductStorefrontPage = () => {
     if (isError) router.back();
   }, [isError]);
 
-  const dataCount = commentData?.length ?? 0
-  
-
+  const dataCount = commentData?.length ?? 0;
 
   return (
     <div className="bg-white">
@@ -157,9 +156,11 @@ const ProductStorefrontPage = () => {
                 </AvatarFallback>
               </Avatar>
               <div className="ml-4">
-                <AlertTitle className="underline">
-                  {merchantInfo?.name}
-                </AlertTitle>
+                <Link href={`/merchants/${router.query.mchtId as string}`}>
+                  <AlertTitle className="underline">
+                    {merchantInfo?.name}
+                  </AlertTitle>
+                </Link>
                 <AlertDescription>
                   {merchantInfo?.banner_title}
                 </AlertDescription>
@@ -258,127 +259,139 @@ const ProductStorefrontPage = () => {
           </div>
           <hr className="my-10" />
           <h4 className="text-lg font-bold leading-none">ความคิดเห็น</h4>
-          {dataCount > 0 ? commentData?.map((comment) => {
-            // console.log(comment.created_at)
-            const commentDate = new Date(comment.created_at);
-            // ดึงค่าวันที่, เดือน, และปี
-            var day = commentDate.getUTCDate();
-            var month = commentDate.getUTCMonth() + 1; // เนื่องจากเดือนใน JavaScript เริ่มนับที่ 0
-            var year = commentDate.getUTCFullYear();
+          {dataCount > 0 ? (
+            commentData?.map((comment) => {
+              // console.log(comment.created_at)
+              const commentDate = new Date(comment.created_at);
+              // ดึงค่าวันที่, เดือน, และปี
+              var day = commentDate.getUTCDate();
+              var month = commentDate.getUTCMonth() + 1; // เนื่องจากเดือนใน JavaScript เริ่มนับที่ 0
+              var year = commentDate.getUTCFullYear();
 
-            // แปลงเป็นสตริงที่ต้องการ
-            var formattedString = `${day}/${month}/${year}`;
-            return (
-              <>
-                <div className="bg-white p-4 rounded-lg shadow-xl mb-4">
-                  <div className="flex items-center">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src="/avatars/03.png" alt="@shadcn" />
-                      <AvatarFallback>
-                        {comment.user_name.split(" ")
-                          .map((word) => word.substring(0, 1).toUpperCase())
-                          .filter((word, index) => index <= 1)
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
+              // แปลงเป็นสตริงที่ต้องการ
+              var formattedString = `${day}/${month}/${year}`;
+              return (
+                <>
+                  <div className="bg-white p-4 rounded-lg shadow-xl mb-4">
+                    <div className="flex items-center">
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage src="/avatars/03.png" alt="@shadcn" />
+                        <AvatarFallback>
+                          {comment.user_name
+                            .split(" ")
+                            .map((word) => word.substring(0, 1).toUpperCase())
+                            .filter((word, index) => index <= 1)
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
 
-                    <p className="text-gray-600 text-sm font-medium ml-2">{comment.user_name}</p>
-
-                  </div>
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <button
-                      key={value}
-                      type="button"
-                      disabled={true}
-                      className={`text-1xl focus:outline-none ${value <= comment.rating
-                        ? "text-yellow-400"
-                        : "text-gray-300"
+                      <p className="text-gray-600 text-sm font-medium ml-2">
+                        {comment.user_name}
+                      </p>
+                    </div>
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        disabled={true}
+                        className={`text-1xl focus:outline-none ${
+                          value <= comment.rating
+                            ? "text-yellow-400"
+                            : "text-gray-300"
                         }`}
-                    >
-                      ★
-                    </button>
-                  ))}
-                  <p className="text-gray-800 mt-1">{comment.text}</p>
-                  <p className="text-gray-400 text-xs mt-2">
-                    {formattedString}
-                  </p>
-                  {me?.mcht_id === undefined ? (
-                    <></>
-                  ) : me.mcht_id !== (router.query.mchtId as string) ? (
-                    <></>
-                  ) : comment.message === undefined ? (
-                    <>
-                      <Popover>
-                        <PopoverTrigger asChild className="m-4">
-                          <Button variant="ghost">
-                            <MessageCircle className="mr-3" />
-                            ตอบกลับความคิดเห็น.
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className=" sm:w-60 md:w-98   ">
-                          <div className="grid gap-4">
-                            <div className="space-y-2">
-                              <p className="text-sm text-muted-foreground">
-                                ตอบกลับความคิดเห็นลูกค้า
-                              </p>
-                            </div>
-                            <form onSubmit={handleReplySubmit}>
-                              <div className="grid gap-2">
-                                <div className="grid  items-center ">
-                                  <Textarea
-                                    id={comment.comment_id}
-                                    name="message"
-                                    onChange={handleInputChange}
-                                    className="col-span-2 h-8"
-                                  />
+                      >
+                        ★
+                      </button>
+                    ))}
+                    <p className="text-gray-800 mt-1">{comment.text}</p>
+                    <p className="text-gray-400 text-xs mt-2">
+                      {formattedString}
+                    </p>
+                    {me?.mcht_id === undefined ? (
+                      <></>
+                    ) : me.mcht_id !== (router.query.mchtId as string) ? (
+                      <></>
+                    ) : comment.message === undefined ? (
+                      <>
+                        <Popover>
+                          <PopoverTrigger asChild className="m-4">
+                            <Button variant="ghost">
+                              <MessageCircle className="mr-3" />
+                              ตอบกลับความคิดเห็น.
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className=" sm:w-60 md:w-98   ">
+                            <div className="grid gap-4">
+                              <div className="space-y-2">
+                                <p className="text-sm text-muted-foreground">
+                                  ตอบกลับความคิดเห็นลูกค้า
+                                </p>
+                              </div>
+                              <form onSubmit={handleReplySubmit}>
+                                <div className="grid gap-2">
+                                  <div className="grid  items-center ">
+                                    <Textarea
+                                      id={comment.comment_id}
+                                      name="message"
+                                      onChange={handleInputChange}
+                                      className="col-span-2 h-8"
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="text-right">
-                                <Button className="mt-3" type="submit">
-                                  ตอบกลับ
-                                </Button>
-                              </div>
-                            </form>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </>
-                  ) : (
-                    <></>
-                  )}
+                                <div className="text-right">
+                                  <Button className="mt-3" type="submit">
+                                    ตอบกลับ
+                                  </Button>
+                                </div>
+                              </form>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </>
+                    ) : (
+                      <></>
+                    )}
 
-                  {comment.message && (
-                    <>
-                      <div className="m-1 ml-10 shadow-md p-4">
-                        <div className="flex items-center">
-                          <Avatar className="h-9 w-9">
-                            <AvatarImage src="/avatars/03.png" alt="@shadcn" />
-                            <AvatarFallback>
-                              {merchantInfo?.name
-                                .split(" ")
-                                .map((word) =>
-                                  word.substring(0, 1).toUpperCase()
-                                )
-                                .filter((word, index) => index <= 1)
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <p className="text-gray-600 text-sm font-medium ml-2">
-                            {merchantInfo?.name}
+                    {comment.message && (
+                      <>
+                        <div className="m-1 ml-10 shadow-md p-4">
+                          <div className="flex items-center">
+                            <Avatar className="h-9 w-9">
+                              <AvatarImage
+                                src="/avatars/03.png"
+                                alt="@shadcn"
+                              />
+                              <AvatarFallback>
+                                {merchantInfo?.name
+                                  .split(" ")
+                                  .map((word) =>
+                                    word.substring(0, 1).toUpperCase()
+                                  )
+                                  .filter((word, index) => index <= 1)
+                                  .join("")}
+                              </AvatarFallback>
+                            </Avatar>
+                            <p className="text-gray-600 text-sm font-medium ml-2">
+                              {merchantInfo?.name}
+                            </p>
+                          </div>
+                          <p className="text-gray-800 mt-1">
+                            {comment.message}
                           </p>
                         </div>
-                        <p className="text-gray-800 mt-1">{comment.message}</p>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </>
-            );
-          }) : dataCount === 0 ? (
+                      </>
+                    )}
+                  </div>
+                </>
+              );
+            })
+          ) : dataCount === 0 ? (
             <Alert className="mt-2">
               <AlertTitle className="text-center">ไม่มีความคิดเห็น</AlertTitle>
             </Alert>
-          ) : (<></>)}
+          ) : (
+            <></>
+          )}
         </div>
       </Container>
       <Footer />

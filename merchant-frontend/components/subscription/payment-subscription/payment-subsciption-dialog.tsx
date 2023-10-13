@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,74 +7,102 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { Label } from "../ui/label";
-import { Icons } from "../icons";
-import { Input } from "../ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import * as z from "zod"
-import { useForm } from "react-hook-form"
+} from "../../ui/dialog";
+import { Button } from "../../ui/button";
+import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
+import { Label } from "../../ui/label";
+import { Icons } from "../../icons";
+import { Input } from "../../ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../ui/select";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateToken, useCreditCard } from "@/src/hooks/payment/mutations";
 import { useRouter } from "next/router";
+import usePaymentSubscriptionHook from "./use-payment-subscription-hook";
 
-const formSchema = z.object({
-  name: z.string().trim().min(5, { message: "name card must be at least 5 characters." }),
-  number: z.string().max(16, { message: "number card must be at most 16 number." }),
-  expiration_month: z.string().trim(),
-  expiration_year: z.string().trim(),
-  security_code: z.string().trim().min(3, { message: "least 1 number." })
-})
+// const formSchema = z.object({
+//   name: z
+//     .string()
+//     .trim()
+//     .min(5, { message: "name card must be at least 5 characters." }),
+//   number: z
+//     .string()
+//     .max(16, { message: "number card must be at most 16 number." }),
+//   expiration_month: z.string().trim(),
+//   expiration_year: z.string().trim(),
+//   security_code: z.string().trim().min(3, { message: "least 1 number." }),
+// });
 
 const PaymentSubscriptionDialog = () => {
+  // const [open, setOpen] = useState(false);
+  // const router = useRouter();
 
-  const router = useRouter()
+  // const {
+  //   mutateAsync: tokenHandler,
+  //   isLoading: tokenLoading,
+  //   isSuccess: tokenSuccess,
+  // } = useCreateToken();
+  // const { mutate: creditHandler, isLoading, isSuccess } = useCreditCard();
 
-  const { mutateAsync: tokenHandler, isLoading: tokenLoading, isSuccess: tokenSuccess } = useCreateToken()
-  const { mutate: creditHandler, isLoading, isSuccess } = useCreditCard()
+  // const form = useForm<z.infer<typeof formSchema>>({
+  //   resolver: zodResolver(formSchema),
+  //   defaultValues: {
+  //     name: "",
+  //     number: "",
+  //     security_code: "",
+  //     expiration_month: undefined,
+  //     expiration_year: undefined,
+  //   },
+  // });
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      number: "",
-      security_code: "",
-      expiration_month: undefined,
-      expiration_year: undefined
-    }
-  })
+  // async function onSubmit(values: z.infer<typeof formSchema>) {
+  //   const omise: ICreateOmiseToken = {
+  //     card: {
+  //       ...values,
+  //       expiration_month: parseInt(values.expiration_month),
+  //       expiration_year: parseInt(values.expiration_year),
+  //     },
+  //   };
+  //   const token = await tokenHandler(omise);
+  //   console.log(token);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const omise: ICreateOmiseToken = {
-      card: {
-        ...values,
-        expiration_month: parseInt(values.expiration_month),
-        expiration_year: parseInt(values.expiration_year)
-      }
-    }
-    const token = await tokenHandler(omise)
-    console.log(token)
+  //   const body: ICreateCreditCard = {
+  //     amount_: 300,
+  //     token: token.id,
+  //   };
 
-    const body: ICreateCreditCard = {
-      amount_: 300,
-      token: token.id
-    }
+  //   creditHandler(body);
+  // }
 
-    creditHandler(body)
-
-  }
-
-  useEffect(() => {
-    if (isSuccess) {
-      router.push("/");
-    }
-  }, [isSuccess]);
-
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     router.push("/");
+  //   }
+  // }, [isSuccess]);
+  const { open, onOpenChange, form, isLoading, onSubmit, tokenLoading } =
+    usePaymentSubscriptionHook();
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        onOpenChange(o);
+      }}
+    >
       <DialogTrigger asChild>
         <Button className="w-full">ชำระเงิน ฿300.00</Button>
       </DialogTrigger>
@@ -126,7 +154,6 @@ const PaymentSubscriptionDialog = () => {
           </RadioGroup>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-
               <FormField
                 control={form.control}
                 name="name"
@@ -168,7 +195,11 @@ const PaymentSubscriptionDialog = () => {
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
                       <FormLabel>เดือนหมดอายุบัตร</FormLabel>
-                      <Select disabled={isLoading || tokenLoading} onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        disabled={isLoading || tokenLoading}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger id="month">
                             <SelectValue placeholder="เลือกเดือน" />
@@ -199,7 +230,11 @@ const PaymentSubscriptionDialog = () => {
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
                       <FormLabel>ปีหมดอายุบัตร</FormLabel>
-                      <Select disabled={isLoading || tokenLoading} onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        disabled={isLoading || tokenLoading}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger id="year">
                             <SelectValue placeholder="เลือกปี" />
@@ -222,9 +257,6 @@ const PaymentSubscriptionDialog = () => {
                     </FormItem>
                   )}
                 />
-
-
-
               </div>
               <div className="p-2">
                 <FormField
@@ -246,14 +278,16 @@ const PaymentSubscriptionDialog = () => {
                 />
               </div>
               <div className="p-2">
-                <Button className="w-full font-bold" disabled={isLoading || tokenLoading}>
-                  {isLoading || tokenLoading && (
+                <Button
+                  className="w-full font-bold"
+                  disabled={isLoading || tokenLoading}
+                >
+                  {isLoading || tokenLoading ? (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  )}
+                  ) : undefined}
                   ชำระเงิน
                 </Button>
               </div>
-
             </form>
           </Form>
         </div>

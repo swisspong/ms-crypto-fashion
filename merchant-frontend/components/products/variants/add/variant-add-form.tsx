@@ -38,9 +38,8 @@ const VariantAddForm = () => {
     showSelectItems,
     showSelectValue,
   } = useVariantAddHook();
-  console.log(form.formState.errors.variant_selecteds?.root?.message)
+  console.log(form.formState.errors.variant_selecteds?.root?.message);
   return (
-    
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -125,7 +124,11 @@ const VariantAddForm = () => {
                     <Input
                       placeholder="ราคา (ต้องกรอก)"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        const numericValue = inputValue.replace(/[^0-9]/g, "");
+                        field.onChange(Number(numericValue));
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -146,7 +149,14 @@ const VariantAddForm = () => {
                       <Input
                         placeholder="จำนวน (ต้องกรอก)"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          const numericValue = inputValue.replace(
+                            /[^0-9]/g,
+                            ""
+                          );
+                          field.onChange(Number(numericValue));
+                        }}
                       />
                       <Button type="submit" size={"sm"} className="">
                         ยืนยัน

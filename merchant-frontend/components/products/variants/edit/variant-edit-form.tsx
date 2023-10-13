@@ -52,7 +52,7 @@ const VariantEditForm: FC<Props> = ({ variant }) => {
     open,
     toggleHandler,
   } = useVariantEditHook();
-  
+
   initForm(variant);
   return (
     <>
@@ -104,7 +104,9 @@ const VariantEditForm: FC<Props> = ({ variant }) => {
                                       productData
                                     )}
                                   </SelectLabel>
-                                  <SelectItem value={"none"}>ไม่ระบุ</SelectItem>
+                                  <SelectItem value={"none"}>
+                                    ไม่ระบุ
+                                  </SelectItem>
                                   {showSelectItems(
                                     fieldItem.vgrp_id,
                                     productData?.groups
@@ -137,7 +139,14 @@ const VariantEditForm: FC<Props> = ({ variant }) => {
                         disabled={!isEdit}
                         placeholder="ราคา (ต้องกรอก)"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          const numericValue = inputValue.replace(
+                            /[^0-9]/g,
+                            ""
+                          );
+                          field.onChange(Number(numericValue));
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -159,9 +168,14 @@ const VariantEditForm: FC<Props> = ({ variant }) => {
                           disabled={!isEdit}
                           placeholder="จำนวน (ต้องกรอก)"
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const numericValue = inputValue.replace(
+                              /[^0-9]/g,
+                              ""
+                            );
+                            field.onChange(Number(numericValue));
+                          }}
                         />
                         {isEdit ? (
                           <>

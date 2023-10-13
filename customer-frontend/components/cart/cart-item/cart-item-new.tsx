@@ -98,7 +98,8 @@ const CartItemNew: React.FC<CartItemProps> = ({
               <img
                 src={image(data)}
                 alt=""
-                className="object-cover object-center"
+               // className="object-cover object-center"
+               className="object-contain object-center h-full w-full"
               />
             </div>
           </div>
