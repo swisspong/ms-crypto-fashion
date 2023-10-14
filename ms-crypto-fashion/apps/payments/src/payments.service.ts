@@ -119,44 +119,49 @@ export class PaymentsService {
 
 
   async paidManyOrders(data: PaidOrderingEvent) {
-    const { amount_, token, orders, chkt_id, user_id, payment_method } = data
+    try {
 
-    if (payment_method === PaymentMethodFormat.CREDIT) {
-      const amount = amount_ * 100 //convert amount_
-      const charge = await this.omise.charges.create({
-        amount: amount,
-        currency: 'thb',
-        card: token
-      });
-      const payload: IUpdateOrderStatusEventPayload = {
-        user_id,
-        chkt_id,
-        orderIds: orders.map(order => order.orderId),
-        sucess: true,
-        chargeId: charge.id
+      const { amount_, token, orders, chkt_id, user_id, payment_method } = data
+
+      if (payment_method === PaymentMethodFormat.CREDIT) {
+        const amount = amount_ * 100 //convert amount_
+        const charge = await this.omise.charges.create({
+          amount: amount,
+          currency: 'thb',
+          card: token
+        });
+        const payload: IUpdateOrderStatusEventPayload = {
+          user_id,
+          chkt_id,
+          orderIds: orders.map(order => order.orderId),
+          sucess: true,
+          chargeId: charge.id
+        }
+        await this.transactionTemporaryRepository.createMany(orders.map(order => ({
+          tx_id: `tx_${this.uid.stamp(15)}`,
+          amount: order.total,
+          order_id: order.orderId,
+          payment_method: PaymentMethodFormat.CREDIT,
+          user_id,
+          mcht_id: order.mchtId,
+          type: TransactionFormat.DEPOSIT
+        })))
+        // await this.transactionPurchaseRepository.createMany(
+        //   orders.map(order => ({
+        //     tx_id: `tx_${this.uid.stamp(15)}`,
+        //     amount: order.total,
+        //     type: TransactionFormat.DEPOSIT,
+        //     order_id: order.orderId,
+        //     payment_method: PaymentMethodFormat.CREDIT,
+        //     user_id,
+        //     mcht_id: order.mchtId
+        //   })))
+        await lastValueFrom(this.orderClient.emit(UPDATE_ORDER_STATUS_EVENT, payload))
+      } else {
+
       }
-      await this.transactionTemporaryRepository.createMany(orders.map(order => ({
-        tx_id: `tx_${this.uid.stamp(15)}`,
-        amount: order.total,
-        order_id: order.orderId,
-        payment_method: PaymentMethodFormat.CREDIT,
-        user_id,
-        mcht_id: order.mchtId,
-        type: TransactionFormat.DEPOSIT
-      })))
-      // await this.transactionPurchaseRepository.createMany(
-      //   orders.map(order => ({
-      //     tx_id: `tx_${this.uid.stamp(15)}`,
-      //     amount: order.total,
-      //     type: TransactionFormat.DEPOSIT,
-      //     order_id: order.orderId,
-      //     payment_method: PaymentMethodFormat.CREDIT,
-      //     user_id,
-      //     mcht_id: order.mchtId
-      //   })))
-      await lastValueFrom(this.orderClient.emit(UPDATE_ORDER_STATUS_EVENT, payload))
-    } else {
-
+    } catch (error) {
+      this.logger.log(error)
     }
 
   }
@@ -704,8 +709,8 @@ export class PaymentsService {
       const totalWithdraw = aggregate.find(item => item._id === TransactionFormat.WITHDRAW)?.totalAmount ?? 0
       const amount = Math.ceil(totalDeposit - totalWithdraw - fiftyInWei - tmpTotal)
       // if (payload.amount * (1 * 10 ** 18) > amount) throw new BadRequestException("Insufficient balance")
-      this.logger.log(totalDeposit,totalWithdraw)
-      this.logger.log("amount 1",amount)
+      this.logger.log(totalDeposit, totalWithdraw)
+      this.logger.log("amount 1", amount)
       if (amount <= 0) throw new BadRequestException("Insufficient balance")
       await this.transactionTemporaryRepository.create({
 

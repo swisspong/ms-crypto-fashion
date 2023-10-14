@@ -157,40 +157,46 @@ export class CheckoutsService {
         }
     }
     async createOrder(userId: string, chktId: string, orderingDto: OrderingDto) {
-        const checkout = await this.checkoutsRepository.findOne({ chkt_id: chktId, user_id: userId })
-        if (!checkout) throw new NotFoundException("Checkout not found.")
-        const cart = await this.cartsRepository.findOne({ user_id: userId })
-        if (!cart) throw new NotFoundException("Cart not found.")
-        const errorItems = this.filterErrorItem(checkout.payment_method, checkout.items, cart.items)
-        if (!orderingDto.token && orderingDto.payment_method === PaymentMethodFormat.CREDIT) {
-            throw new BadRequestException("Invalid payment")
-        }
-        if (checkout.payment_method === PaymentMethodFormat.WALLET && !checkout.is_orederd) {
-            await this.checkoutsRepository.findAndUpdate({ _id: checkout._id }, { $set: { is_orederd: true } })
+        try {
 
-        }
-        if (errorItems.length > 0) {
-            throw new BadRequestException("Product information is incorrect")
-            //  await this.cartsRepository.findOneAndUpdate({ _id: cart._id }, { $set: { items: cart.items } })
-        } else {
-            this.logger.warn("emit event ordering")
-            await lastValueFrom(
-                this.orderClient.emit(ORDERING_EVENT, {
-                    ...checkout,
-                    ...orderingDto
-                })
-            )
-
-        }
-
-        if (errorItems.length > 0)
-            if (orderingDto.payment_method === PaymentMethodFormat.WALLET) {
-
-                // const orders = await Promise.all(newOrders.map(async order => ({ orderId: order.order_id, total: order.total, wei: await this.getWei(order.total) })))
-                // return { data: orders }
+            const checkout = await this.checkoutsRepository.findOne({ chkt_id: chktId, user_id: userId })
+            if (!checkout) throw new NotFoundException("Checkout not found.")
+            const cart = await this.cartsRepository.findOne({ user_id: userId })
+            if (!cart) throw new NotFoundException("Cart not found.")
+            const errorItems = this.filterErrorItem(checkout.payment_method, checkout.items, cart.items)
+            if (!orderingDto.token && orderingDto.payment_method === PaymentMethodFormat.CREDIT) {
+                throw new BadRequestException("Invalid payment")
             }
-        return {
-            //chkt_id: errorItems.length > 0 ? checkout.chkt_id : undefined
+            if (checkout.payment_method === PaymentMethodFormat.WALLET && !checkout.is_orederd) {
+                await this.checkoutsRepository.findAndUpdate({ _id: checkout._id }, { $set: { is_orederd: true } })
+
+            }
+            if (errorItems.length > 0) {
+                throw new BadRequestException("Product information is incorrect")
+                //  await this.cartsRepository.findOneAndUpdate({ _id: cart._id }, { $set: { items: cart.items } })
+            } else {
+                this.logger.warn("emit event ordering")
+                await lastValueFrom(
+                    this.orderClient.emit(ORDERING_EVENT, {
+                        ...checkout,
+                        ...orderingDto
+                    })
+                )
+
+            }
+
+            if (errorItems.length > 0)
+                if (orderingDto.payment_method === PaymentMethodFormat.WALLET) {
+
+                    // const orders = await Promise.all(newOrders.map(async order => ({ orderId: order.order_id, total: order.total, wei: await this.getWei(order.total) })))
+                    // return { data: orders }
+                }
+            return {
+                //chkt_id: errorItems.length > 0 ? checkout.chkt_id : undefined
+            }
+        } catch (error) {
+            this.logger.error(error)
+            throw error
         }
 
     }

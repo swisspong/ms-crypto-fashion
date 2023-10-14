@@ -31,6 +31,7 @@ import { useSignup } from "@/src/hooks/auth/mutations";
 import React from "react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 const inter = Inter({ subsets: ["latin"] });
 const formSchema = z.object({
   username: z
@@ -48,6 +49,7 @@ const formSchema = z.object({
 });
 export default function Signup() {
   const router = useRouter();
+  // const searchParams = useSearchParams();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -58,7 +60,19 @@ export default function Signup() {
   }
 
   React.useEffect(() => {
-    if (isSuccess) router.push("/");
+    if (isSuccess) {
+      toast.success(`ลงทะเบียนสำเร็จ กรุณาตรวจสอบอีเมลของคุณ`, {
+        // position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        // theme: "dark",
+      });
+      router.push("/signin");
+    }
   }, [isSuccess]);
   return (
     <div className="min-h-screen h-full ">

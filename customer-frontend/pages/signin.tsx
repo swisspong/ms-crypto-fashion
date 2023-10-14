@@ -32,6 +32,8 @@ import { withoutUser } from "@/src/hooks/auth/auth-hook";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import GoogleButton from "@/components/google-button";
+import { toast } from "react-toastify";
+import { useSearchParams } from "next/navigation";
 const inter = Inter({ subsets: ["latin"] });
 const formSchema = z.object({
   email: z
@@ -53,7 +55,25 @@ export default function Signin() {
     console.log(values);
     signinHandler(values);
   }
-
+  const searchParams = useSearchParams();
+  React.useEffect(() => {
+    const errorMessage = searchParams.get("error");
+    if (errorMessage && errorMessage === "Incorrect_Email") {
+      if (typeof window !== "undefined") {
+        window.history.replaceState(null, "", "/signin");
+        toast.error(`อีเมลนี้ถูกใช้แล้ว`, {
+          // position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          // theme: "dark",
+        });
+      }
+    }
+  }, []);
   React.useEffect(() => {
     if (isSuccess) router.push("/");
   }, [isSuccess]);
@@ -140,7 +160,6 @@ export default function Signin() {
                     ) : null}
                     เข้าสู่ระบบด้วยบัญชี
                   </Button>
-
 
                   <div className="w-full grid grid-cols-2 gap-6">
                     <div>

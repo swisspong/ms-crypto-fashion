@@ -1207,112 +1207,117 @@ export class ProductsService {
   }
 
   async cutStock(data: IProductOrderingEventPayload) {
-    await Promise.all(data.items.map(async (item) => {
-      const newStock = -item.quantity
-      const currentProduct = await this.productsRepository.findOnePopulate({ prod_id: item.prod_id },
-        [
-          {
-            model: "Merchant",
-            path: 'merchant',
-          }
-        ]
-      ) as IProduct
-      const payload: PaidOrderingEvent = {
-        payment_method: data.payment_method,
-        user_id: data.user_id,
-        chkt_id: data.chkt_id,
-        amount_: data.total,
-        token: data.token,
-        orders: data.orders
-      }
-      const chktProduct = item.product
-      if (
-        currentProduct &&
-        chktProduct &&
-        this.productsUtilService.isValid(currentProduct) &&
-        this.productsUtilService.isValid(chktProduct) &&
-        this.productsUtilService.isEqual(currentProduct, chktProduct) &&
-        this.productsUtilService.isIncludePayment(currentProduct, data.payment_method) &&
-        this.productsUtilService.isIncludePayment(chktProduct, data.payment_method)
-      ) {
-
-        if (
-          item.vrnt_id &&
-          this.productsUtilService.isHasVariant(currentProduct) &&
-          this.productsUtilService.isIncludeVariant(currentProduct, item.vrnt_id) &&
-          this.productsUtilService.isEnoughVariant(currentProduct, item.vrnt_id, item.quantity)
-        ) {
-          const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id, "variants.vrnt_id": item.vrnt_id }, { $inc: { "variants.$.stock": newStock } }) as IProduct
-          if (product && this.productsUtilService.isEnoughVariant(product, item.vrnt_id, 0)) {
-            if (data.payment_method === PaymentMethodFormat.CREDIT) {
-              this.logger.warn("Emit to payment", data.payment_method)
-
-              await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
-              await lastValueFrom(
-                this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
-                  ...product
-                })
-              )
-            } else if (data.payment_method === PaymentMethodFormat.WALLET) {
-              const payload: IDeleteChktEventPayload = {
-                user_id: data.user_id,
-                chkt_id: data.chkt_id
-              }
-              await lastValueFrom(
-                this.cartsClient.emit(CARTS_DELETE_ITEMS_EVENT, payload)
-              )
+    try {
+      this.logger.log("cutStock",data)
+      await Promise.all(data.items.map(async (item) => {
+        const newStock = -item.quantity
+        const currentProduct = await this.productsRepository.findOnePopulate({ prod_id: item.prod_id },
+          [
+            {
+              model: "Merchant",
+              path: 'merchant',
             }
-            return
-          }
-        } else if (
-          !item.vrnt_id &&
-          !this.productsUtilService.isHasVariant(currentProduct) &&
-          this.productsUtilService.isEnoughStock(currentProduct, item.quantity)
-        ) {
-          const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id }, { $inc: { stock: newStock } }) as IProduct
-          if (product && this.productsUtilService.isEnoughStock(product, 0)) {
-            if (data.payment_method === PaymentMethodFormat.CREDIT) {
-              this.logger.warn("Emit to payment no options", data.payment_method)
-              await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
-              await lastValueFrom(
-                this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
-                  ...product
-                })
-              )
-            } else if (data.payment_method === PaymentMethodFormat.WALLET) {
-              const payload: IDeleteChktEventPayload = {
-                user_id: data.user_id,
-                chkt_id: data.chkt_id
-              }
-              await lastValueFrom(
-                this.cartsClient.emit(CARTS_DELETE_ITEMS_EVENT, payload)
-              )
-            }
-            return
-          }
-
+          ]
+        ) as IProduct
+        const payload: PaidOrderingEvent = {
+          payment_method: data.payment_method,
+          user_id: data.user_id,
+          chkt_id: data.chkt_id,
+          amount_: data.total,
+          token: data.token,
+          orders: data.orders
         }
+        const chktProduct = item.product
+        if (
+          currentProduct &&
+          chktProduct &&
+          this.productsUtilService.isValid(currentProduct) &&
+          this.productsUtilService.isValid(chktProduct) &&
+          this.productsUtilService.isEqual(currentProduct, chktProduct) &&
+          this.productsUtilService.isIncludePayment(currentProduct, data.payment_method) &&
+          this.productsUtilService.isIncludePayment(chktProduct, data.payment_method)
+        ) {
+
+          if (
+            item.vrnt_id &&
+            this.productsUtilService.isHasVariant(currentProduct) &&
+            this.productsUtilService.isIncludeVariant(currentProduct, item.vrnt_id) &&
+            this.productsUtilService.isEnoughVariant(currentProduct, item.vrnt_id, item.quantity)
+          ) {
+            const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id, "variants.vrnt_id": item.vrnt_id }, { $inc: { "variants.$.stock": newStock } }) as IProduct
+            if (product && this.productsUtilService.isEnoughVariant(product, item.vrnt_id, 0)) {
+              if (data.payment_method === PaymentMethodFormat.CREDIT) {
+                this.logger.warn("Emit to payment", data.payment_method)
+
+                await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+                await lastValueFrom(
+                  this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+                    ...product
+                  })
+                )
+              } else if (data.payment_method === PaymentMethodFormat.WALLET) {
+                const payload: IDeleteChktEventPayload = {
+                  user_id: data.user_id,
+                  chkt_id: data.chkt_id
+                }
+                await lastValueFrom(
+                  this.cartsClient.emit(CARTS_DELETE_ITEMS_EVENT, payload)
+                )
+              }
+              return
+            }
+          } else if (
+            !item.vrnt_id &&
+            !this.productsUtilService.isHasVariant(currentProduct) &&
+            this.productsUtilService.isEnoughStock(currentProduct, item.quantity)
+          ) {
+            const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id }, { $inc: { stock: newStock } }) as IProduct
+            if (product && this.productsUtilService.isEnoughStock(product, 0)) {
+              if (data.payment_method === PaymentMethodFormat.CREDIT) {
+                this.logger.warn("Emit to payment no options", data.payment_method)
+                await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+                await lastValueFrom(
+                  this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
+                    ...product
+                  })
+                )
+              } else if (data.payment_method === PaymentMethodFormat.WALLET) {
+                const payload: IDeleteChktEventPayload = {
+                  user_id: data.user_id,
+                  chkt_id: data.chkt_id
+                }
+                await lastValueFrom(
+                  this.cartsClient.emit(CARTS_DELETE_ITEMS_EVENT, payload)
+                )
+              }
+              return
+            }
+
+          }
 
 
-        //throw error here
+          //throw error here
 
 
-        // if (item.vrnt_id) {
-        //   const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id, "variants.vrnt_id": item.vrnt_id }, { $inc: { "variants.$.stock": newStock } })
-        //   if (!product) throw new BadRequestException("Product info has changed")
-        //   const variant = product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
-        //   if (!variant) throw new BadRequestException("Product info has changed")
-        //   if (variant.stock < 0) throw new BadRequestException("Product info has chagned")
-        //   return product
-        // } else {
+          // if (item.vrnt_id) {
+          //   const product = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id, "variants.vrnt_id": item.vrnt_id }, { $inc: { "variants.$.stock": newStock } })
+          //   if (!product) throw new BadRequestException("Product info has changed")
+          //   const variant = product.variants.find(variant => variant.vrnt_id === item.vrnt_id)
+          //   if (!variant) throw new BadRequestException("Product info has changed")
+          //   if (variant.stock < 0) throw new BadRequestException("Product info has chagned")
+          //   return product
+          // } else {
 
-        //   const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id }, { $inc: { stock: newStock } })
-        //   if (!newProduct) throw new BadRequestException("Product info has changed")
-        //   if (newProduct.stock < 0) throw new BadRequestException("Out of stock")
-        //   return newProduct
-        // }
-      }
-    }))
+          //   const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: item.product.prod_id }, { $inc: { stock: newStock } })
+          //   if (!newProduct) throw new BadRequestException("Product info has changed")
+          //   if (newProduct.stock < 0) throw new BadRequestException("Out of stock")
+          //   return newProduct
+          // }
+        }
+      }))
+    } catch (error) {
+      this.logger.error(error)
+    }
   }
 
   async returnStock(payload: IProductReturnStockEventPayload) {

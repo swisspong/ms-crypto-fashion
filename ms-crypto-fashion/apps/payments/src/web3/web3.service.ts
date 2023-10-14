@@ -59,6 +59,8 @@ export class Web3Service implements OnApplicationBootstrap {
 
     //const CONTRACT_ADDRESS = configuration.networks["5777"].address
     //const CONTRACT_ABI = configuration.abi;
+
+    
     const output = await this.provider.getBlockNumber();
     console.log(output);
     // contract.listeners("PaymentDone")
