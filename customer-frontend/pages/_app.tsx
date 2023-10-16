@@ -134,7 +134,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <div className="h-screen w-screen rounded-lg p-8 flex justify-center items-center">
           <div className="flex space-x-2 items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <h1 className="text-xl font-bold tracking-tight">Please wait...</h1>
+            <h1 className="text-xl font-bold tracking-tight">กรุณารอสักครู่...</h1>
           </div>
         </div>
       ) : (
