@@ -32,6 +32,7 @@ import React from "react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import GoogleButton from "@/components/google-button";
 const inter = Inter({ subsets: ["latin"] });
 const formSchema = z.object({
   username: z
@@ -90,10 +91,11 @@ export default function Signup() {
                 <CardContent className="grid gap-4">
                   <div className="grid grid-cols-2 gap-6">
                     <MetaMask />
-                    <Button type="button" variant="outline">
+                    {/* <Button type="button" variant="outline">
                       <Icons.google className="mr-2 h-4 w-4" />
                       Google
-                    </Button>
+                    </Button> */}
+                     <GoogleButton />
                   </div>
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">

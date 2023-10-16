@@ -91,7 +91,7 @@ export class AuthService {
   async signupLocal(signupLocalDto: SignupLocalDto, res: any) {
     try {
       const user = await this.usersRepository.findOne({ email: signupLocalDto.email })
-      
+
       if ((user && user.isVerified) || (user && user.google_id)) throw new HttpException('Email is already exist.', HttpStatus.BAD_REQUEST);
 
       const hash = await this.hashService.hashPassword(signupLocalDto.password)
@@ -99,10 +99,12 @@ export class AuthService {
 
       // newUser or Update Email Token
 
-      const newUser = (user && user.emailToken) ? await this.usersRepository.findOneAndUpdate({emailToken: user.emailToken}, {$set: {
-        emailToken
-      }}):
-      await this.usersRepository.create({ ...signupLocalDto, user_id: `user_${this.uid.stamp(15)}`, password: hash, emailToken })  
+      const newUser = (user && user.emailToken) ? await this.usersRepository.findOneAndUpdate({ emailToken: user.emailToken }, {
+        $set: {
+          emailToken
+        }
+      }) :
+        await this.usersRepository.create({ ...signupLocalDto, user_id: `user_${this.uid.stamp(15)}`, password: hash, emailToken })
 
       const mailOptions = {
         from: this.configService.get('MAIL_USER', { infer: true }) as string,
@@ -236,32 +238,14 @@ export class AuthService {
 
 
   async googleSignin(profile: any, res: Response) {
-    this.logger.log(profile)
-    const users = await this.usersRepository.find({ $or: [{ google_id: profile.id }, { email: profile.emails[0].value }] })
-    if (users.length <= 0) {
-      const newUser = await this.usersRepository.create({ user_id: `user_${this.uid.stamp(15)}`, email: profile.emails[0].value, google_id: profile.id, username: profile.displayName })
-      const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
+    try {
+      this.logger.log(profile)
+      const users = await this.usersRepository.find({ $or: [{ google_id: profile.id }, { email: profile.emails[0].value }] })
+      if (users.length <= 0) {
+        const newUser = await this.usersRepository.create({ user_id: `user_${this.uid.stamp(15)}`, email: profile.emails[0].value, google_id: profile.id, username: profile.displayName })
+        const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
 
-      // res.cookie("token", accessToken)
-      res.cookie("token", accessToken, {
-        // secure: true, 
-        httpOnly: false,
-        // sameSite: 'none',
-        domain: 'example.com'
-      })
-      res.redirect(`http://example.com`);
-      return
-    } else {
-      const user = users.find(user => user.google_id === profile.id && user.email === profile.emails[0].value)
-      if (!user) {
-        res.redirect(
-          `http://example.com/signin?error=${encodeURIComponent(
-            "Incorrect_Email"
-          )}`
-        );
-        return;
-      } else {
-        const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, permission: user.permission ,merchant:user.mcht_id})
+        // res.cookie("token", accessToken)
         res.cookie("token", accessToken, {
           // secure: true, 
           httpOnly: false,
@@ -270,8 +254,31 @@ export class AuthService {
         })
         res.redirect(`http://example.com`);
         return
+      } else {
+        const user = users.find(user => user.google_id === profile.id && user.email === profile.emails[0].value)
+        if (!user) {
+          res.redirect(
+            `http://example.com/signin?error=${encodeURIComponent(
+              "Incorrect_Email"
+            )}`
+          );
+          return;
+        } else {
+          const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, permission: user.permission, merchant: user.mcht_id })
+          res.cookie("token", accessToken, {
+            // secure: true, 
+            httpOnly: false,
+            // sameSite: 'none',
+            domain: 'example.com'
+          })
+          res.redirect(`http://example.com`);
+          return
+        }
       }
+    } catch (error) {
+      this.logger.error(error)
     }
+
   }
 
 
@@ -281,8 +288,8 @@ export class AuthService {
       const user = await this.usersRepository.findOne({ emailToken: token })
       if (user) {
         updateUser = await this.usersRepository.findOneAndUpdate({ user_id: user.user_id }, {
-          $set: {  isVerified: true },
-          $unset: { emailToken: 1 } 
+          $set: { isVerified: true },
+          $unset: { emailToken: 1 }
         })
       }
 
@@ -293,7 +300,7 @@ export class AuthService {
     }
   }
 
-  
+
 
 
 }
