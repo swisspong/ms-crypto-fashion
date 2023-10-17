@@ -4,9 +4,9 @@ import { GetUser, GetUserId, Roles } from '@app/common/decorators';
 import { PaymentMethodFormat, RoleFormat } from '@app/common/enums';
 import { ApiTags } from '@nestjs/swagger';
 import { Ctx, EventPattern, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
-import { FINDONE_ORDER_EVENT, ORDERING_EVENT, ORDER_SERVICE, UPDATEREVIEW_ORDER_EVENT, UPDATE_ORDER_STATUS_EVENT, UPDATE_STATUS_REFUND_EVENT } from '@app/common/constants/order.constant';
+import { FINDONE_ORDER_EVENT, ORDERING_EVENT, ORDER_ERROR_EVENT, ORDER_SERVICE, UPDATEREVIEW_ORDER_EVENT, UPDATE_ORDER_STATUS_EVENT, UPDATE_STATUS_REFUND_EVENT } from '@app/common/constants/order.constant';
 import { RmqService } from '@app/common';
-import { FindOrderById, IOrderStatusRefundEvent, IUpdateOrderStatusEventPayload, OrderingEventPayload, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
+import { FindOrderById, IOrderErrorEvent, IOrderStatusRefundEvent, IUpdateOrderStatusEventPayload, OrderingEventPayload, UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
 import { OrderPaginationDto } from './dto/order-pagination.dto';
 import { FullfillmentDto } from './dto/fullfuillment.dto';
 import { CancelOrderDto } from './dto/cancel-order.dto';
@@ -44,6 +44,12 @@ export class OrdersController {
   async handlerOrdering(@Payload() data: OrderingEventPayload, @Ctx() context: RmqContext) {
     this.logger.warn("Received from checkout", data)
     await this.ordersService.ordering(data)
+    this.rmqService.ack(context);
+  }
+  @EventPattern(ORDER_ERROR_EVENT)
+  async handlerOrderError(@Payload() data: IOrderErrorEvent, @Ctx() context: RmqContext) {
+    this.logger.warn("Received from payment", data)
+    await this.ordersService.orderErrorHandler(data.orderIds)
     this.rmqService.ack(context);
   }
   @EventPattern(UPDATE_ORDER_STATUS_EVENT)

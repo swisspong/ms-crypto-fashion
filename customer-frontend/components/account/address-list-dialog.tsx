@@ -32,6 +32,10 @@ import {
 } from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { AddAddressForm } from "./address/add/add-address-form";
+import {
+  useDeleteAddress,
+  useUpdateAddress,
+} from "@/src/hooks/address/mutations";
 
 interface Props {
   selected?: string;
@@ -42,6 +46,19 @@ const AddressListDialog: FC<Props> = ({ selected, setAddressSelected }) => {
   const addresses = useMyAddress();
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [updateData, setUpdateData] = useState<IAddress | undefined>(undefined);
+  const [id, setId] = useState<string>();
+
+  const {
+    mutate: updateHandler,
+    isLoading: updateLoading,
+    isSuccess: updateSuccess,
+  } = useUpdateAddress();
+  const {
+    mutate: deleteHandler,
+    isLoading: deleteLoading,
+    isSuccess: deleteSuccess,
+  } = useDeleteAddress();
   return (
     <>
       <Dialog>
@@ -62,6 +79,10 @@ const AddressListDialog: FC<Props> = ({ selected, setAddressSelected }) => {
               <div className="grid gap-4">
                 {addresses.data?.map((address) => (
                   <AddressItem
+                    setUpdateHandler={(data: IAddress) => {
+                      setUpdateData(data);
+                    }}
+                    setIdHandler={(id: string) => setId(id)}
                     setAddressSelected={setAddressSelected}
                     checkbox={true}
                     selected={selected}
@@ -85,13 +106,27 @@ const AddressListDialog: FC<Props> = ({ selected, setAddressSelected }) => {
       </Dialog>
       <div className="grid grid-cols-2 gap-4"></div>
       <EditAddressForm
+        updateHandler={(body: { id: string; data: IAddressPayload }) =>
+          updateHandler(body)
+        }
+        isSuccess={updateSuccess}
+        isLoading={updateLoading}
+        data={updateData!}
+        //
         open={openEdit}
         openHandler={(open) => setOpenEdit(open)}
       />
-      <DeleteDialog
-        deleteHandler={() => { }}
+      {/* <DeleteDialog
+        deleteHandler={() => {}}
         isLoading={false}
         isSuccess={false}
+        open={openDelete}
+        openHandler={(o) => setOpenDelete(o)}
+      /> */}
+      <DeleteDialog
+        deleteHandler={() => deleteHandler(id!)}
+        isLoading={deleteLoading}
+        isSuccess={deleteSuccess}
         open={openDelete}
         openHandler={(o) => setOpenDelete(o)}
       />

@@ -48,8 +48,11 @@ const CheckoutPage = () => {
       if (addresses.data.length > 0) {
         setAddressSelected(addresses.data[0].addr_id);
       }
+      if(addresses.data.length<=0){
+        setAddressSelected(undefined)
+      }
     }
-  }, [addresses.isSuccess]);
+  }, [addresses.isSuccess,addresses.data?.length]);
   return (
     <div className="bg-white">
       <Navbar />
@@ -108,7 +111,7 @@ const CheckoutPage = () => {
                   </CardContent>
                 </Card>
               ) : (
-                <Card>
+                <Card className="mb-2">
                   <CardContent className="pt-6">
                     <div className="flex justify-between items-center">
                       <div>
@@ -117,9 +120,16 @@ const CheckoutPage = () => {
                           เพิ่มที่อยู่ของคุณเพื่อดำเนินการชำระเงินให้สำเร็จ
                         </p>
                       </div>
-                      <Link href={"/account/address"}>
+                      {/* <Link href={"/account/address"}>
                         <Button variant="outline">เพิ่มที่อยู่</Button>
-                      </Link>
+                      </Link> */}
+                      <div>
+                      <AddressListDialog
+                        selected={addressSelected}
+                        setAddressSelected={setAddressSelected}
+                      />
+                      </div>
+                  
                       {/* <AddAddressForm /> */}
                     </div>
                   </CardContent>

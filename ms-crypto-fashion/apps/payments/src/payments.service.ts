@@ -6,8 +6,8 @@ import { lastValueFrom } from 'rxjs';
 import { ClientProxy } from '@nestjs/microservices';
 import { IReceivedOrder, IRefundEvent, PaidOrderingEvent, UpdateChargeMerchant } from '@app/common/interfaces/payment.event.interface';
 import { CHARGE_MONTH_EVENT, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
-import { ORDER_SERVICE, UPDATE_ORDER_STATUS_EVENT, UPDATE_STATUS_REFUND_EVENT } from '@app/common/constants/order.constant';
-import { IOrderStatusRefundEvent, IUpdateOrderStatusEventPayload } from '@app/common/interfaces/order-event.interface';
+import { ORDER_ERROR_EVENT, ORDER_SERVICE, UPDATE_ORDER_STATUS_EVENT, UPDATE_STATUS_REFUND_EVENT } from '@app/common/constants/order.constant';
+import { IOrderErrorEvent, IOrderStatusRefundEvent, IUpdateOrderStatusEventPayload } from '@app/common/interfaces/order-event.interface';
 import { PaymentMethodFormat } from '@app/common/enums';
 import { TransactionPurchaseRepository } from './transaction-purchase.repository';
 import ShortUniqueId from 'short-unique-id';
@@ -119,9 +119,9 @@ export class PaymentsService {
 
 
   async paidManyOrders(data: PaidOrderingEvent) {
+    const { amount_, token, orders, chkt_id, user_id, payment_method } = data
     try {
 
-      const { amount_, token, orders, chkt_id, user_id, payment_method } = data
 
       if (payment_method === PaymentMethodFormat.CREDIT) {
         const amount = amount_ * 100 //convert amount_
@@ -161,10 +161,15 @@ export class PaymentsService {
 
       }
     } catch (error) {
+      const payload: IOrderErrorEvent = {
+        orderIds: orders.map(order => order.orderId)
+      }
+      await lastValueFrom(this.orderClient.emit(ORDER_ERROR_EVENT, payload))
       this.logger.log(error)
     }
 
   }
+
   async evnetRefund(data: IRefundEvent) {
     console.log("refund receive", data)
     const userTx = await this.transactionPurchaseRepository.findOne({ order_id: data.orderId })

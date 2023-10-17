@@ -984,4 +984,30 @@ export class OrdersService {
       message: "success"
     }
   }
+
+
+  async orderErrorHandler(orderIds: string[]) {
+    try {
+      const productErrorPayload: IProductReturnStockEventPayload = { data: [] }
+      const orders = await this.ordersRepository.find({ order_id: { $in: orderIds } })
+      if (orders.length > 0) {
+        orders.map(order => {
+          order.items.map(item => {
+            const foundIndex = productErrorPayload.data.findIndex(product => product.prodId === item.prod_id && product.vrntId === item.vrnt_id)
+            if (foundIndex > 0) {
+              productErrorPayload.data[foundIndex].stock = productErrorPayload.data[foundIndex].stock + item.quantity
+            } else {
+              productErrorPayload.data.push({ mchtId: order.order_id, prodId: item.prod_id, vrntId: item.vrnt_id, stock: item.quantity })
+            }
+          })
+        })
+        await this.ordersRepository.deleteMany({ order_id: { $in: orderIds } })
+        if (productErrorPayload.data.length > 0) {
+          await lastValueFrom(this.productsClient.emit(RETURN_STOCK_EVENT, productErrorPayload))
+        }
+      }
+    } catch (error) {
+      this.logger.error(error)
+    }
+  }
 }

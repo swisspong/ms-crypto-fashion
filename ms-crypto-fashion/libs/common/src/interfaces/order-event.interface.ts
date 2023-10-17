@@ -106,3 +106,7 @@ export interface IOrderStatusRefundEvent {
     orderId: string
 }
 
+export interface IOrderErrorEvent {
+    orderIds: string[]
+}
+
