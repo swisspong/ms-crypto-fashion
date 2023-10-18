@@ -247,6 +247,14 @@ services:
       - admin-client
     ports:
       - 80:80
+  # uptime-kuma:
+  #   image: louislam/uptime-kuma:1
+  #   container_name: kuma
+  #   volumes:
+  #     - ./uptime-kuma-data:/app/data
+  #   restart: always
+  #   ports:
+  #     - 5001:3001  # <Host Port>:<Container Port>
 # networks:
 #   default:
 #     name: bridge

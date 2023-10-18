@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import * as crypto from "crypto"
 import { UsersRepository } from './users/users.repository';
 import { SigninMetamaskDto } from './dto/signin-metamask-dto.dto';
@@ -156,7 +156,8 @@ export class AuthService {
         })
         return { accessToken }
       } else {
-        throw new HttpException('You are not admin.', HttpStatus.BAD_REQUEST);
+        // throw new HttpException('You are not admin.', HttpStatus.BAD_REQUEST);
+        throw new ForbiddenException()
 
       }
 

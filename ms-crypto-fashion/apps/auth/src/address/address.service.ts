@@ -54,6 +54,7 @@ export class AddressService {
 
       return result
     } catch (error) {
+      throw error
       console.log(error)
     }
   }
