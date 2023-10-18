@@ -26,7 +26,7 @@ import {
   
   export const sidebarItems: SidebarProp = [
     {
-      name: "แผงควบคุม",
+      name: "แดชบอร์ด",
       href: `/`,
       icon: LayoutGrid,
     },{

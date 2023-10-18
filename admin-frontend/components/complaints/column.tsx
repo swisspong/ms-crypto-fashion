@@ -4,6 +4,7 @@ import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { ComplaintFormat } from "@/src/types/enums/complaint";
+import Link from "next/link";
 
 interface columnProps {
     setHandler: (status: string | undefined, id: string | undefined) => void;
@@ -25,10 +26,71 @@ export const columns = ({
             accessorKey: "type",
             header: () => <div>#ประเภทคำร้อง</div>,
             cell: ({ row }) => {
-                const type = row.original.type
+                const type = row.original.type.toLocaleUpperCase()
                 return (
                     <Badge variant={row.original.type.toLocaleUpperCase() === "MERCHANT" ? "secondary" : "zinc"}>{type === "MERCHANT" ? "ร้านค้า" : "สินค้า"}</Badge>
                 )
+            }
+        },
+        {
+            accessorKey: "prod_id",
+            header: () => <div>#ดูสินค้าหรือร้านค้า</div>,
+            cell: ({ row }) => {
+                const type = row.original.type.toLocaleUpperCase()
+                const prod = row.original.prod_id
+                const mcht = row.original.mecht_id
+
+
+                if (type === "MERCHANT") {
+                    if (mcht) {
+                        return (
+                            <Link href={`${process.env.HOST_CUSTOMER}/merchants/${mcht}`}>
+                                <Button onClick={(e) => {
+                                    e.stopPropagation()
+                                }}
+                                    variant="secondary">
+                                    รายละเอียดร้าน
+                                </Button>
+                            </Link>
+                        )
+                    } else {
+                        return (
+                            <Button
+                                disabled={true}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                }}
+                                variant="secondary">
+                                ไม่มีร้านค้านี้อยู่แล้ว
+                            </Button>
+                        )
+                    }
+
+                } else {
+                    if (prod) {
+                        return (
+                            <Link href={`${process.env.HOST_CUSTOMER}/merchants/${prod}`}>
+                                <Button onClick={(e) => {
+                                    e.stopPropagation()
+                                }}
+                                    variant="secondary">
+                                    รายละเอียดสินค้า
+                                </Button>
+                            </Link>
+                        )
+                    } else {
+                        return (
+                            <Button
+                                disabled={true}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                }}
+                                variant="secondary">
+                                ไม่มีสินค้านี้อยู่แล้ว
+                            </Button>
+                        )
+                    }
+                }
             }
         },
         {
@@ -39,11 +101,11 @@ export const columns = ({
                 const status = row.original.status.toLocaleUpperCase()
                 return (
                     <Badge variant={row.original.status.toLocaleUpperCase() === "PENDING" ? "destructive" : row.original.status.toLocaleUpperCase() === "PROGRESS" ? "sky" : "green"}>
-                        {status === ComplaintFormat.PENDING.toLocaleUpperCase() ? "รอดำเนินการ":
-                         status === ComplaintFormat.PROGRESS.toLocaleUpperCase()? "กำลังดำเนินการ":
-                         status === ComplaintFormat.RESOLVED.toLocaleUpperCase()? "แก้ไขเรียบร้อย": "ปิด"
-                         }
-                        </Badge>
+                        {status === ComplaintFormat.PENDING.toLocaleUpperCase() ? "รอดำเนินการ" :
+                            status === ComplaintFormat.PROGRESS.toLocaleUpperCase() ? "กำลังดำเนินการ" :
+                                status === ComplaintFormat.RESOLVED.toLocaleUpperCase() ? "แก้ไขเรียบร้อย" : "ปิด"
+                        }
+                    </Badge>
                 )
             }
         },
@@ -53,7 +115,7 @@ export const columns = ({
                 const status = Object.values(ComplaintFormat)
                 const com = ComplaintFormat
                 const statusCurrent = row.original.status.toLocaleUpperCase()
-                
+
                 return (
                     <div className="w-full flex flex-wrap justify-end" >
                         <Card className="pt-1 pb-1  text-center ">
@@ -67,7 +129,7 @@ export const columns = ({
                                     key={val}
                                     disabled={statusCurrent == val.toLocaleUpperCase()}
                                     variant="secondary">{(val == com.PENDING ? "รอดำเนินการ" : val == com.PROGRESS ? "กำลังดำเนินการ" : val == com.RESOLVED ? "แก้ไขเรียบร้อย" : "ปิด")}
-                                    </Button>
+                                </Button>
                             ))}
                         </Card>
                     </div>
