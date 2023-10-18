@@ -6,15 +6,15 @@ import { CreateMerchantDto } from './merchants/dto/create-merchant.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateProductDto } from './dto/create-product.dto';
 import { GetProductDto } from './dto/get-product.dto';
-import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
+import { Ctx, EventPattern, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import { GetProductNoTypeSerchatDto } from './dto/get-product-no-type-search.dto';
 import { GetProductStoreDto } from './dto/get-product-store.dto';
 import { StoreQueryDto } from './dto/store-query.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { PRODUCTS_ORDERING_EVENT, RETURN_STOCK_EVENT } from '@app/common/constants/products.constant';
+import { PRODUCTS_DELETE_EVENT, PRODUCTS_ORDERING_EVENT, RETURN_STOCK_EVENT } from '@app/common/constants/products.constant';
 import { OrderingEventPayload } from '@app/common/interfaces/order-event.interface';
 import { RmqService } from '@app/common';
-import { IProductOrderingEventPayload, IProductReturnStockEventPayload } from '@app/common/interfaces/products-event.interface';
+import { IMerchantId, IProductOrderingEventPayload, IProductReturnStockEventPayload } from '@app/common/interfaces/products-event.interface';
 
 @ApiTags("Products")
 @Controller('products')
@@ -112,6 +112,7 @@ export class ProductsController {
     return this.productsService.removeByAdmin(id);
   }
 
+ 
 
 
 

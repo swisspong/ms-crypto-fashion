@@ -19,7 +19,7 @@ import { PaymentFormat, StatusFormat } from "@/src/types/enums/order";
 import { ReviewFormat } from "@/src/types/enums/review";
 
 interface columnProps {
-  setIdHandler: (id: string | undefined) => void;
+  setIdHandler: (id: string | undefined, mcht: string | undefined) => void;
   openSheetHandler: () => void;
   openDialogHandler: () => void;
   setDataItems: (body: Item[]) => void;
@@ -153,7 +153,7 @@ export const columns = ({
                   // console.log(filteredItems)
 
                   await setDataItems(data );
-                  setIdHandler(row.original.order_id as string);
+                  setIdHandler(row.original.order_id as string, row.original.mcht_id as string);
                   openSheetHandler();
                 }}
                 variant="default"
@@ -203,7 +203,7 @@ export const columns = ({
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIdHandler(row.original.order_id as string);
+                    setIdHandler(row.original.order_id as string, row.original.mcht_id as string);
                     openDialogHandler();
                   }}
                 >

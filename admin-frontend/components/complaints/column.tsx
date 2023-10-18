@@ -38,7 +38,7 @@ export const columns = ({
             cell: ({ row }) => {
                 const type = row.original.type.toLocaleUpperCase()
                 const prod = row.original.prod_id
-                const mcht = row.original.mecht_id
+                const mcht = row.original.mcht_id
 
 
                 if (type === "MERCHANT") {
@@ -69,7 +69,7 @@ export const columns = ({
                 } else {
                     if (prod) {
                         return (
-                            <Link href={`${process.env.HOST_CUSTOMER}/merchants/${prod}`}>
+                            <Link href={`${process.env.HOST_CUSTOMER}/merchants/${mcht}/product/${prod}`}>
                                 <Button onClick={(e) => {
                                     e.stopPropagation()
                                 }}

@@ -21,10 +21,13 @@ import { IProduct, OrderingEventPayload } from '@app/common/interfaces/order-eve
 import { ProductsUtilService } from '@app/common/utils/products/products-util.service';
 import { CartsUtilService } from '@app/common/utils/carts/carts-util.service';
 import { PaidOrderingEvent } from '@app/common/interfaces/payment.event.interface';
-import { IProductOrderingEventPayload, IProductReturnStockEventPayload } from '@app/common/interfaces/products-event.interface';
+import { IMerchantId, IProductOrderingEventPayload, IProductReturnStockEventPayload } from '@app/common/interfaces/products-event.interface';
 import { PAID_ORDERING_EVENT, PAYMENT_SERVICE } from '@app/common/constants/payment.constant';
 import { IDeleteChktEventPayload, IDeleteProductId } from '@app/common/interfaces/carts.interface';
 import { ProductsValidator } from '@app/common/utils/products/products-validator';
+import { ObjectId } from 'mongodb';
+import { ComplaintsRepository } from './complaints/complaints.repository';
+import { CommentsRepository } from './comments/comments.repository';
 
 @Injectable()
 export class ProductsService {
@@ -75,6 +78,7 @@ export class ProductsService {
     })
     return newProduct;
   }
+  
   async findAllProducts(productFilter: GetProductDto) {
     let sort = {}
     if (productFilter.sort) {
@@ -1208,7 +1212,7 @@ export class ProductsService {
 
   async cutStock(data: IProductOrderingEventPayload) {
     try {
-      this.logger.log("cutStock",data)
+      this.logger.log("cutStock", data)
       await Promise.all(data.items.map(async (item) => {
         const newStock = -item.quantity
         const currentProduct = await this.productsRepository.findOnePopulate({ prod_id: item.prod_id },
@@ -1376,4 +1380,16 @@ export class ProductsService {
     }))
 
   }
+
+  // async productDeleteByMerchant(data: IMerchantId) {
+  //   try {
+  //     const deleteProduct= await this.productsRepository.findAndDelete({ merchant: new ObjectId(data._id) })
+  //     this.logger.warn("delete product by merchant id")
+  //     const deleteComplaint = await this.complaintsRepository.findAndDelete({mcht_id: data.mcht_id})
+  //     this.logger.warn("delete complaint list by merchant id")
+  //   } catch (error) {
+  //     console.log(error);
+
+  //   }
+  // }
 }

@@ -21,6 +21,11 @@ import { ProductsRepository } from '../products.repository';
 import { GetProductStoreDto } from '../dto/get-product-store.dto';
 import { Product } from '../schemas/product.schema';
 import { StoreQueryDto } from '../dto/store-query.dto';
+import { ObjectId } from "mongodb"
+import { PRODUCTS_DELETE_EVENT, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
+import { IMerchantId } from '@app/common/interfaces/products-event.interface';
+import { ComplaintsRepository } from '../complaints/complaints.repository';
+import { CommentsRepository } from '../comments/comments.repository';
 interface StatusTotal {
     _id: MerchantStatus;
     count: number
@@ -32,6 +37,8 @@ export class MerchantsService {
     constructor(
         @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
         private readonly jwtUtilsService: JwtUtilsService,
+        private readonly complaintsRepository: ComplaintsRepository,
+        private readonly commentsRepository: CommentsRepository,
         private readonly merchantsRepository: MerchantsRepository,
         private readonly omiseService: OmiseService,
         private readonly productsRepository: ProductsRepository
@@ -216,7 +223,7 @@ export class MerchantsService {
 
     async myMerchant(userId: string, merchantId: string, productFilter: GetProductStoreDto) {
         // const user = await this.usersRepository.findOne({ user_id: userId, merchant: new Types.ObjectId(merchantId) })
-        this.logger.log("mcht_id",merchantId)
+        this.logger.log("mcht_id", merchantId)
         let sort = {}
         if (productFilter.sort) {
             const sortArr = productFilter.sort.split(",")
@@ -357,7 +364,7 @@ export class MerchantsService {
     }
     async merchantStorefront(userId: string, merchantId: string, productFilter: GetProductStoreDto) {
         // const user = await this.usersRepository.findOne({ user_id: userId, merchant: new Types.ObjectId(merchantId) })
-        console.log(merchantId,"--------------------------------------------------------------------------")
+        console.log(merchantId, "--------------------------------------------------------------------------")
         let sort = {}
         if (productFilter.sort) {
             const sortArr = productFilter.sort.split(",")
@@ -628,10 +635,16 @@ export class MerchantsService {
     }
     async deleteMerchantById(mcht_id: string) {
         try {
+            const merchant = await this.merchantsRepository.findOne({ mcht_id })
             const data: DeleteMerchantData = {
                 mcht_id
             }
 
+            const deleteProducts = await this.productsRepository.findAndDelete({ merchant: new ObjectId(merchant._id) })
+
+            const deleteComplaints = await this.complaintsRepository.findAndDelete({mcht_id: merchant.mcht_id})
+
+            const deleteComments = await this.commentsRepository.findAndDelete({mcht_id: merchant.mcht_id})
             await lastValueFrom(
                 this.authClient.emit(DELETE_MERCHANT_EVENT, {
                     ...data

@@ -80,6 +80,12 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
         return document;
     }
+    async findAndDelete(filterQuery: FilterQuery<TDocument>) {
+        const document = await this.model.deleteMany(filterQuery, { lean: true })
+       
+
+        return document;
+    }
     async findOneAndUpdate(
         filterQuery: FilterQuery<TDocument>,
         update: UpdateQuery<TDocument>,

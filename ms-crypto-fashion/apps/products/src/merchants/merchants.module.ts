@@ -10,6 +10,8 @@ import { AUTH_SERVICE } from '@app/common/constants';
 import { ProductsModule } from '../products.module';
 import { OmiseService } from './omise.service';
 import { Product, ProductSchema } from '../schemas/product.schema';
+import { ComplaintsModule } from '../complaints/complaints.module';
+import { CommentsModule } from '../comments/comments.module';
 
 @Module({
   imports: [
@@ -17,7 +19,9 @@ import { Product, ProductSchema } from '../schemas/product.schema';
     RmqModule.register({ name: AUTH_SERVICE }),
     RmqModule,
     MongooseModule.forFeature([{ name: Merchant.name, schema: MerchantSchema }]),
-    forwardRef(() => ProductsModule)
+    forwardRef(() => ProductsModule),
+    ComplaintsModule,
+    CommentsModule
   ],
   controllers: [MerchantsController],
   providers: [

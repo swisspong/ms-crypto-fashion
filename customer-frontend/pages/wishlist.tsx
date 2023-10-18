@@ -9,7 +9,6 @@ import { useMyWishlist } from "@/src/hooks/wishlist/queries"
 const WishListPage = () => {
 
     const { data } = useMyWishlist()
-    console.log(data);
     const dataCount = data?.items.length ?? 0
     return (
         <div className="bg-white">

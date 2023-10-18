@@ -1,3 +1,4 @@
+import { Types } from "mongoose"
 import { ICartItem } from "./carts.interface"
 import { IOrderItemsEvent, IProduct } from "./order-event.interface"
 
@@ -74,5 +75,10 @@ export interface IProductOrderingEventPayload {
 }
 export interface IProductReturnStockEventPayload {
     data: { prodId: string, mchtId: string, vrntId?: string, stock: number }[]
+}
+
+export interface IMerchantId {
+    _id: Types.ObjectId
+    mcht_id: string 
 }
 

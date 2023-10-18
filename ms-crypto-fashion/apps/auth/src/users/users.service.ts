@@ -146,7 +146,12 @@ export class UsersService {
   async deleteMerchantIdInUser(data: DeleteMerchantData) {
     try {
       this.logger.warn("update_merchant", data)
-      const result = await this.userRepository.findAndUpdate({ mcht_id: data.mcht_id }, { $set: { mcht_id: "", role: RoleFormat.USER } })
+      const result = await this.userRepository.findAndUpdate({ mcht_id: data.mcht_id }, { 
+        $set: {  role: RoleFormat.USER },
+        $unset: {
+          mcht_id: 1
+        } 
+      })
       this.logger.warn("update to merchant =>", result)
       await lastValueFrom(
         this.productClient.emit(MERCHANT_DELETE_P, data)
