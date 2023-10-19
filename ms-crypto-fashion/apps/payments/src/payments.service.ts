@@ -78,6 +78,9 @@ export class PaymentsService {
         card: token
       });
 
+      console.log(charge);
+      
+
 
       // const amount_convert = charge.amount / 100;
       const amount_convert = amount / 100;

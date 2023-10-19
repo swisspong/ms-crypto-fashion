@@ -12,16 +12,20 @@ import { OmiseService } from './omise.service';
 import { Product, ProductSchema } from '../schemas/product.schema';
 import { ComplaintsModule } from '../complaints/complaints.module';
 import { CommentsModule } from '../comments/comments.module';
+import { CARTS_SERVICE } from '@app/common/constants/carts.constant';
+import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
   imports: [
     JwtUtilsModule,
     RmqModule.register({ name: AUTH_SERVICE }),
+    RmqModule.register({ name: CARTS_SERVICE }),
     RmqModule,
     MongooseModule.forFeature([{ name: Merchant.name, schema: MerchantSchema }]),
     forwardRef(() => ProductsModule),
     ComplaintsModule,
-    CommentsModule
+    CommentsModule,
+    CategoriesModule
   ],
   controllers: [MerchantsController],
   providers: [

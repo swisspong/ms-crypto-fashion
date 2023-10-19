@@ -4,13 +4,27 @@ import Navbar from "@/components/navbar"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import WishListItem from "@/components/wishlist/wishlist-item"
 import { withUser } from "@/src/hooks/auth/auth-hook"
+import { useRemoveManyItemInWishlist } from "@/src/hooks/wishlist/mutations"
 import { useMyWishlist } from "@/src/hooks/wishlist/queries"
+import { useEffect } from "react"
+import { toast } from "react-toastify"
 
 const WishListPage = () => {
 
-    const { data } = useMyWishlist()
+    const { data, isSuccess, isLoading } = useMyWishlist()
+    const { mutate: handleRemoveWishlist } = useRemoveManyItemInWishlist()
     const dataCount = data?.items.length ?? 0
     console.log(data)
+    useEffect(() => {
+        if (isSuccess) {
+            if (data.errorItems.length > 0) {
+                toast(`มีสินค้าบางชั้นออกจากร้านค้า\nคุณสามารถเลือกดูสินค้าอื่น ๆ ได้ต่อ`);
+                handleRemoveWishlist({
+                    items: data.errorItems.map((item) => item.item_id) ?? [],
+                })
+            }
+        }
+    }, [isSuccess])
     return (
         <div className="bg-white">
             <Navbar />

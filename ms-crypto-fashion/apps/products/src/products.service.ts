@@ -78,7 +78,7 @@ export class ProductsService {
     })
     return newProduct;
   }
-  
+
   async findAllProducts(productFilter: GetProductDto) {
     let sort = {}
     if (productFilter.sort) {
@@ -1207,6 +1207,14 @@ export class ProductsService {
   async removeByAdmin(prod_id: string) {
     const product = await this.productsRepository.findOne({ prod_id })
     if (!product) throw new NotFoundException("Category not found.")
+    const payload: IDeleteProductId = {
+      prod_id: product.prod_id
+    }
+    await lastValueFrom(
+      this.cartsClient.emit(CARTS_DELETE_ITEMS_BY_PROUCT_ID_EVENT, {
+        ...payload
+      })
+    )
     return await this.productsRepository.findOneAndDelete({ prod_id })
   }
 

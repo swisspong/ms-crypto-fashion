@@ -8,6 +8,9 @@ import { lastValueFrom } from "rxjs";
 import { Product } from "apps/products/src/schemas/product.schema";
 import { WishListItem } from "./schemas/wishlists.schema";
 import { IDeleteMerchantId, IDeleteProductId } from "@app/common/interfaces/carts.interface";
+import { Types } from "mongoose";
+import { CartsRepository } from "../carts.repository";
+import { DeleteManyItemsDto } from "../dto/delet-many-items.dto";
 
 @Injectable()
 export class WishListService {
@@ -15,6 +18,7 @@ export class WishListService {
 
     constructor(
         private readonly wishListRepository: WishListRepository,
+        private readonly cartsRepository: CartsRepository,
         @Inject(PRODUCTS_SERVICE) private readonly productsClient: ClientProxy,
     ) { }
 
@@ -81,15 +85,35 @@ export class WishListService {
 
     async deleteMerchantFormWishlistItemEvent(data: IDeleteMerchantId) {
 
-        const wishlistUpdate = await this.wishListRepository.findAndUpdate({
-            "items.merchant": data._id
-        }, {
-            $set: {
-                'items.$.product.available': false,
-            }
-        })
+        const wishlistUpdate = await this.wishListRepository.findAndUpdate
+            ({
+                "items.product.merchant._id": `${data._id}`
+            }, {
+                $set: {
+                    "items.$.product.available": false
+                }
+            })
+
+        const cartsUpdate = await this.cartsRepository.findAndUpdate
+            ({
+                "items.product.merchant._id": `${data._id}`
+            }, {
+                $set: {
+                    "items.$.product.available": false
+                }
+            })
+
         this.logger.warn("event delete", wishlistUpdate)
     }
+
+    async removeMany(userId: string, dto: DeleteManyItemsDto) {
+        let wishlist = await this.wishListRepository.findOne({ user_id: userId })
+        wishlist = wishlist ? wishlist : await this.wishListRepository.create({ user_id: userId, wishl_id: `wishl_${this.uid.stamp(15)}`, items: [] })
+        wishlist.items = wishlist.items.filter(item => !dto.items.some(id => id === item.item_id))
+        const newWish = await this.wishListRepository.findOneAndUpdate({ wishl_id: wishlist.wishl_id }, { items: wishlist.items })
+        return newWish
+      }
+    
 
     filterItem(errorItems: WishListItem[], items: WishListItem[]): WishListItem[] {
         try {

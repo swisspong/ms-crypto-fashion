@@ -18,6 +18,7 @@ import { CheckoutsRepository } from './checkouts/checkouts.repository';
 import { Product } from 'apps/products/src/schemas/product.schema';
 import { ProductsValidator } from '@app/common/utils/products/products-validator';
 import { CartItemsValidator } from '@app/common/utils/carts/cart-items-validator';
+import { WishListRepository } from './wishlists/wishlists.repository';
 
 @Injectable()
 export class CartsService {
@@ -29,7 +30,8 @@ export class CartsService {
     @Inject(PRODUCTS_SERVICE) private readonly productsClient: ClientProxy,
     private readonly productsUtilService: ProductsUtilService,
     private readonly productsValidator: ProductsValidator,
-    private readonly cartItemsValidator: CartItemsValidator
+    private readonly cartItemsValidator: CartItemsValidator,
+    private readonly wishlistRepository: WishListRepository
   ) { }
 
   async updateCartItemEvent(data: ProductPayloadDataEvent) {
@@ -60,6 +62,7 @@ export class CartsService {
     //     },
     //   },
     // })
+    
     const cartsUpdate = await this.cartsRepository.findAndUpdate({
       "items.prod_id": data.prod_id
     }, {
@@ -69,6 +72,16 @@ export class CartsService {
       }
     })
     this.logger.warn("event delete", cartsUpdate)
+
+    const wishlistUpdate = await this.wishlistRepository.findAndUpdate({
+      "items.prod_id": data.prod_id
+    }, {
+      $set: {
+        'items.$.product.available': false
+      }
+    })
+
+    this.logger.warn("event delete", wishlistUpdate)
   }
 
   async findCartByUserId(userId: string) {

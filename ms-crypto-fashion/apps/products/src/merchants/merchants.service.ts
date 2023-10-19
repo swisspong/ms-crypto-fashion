@@ -28,6 +28,7 @@ import { ComplaintsRepository } from '../complaints/complaints.repository';
 import { CommentsRepository } from '../comments/comments.repository';
 import { CARTS_SERVICE, WISHLIST_DELETE_ITEMS_BY_MERCHANT_ID_EVENT } from '@app/common/constants/carts.constant';
 import { IDeleteMerchantId } from '@app/common/interfaces/carts.interface';
+import { CategoriesRepository } from '../categories/categories.repository';
 interface StatusTotal {
     _id: MerchantStatus;
     count: number
@@ -43,6 +44,7 @@ export class MerchantsService {
         private readonly complaintsRepository: ComplaintsRepository,
         private readonly commentsRepository: CommentsRepository,
         private readonly merchantsRepository: MerchantsRepository,
+        private readonly categoryRepository: CategoriesRepository,
         private readonly omiseService: OmiseService,
         private readonly productsRepository: ProductsRepository
     ) { }
@@ -652,11 +654,17 @@ export class MerchantsService {
 
             const deleteComments = await this.commentsRepository.findAndDelete({ mcht_id: merchant.mcht_id })
 
+            const deleteCategory = await this.categoryRepository.findAndDelete({mcht_id: merchant.mcht_id})
+
+           
+
             await lastValueFrom(
                 this.cartClient.emit(WISHLIST_DELETE_ITEMS_BY_MERCHANT_ID_EVENT, {
                     ...id
                 })
             )
+
+           
             await lastValueFrom(
                 this.authClient.emit(DELETE_MERCHANT_EVENT, {
                     ...data
