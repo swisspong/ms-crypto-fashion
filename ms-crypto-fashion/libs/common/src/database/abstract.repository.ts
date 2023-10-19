@@ -9,6 +9,7 @@ import {
     PipelineStage,
     PopulateOptions,
     UpdateWithAggregationPipeline,
+    QueryOptions
 } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 
@@ -71,18 +72,20 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     async aggregate(pipeline?: PipelineStage[]) {
         return this.model.aggregate(pipeline)
     }
-    async findAndUpdate(filterQuery: FilterQuery<TDocument>, update: UpdateWithAggregationPipeline | UpdateQuery<TDocument>) {
-        const document = await this.model.updateMany(filterQuery, update, { lean: true, new: true })
+    async findAndUpdate(filterQuery: FilterQuery<TDocument>, update: UpdateWithAggregationPipeline | UpdateQuery<TDocument>, arrayFilters?: QueryOptions) {
+        const document = await this.model.updateMany(filterQuery, update, { lean: true, new: true, ...arrayFilters })
+        
         if (!document) {
             this.logger.warn(`Document not found with filterQuery:`, filterQuery);
             throw new NotFoundException('Document not found.');
         }
 
+
         return document;
     }
     async findAndDelete(filterQuery: FilterQuery<TDocument>) {
         const document = await this.model.deleteMany(filterQuery, { lean: true })
-       
+
 
         return document;
     }

@@ -86,22 +86,41 @@ export class WishListService {
     async deleteMerchantFormWishlistItemEvent(data: IDeleteMerchantId) {
 
         const wishlistUpdate = await this.wishListRepository.findAndUpdate
-            ({
-                "items.product.merchant._id": `${data._id}`
-            }, {
-                $set: {
-                    "items.$.product.available": false
+            (
+                {
+                    "items.product.merchant._id": `${data._id}`
+                },
+                {
+                    $set: {
+                        "items.$[elem].product.available": false
+                    }
+                },
+                {
+                    arrayFilters: [
+                        {
+                            "elem.product.merchant._id": `${data._id}`
+                        }
+                    ]
                 }
-            })
-
+            )
         const cartsUpdate = await this.cartsRepository.findAndUpdate
-            ({
-                "items.product.merchant._id": `${data._id}`
-            }, {
-                $set: {
-                    "items.$.product.available": false
+            (
+                {
+                    "items.product.merchant._id": `${data._id}`
+                },
+                {
+                    $set: {
+                        "items.$[elem].product.available": false
+                    }
+                },
+                {
+                    arrayFilters: [
+                        {
+                            "elem.product.merchant._id": `${data._id}`
+                        }
+                    ]
                 }
-            })
+            )
 
         this.logger.warn("event delete", wishlistUpdate)
     }
@@ -112,8 +131,8 @@ export class WishListService {
         wishlist.items = wishlist.items.filter(item => !dto.items.some(id => id === item.item_id))
         const newWish = await this.wishListRepository.findOneAndUpdate({ wishl_id: wishlist.wishl_id }, { items: wishlist.items })
         return newWish
-      }
-    
+    }
+
 
     filterItem(errorItems: WishListItem[], items: WishListItem[]): WishListItem[] {
         try {

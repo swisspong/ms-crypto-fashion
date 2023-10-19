@@ -19,9 +19,9 @@ const WishListPage = () => {
         if (isSuccess) {
             if (data.errorItems.length > 0) {
                 toast(`มีสินค้าบางชั้นออกจากร้านค้า\nคุณสามารถเลือกดูสินค้าอื่น ๆ ได้ต่อ`);
-                handleRemoveWishlist({
-                    items: data.errorItems.map((item) => item.item_id) ?? [],
-                })
+                // handleRemoveWishlist({
+                //     items: data.errorItems.map((item) => item.item_id) ?? [],
+                // })
             }
         }
     }, [isSuccess])
