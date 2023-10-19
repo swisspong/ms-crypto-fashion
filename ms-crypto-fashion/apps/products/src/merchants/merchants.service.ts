@@ -26,6 +26,8 @@ import { PRODUCTS_DELETE_EVENT, PRODUCTS_SERVICE } from '@app/common/constants/p
 import { IMerchantId } from '@app/common/interfaces/products-event.interface';
 import { ComplaintsRepository } from '../complaints/complaints.repository';
 import { CommentsRepository } from '../comments/comments.repository';
+import { CARTS_SERVICE, WISHLIST_DELETE_ITEMS_BY_MERCHANT_ID_EVENT } from '@app/common/constants/carts.constant';
+import { IDeleteMerchantId } from '@app/common/interfaces/carts.interface';
 interface StatusTotal {
     _id: MerchantStatus;
     count: number
@@ -36,6 +38,7 @@ export class MerchantsService {
     private readonly logger = new Logger(MerchantsService.name)
     constructor(
         @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
+        @Inject(CARTS_SERVICE) private readonly cartClient: ClientProxy,
         private readonly jwtUtilsService: JwtUtilsService,
         private readonly complaintsRepository: ComplaintsRepository,
         private readonly commentsRepository: CommentsRepository,
@@ -639,12 +642,21 @@ export class MerchantsService {
             const data: DeleteMerchantData = {
                 mcht_id
             }
+            const id: IDeleteMerchantId = {
+                _id: merchant._id
+            }
 
             const deleteProducts = await this.productsRepository.findAndDelete({ merchant: new ObjectId(merchant._id) })
 
-            const deleteComplaints = await this.complaintsRepository.findAndDelete({mcht_id: merchant.mcht_id})
+            const deleteComplaints = await this.complaintsRepository.findAndDelete({ mcht_id: merchant.mcht_id })
 
-            const deleteComments = await this.commentsRepository.findAndDelete({mcht_id: merchant.mcht_id})
+            const deleteComments = await this.commentsRepository.findAndDelete({ mcht_id: merchant.mcht_id })
+
+            await lastValueFrom(
+                this.cartClient.emit(WISHLIST_DELETE_ITEMS_BY_MERCHANT_ID_EVENT, {
+                    ...id
+                })
+            )
             await lastValueFrom(
                 this.authClient.emit(DELETE_MERCHANT_EVENT, {
                     ...data

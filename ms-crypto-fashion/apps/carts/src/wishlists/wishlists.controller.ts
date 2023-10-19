@@ -4,6 +4,10 @@ import { WishListService } from "./wishlists.service";
 import { GetUserId, Roles } from "@app/common/decorators";
 import { AddToWishlistDto } from "./dto/wishlist.dto";
 import { RoleFormat } from "@app/common/enums";
+import { Ctx, EventPattern, Payload, RmqContext } from "@nestjs/microservices";
+import { WISHLIST_DELETE_ITEMS_BY_MERCHANT_ID_EVENT } from "@app/common/constants/carts.constant";
+import { IDeleteMerchantId, IDeleteProductId } from "@app/common/interfaces/carts.interface";
+import { RmqService } from "@app/common";
 
 @ApiTags('WishList')
 @Controller('wishlists')
@@ -11,7 +15,8 @@ export class WishListController {
     private readonly logger = new Logger(WishListController.name);
 
     constructor(
-        private readonly wishlistService: WishListService
+        private readonly wishlistService: WishListService,
+        private readonly rmqService: RmqService,
     ) { }
 
     @Get()
@@ -19,7 +24,7 @@ export class WishListController {
         return this.wishlistService.findWishlistByUserId(userId)
     }
 
-   
+
     @Get('product/:prod_id')
     getWishlistByProductId(@Param('prod_id') prod_id: string) {
         return this.wishlistService.findWishlistByProductId(prod_id)
@@ -28,5 +33,12 @@ export class WishListController {
     @Post()
     addToWishList(@GetUserId() userId: string, @Body() addToWishlist: AddToWishlistDto) {
         return this.wishlistService.addToWishList(userId, addToWishlist);
+    }
+
+    @EventPattern(WISHLIST_DELETE_ITEMS_BY_MERCHANT_ID_EVENT)
+    async removeProduct(@Payload() data: IDeleteMerchantId, @Ctx() context: RmqContext) {
+        this.logger.warn("Recevied from WishList")
+        await this.wishlistService.deleteMerchantFormWishlistItemEvent(data)
+        this.rmqService.ack(context);
     }
 }

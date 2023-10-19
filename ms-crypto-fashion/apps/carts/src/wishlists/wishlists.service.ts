@@ -7,6 +7,7 @@ import { PRODUCTS_SERVICE } from "@app/common/constants/products.constant";
 import { lastValueFrom } from "rxjs";
 import { Product } from "apps/products/src/schemas/product.schema";
 import { WishListItem } from "./schemas/wishlists.schema";
+import { IDeleteMerchantId, IDeleteProductId } from "@app/common/interfaces/carts.interface";
 
 @Injectable()
 export class WishListService {
@@ -57,8 +58,9 @@ export class WishListService {
         try {
             let wishlist = await this.wishListRepository.findOne({ user_id })
             wishlist = wishlist ? wishlist : await this.wishListRepository.create({ wishl_id: `wishl_${this.uid.stamp(15)}`, user_id, items: [] })
-
-            return { items: wishlist.items }
+            const errorItems: WishListItem[] = []
+            wishlist.items = await this.filterItem(errorItems, wishlist.items)
+            return { items: wishlist.items, errorItems: errorItems }
         } catch (error) {
             console.log(error);
 
@@ -68,12 +70,47 @@ export class WishListService {
     async findWishlistByProductId(prod_id: string) {
         try {
             const wishlist = await this.wishListRepository.findOne({
-                items: {$elemMatch: {prod_id}}
+                items: { $elemMatch: { prod_id } }
             })
-            return {check_wishlist: wishlist? true: false};
+            return { check_wishlist: wishlist ? true : false };
         } catch (error) {
             console.log(error);
             throw error
+        }
+    }
+
+    async deleteMerchantFormWishlistItemEvent(data: IDeleteMerchantId) {
+
+        const wishlistUpdate = await this.wishListRepository.findAndUpdate({
+            "items.merchant": data._id
+        }, {
+            $set: {
+                'items.$.product.available': false,
+            }
+        })
+        this.logger.warn("event delete", wishlistUpdate)
+    }
+
+    filterItem(errorItems: WishListItem[], items: WishListItem[]): WishListItem[] {
+        try {
+            const correctItems: WishListItem[] = []
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i]
+                try {
+                    if (!item.product.available) throw new BadRequestException("สินค้านี้ไม่มีอยู่ในร้านค้าแล้ว")
+                    correctItems.push(item)
+                } catch (error) {
+                    const errorItem = items[i]
+                    errorItems.push(errorItem)
+
+                }
+
+
+
+            }
+            return correctItems
+        } catch (error) {
+
         }
     }
 }

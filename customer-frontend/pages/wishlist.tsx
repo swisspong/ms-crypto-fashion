@@ -10,6 +10,7 @@ const WishListPage = () => {
 
     const { data } = useMyWishlist()
     const dataCount = data?.items.length ?? 0
+    console.log(data)
     return (
         <div className="bg-white">
             <Navbar />

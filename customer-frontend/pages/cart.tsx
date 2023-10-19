@@ -1,22 +1,12 @@
-"use client";
 
-import { useEffect, useState } from "react";
-
-import CartItem from "@/components/cart-item";
 import Container from "@/components/container";
 import Summary from "@/components/summary";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Store } from "lucide-react";
-import { useMyCart } from "@/src/hooks/cart/queries";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import * as z from "zod";
 import dynamic from "next/dynamic";
-import { PaymentMethodFormat } from "@/src/types/enums/product";
 import RemoveItemAllertDialog from "@/components/cart/remove-item-allert-dialog";
-import CartDataTable from "@/components/cart/cart-data-table";
 
 import useCartHook from "@/components/cart/use-cart-hook";
 import CartItemNew from "@/components/cart/cart-item/cart-item-new";
@@ -32,16 +22,7 @@ const formSchema = z.object({
 });
 
 export default function CartPage() {
-  // const [selecteds, setSelecteds] = useState<string[]>([]);
-  // const [isNormalPay, setIsNormalPay] = useState<boolean | undefined>();
-  // const paymentMethodHandler = (val: boolean | undefined) => {
-  //   setSelecteds([]);
-  //   setIsNormalPay(val);
-  // };
-  // const { data } = useMyCart();
-  // useEffect(() => {
-  //   console.log(selecteds);
-  // }, [selecteds]);
+
   const {
     filterItemByPayementMethod,
     cartItems,
@@ -75,8 +56,6 @@ export default function CartPage() {
                       <CartItemNew
                         data={item}
                         onCheckedHandler={onCheckedHandler}
-                        // setSelecteds={setSelecteds}
-
                         selecteds={selecteds}
                         isNormalPay={isNormalPay}
                       />
@@ -84,41 +63,6 @@ export default function CartPage() {
                   ))}
                 </>
               )}
-
-              {/* {data?.items?.length === 0 && (
-                <p className="text-neutral-500 flex justify-center">
-                  ไม่มีสินค้าเพิ่มลงในรถเข็น
-                </p>
-              )}
-              {data?.items
-                ?.filter(
-                  (item) =>
-                    isNormalPay === undefined ||
-                    (isNormalPay === true &&
-                      item.product.payment_methods.includes(
-                        PaymentMethodFormat.CREDIT
-                      )) ||
-                    (isNormalPay === false &&
-                      item.product.payment_methods.includes(
-                        PaymentMethodFormat.WALLET
-                      ))
-                )
-                ?.map((item) => (
-                  <>
-                    <CartItemNew
-                      data={item}
-                      setSelecteds={setSelecteds}
-                      selecteds={selecteds}
-                      isNormalPay={isNormalPay}
-                    />
-                    <CartItem
-                      data={item}
-                      setSelecteds={setSelecteds}
-                      selecteds={selecteds}
-                      isNormalPay={isNormalPay}
-                    />
-                  </>
-                ))} */}
             </div>
             <Summary
               selecteds={selecteds}
