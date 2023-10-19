@@ -28,6 +28,7 @@ import { ProductsValidator } from '@app/common/utils/products/products-validator
 import { ObjectId } from 'mongodb';
 import { ComplaintsRepository } from './complaints/complaints.repository';
 import { CommentsRepository } from './comments/comments.repository';
+import { PRODUCT_NOT_FOUND } from '@app/common/constants/error.constant';
 
 @Injectable()
 export class ProductsService {
@@ -1206,7 +1207,7 @@ export class ProductsService {
   }
   async removeByAdmin(prod_id: string) {
     const product = await this.productsRepository.findOne({ prod_id })
-    if (!product) throw new NotFoundException("Category not found.")
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
     const payload: IDeleteProductId = {
       prod_id: product.prod_id
     }

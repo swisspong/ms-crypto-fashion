@@ -11,6 +11,7 @@ import { IDeleteMerchantId, IDeleteProductId } from "@app/common/interfaces/cart
 import { Types } from "mongoose";
 import { CartsRepository } from "../carts.repository";
 import { DeleteManyItemsDto } from "../dto/delet-many-items.dto";
+import { PRODUCT_NOT_AVAILABLE, PRODUCT_NOT_FOUND, WISHLIST_NOT_ADD } from "@app/common/constants/error.constant";
 
 @Injectable()
 export class WishListService {
@@ -28,7 +29,7 @@ export class WishListService {
         try {
             let wishlist = await this.wishListRepository.findOne({ user_id })
             wishlist = wishlist ? wishlist : await this.wishListRepository.create({ wishl_id: `wishl_${this.uid.stamp(15)}`, user_id, items: [] })
-            if (!wishlist) throw new BadRequestException("Can not add to wishlist.")
+            if (!wishlist) throw new BadRequestException(WISHLIST_NOT_ADD)
             const currentIndex = wishlist.items.findIndex(item => {
                 if (item.prod_id === data.prod_id) {
                     return true
@@ -41,7 +42,7 @@ export class WishListService {
             } else {
                 const { data: product }: { data: Product } = await lastValueFrom(this.productsClient.send({ cmd: 'get_product' }, { prod_id: data.prod_id }));
                 this.logger.log("res from product =>", product)
-                if (!product) throw new NotFoundException("Product not found.")
+                if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
 
                 const newItem = new WishListItem()
                 newItem.item_id = `item_${this.uid.stamp(15)}`
@@ -140,7 +141,7 @@ export class WishListService {
             for (let i = 0; i < items.length; i++) {
                 const item = items[i]
                 try {
-                    if (!item.product.available) throw new BadRequestException("สินค้านี้ไม่มีอยู่ในร้านค้าแล้ว")
+                    if (!item.product.available) throw new BadRequestException(PRODUCT_NOT_AVAILABLE)
                     correctItems.push(item)
                 } catch (error) {
                     const errorItem = items[i]

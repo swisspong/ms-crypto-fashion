@@ -78,7 +78,6 @@ export class PaymentsService {
         card: token
       });
 
-      console.log(charge);
       
 
 

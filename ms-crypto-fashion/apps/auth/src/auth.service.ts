@@ -13,6 +13,7 @@ import { RoleFormat } from '@app/common/enums';
 import { Response } from 'express';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { ACCOUNT_NOT_FOUND, EMAIL_IS_ALREADY_IN_USE, EMAIL_NOT_VERIFIED, PASSWORD_NOT_MATCH } from '@app/common/constants/error.constant';
 
 @Injectable()
 export class AuthService {
@@ -26,9 +27,6 @@ export class AuthService {
     private readonly configService: ConfigService
   ) { }
 
-  getHello(): string {
-    return 'jkffffff Test game';
-  }
 
   async signinMetamask(signinMetamaskDto: SigninMetamaskDto, res: any) {
     try {
@@ -67,12 +65,12 @@ export class AuthService {
     try {
       const user = await this.usersRepository.findOne({ email: signinLocalDto.email })
 
-      if (!user) throw new NotFoundException('Account not found.');
+      if (!user) throw new NotFoundException(ACCOUNT_NOT_FOUND);
 
-      if (!user.isVerified) throw new HttpException('Not verify you email.', HttpStatus.BAD_REQUEST);
+      if (!user.isVerified) throw new HttpException(EMAIL_NOT_VERIFIED, HttpStatus.BAD_REQUEST);
 
       if (!await this.hashService.comparePassword(signinLocalDto.password, user.password))
-        throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
+        throw new HttpException(PASSWORD_NOT_MATCH, HttpStatus.BAD_REQUEST);
 
       const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
       res.cookie("token", accessToken, {
@@ -92,7 +90,7 @@ export class AuthService {
     try {
       const user = await this.usersRepository.findOne({ email: signupLocalDto.email })
 
-      if ((user && user.isVerified) || (user && user.google_id)) throw new HttpException('Email is already exist.', HttpStatus.BAD_REQUEST);
+      if ((user && user.isVerified) || (user && user.google_id)) throw new HttpException(EMAIL_IS_ALREADY_IN_USE, HttpStatus.BAD_REQUEST);
 
       const hash = await this.hashService.hashPassword(signupLocalDto.password)
       const emailToken = await this.uid.randomUUID(30)
@@ -119,16 +117,7 @@ export class AuthService {
 
 
       await this.mailerService.sendMail(mailOptions)
-      // const accessToken = await this.jwtUtilsService.signToken({ sub: newUser.user_id, role: newUser.role, permission: newUser.permission })
-
-      // res.cookie("token", accessToken)
-      // res.cookie("token", accessToken, {
-      //   // secure: true, 
-      //   httpOnly: false,
-      //   // sameSite: 'none',
-      //   domain: 'example.com'
-      // })
-      // return { accessToken }
+      
       return { status: "success" }
 
     } catch (error) {
@@ -140,11 +129,11 @@ export class AuthService {
     try {
       const user = await this.usersRepository.findOne({ email: signinLocalDto.email })
 
-      if (!user) throw new NotFoundException('Account not found.');
+      if (!user) throw new NotFoundException(ACCOUNT_NOT_FOUND);
 
       if (user.role === RoleFormat.ADMIN) {
         if (!await this.hashService.comparePassword(signinLocalDto.password, user.password))
-          throw new HttpException('Password not match.', HttpStatus.BAD_REQUEST);
+          throw new HttpException(PASSWORD_NOT_MATCH, HttpStatus.BAD_REQUEST);
 
         const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
         // res.cookie("token", accessToken)

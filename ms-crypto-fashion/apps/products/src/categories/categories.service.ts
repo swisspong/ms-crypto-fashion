@@ -14,6 +14,7 @@ import { GetCategoryByOwnerDto } from './dto/get-category-by-owner.dto';
 import { Types } from 'mongoose';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryWebRepository } from './category-web.repository';
+import { CATEGORY_ALREADY_IN_USE } from '@app/common/constants/error.constant';
 
 
 @Injectable()
@@ -233,7 +234,7 @@ export class CategoriesService {
         try {
             const { name, image_url } = createCategory
             const existCategory = await this.categoryWebRepository.findOne({ user_id, name })
-            if (existCategory) throw new BadRequestException("Category is exist.")
+            if (existCategory) throw new BadRequestException(CATEGORY_ALREADY_IN_USE)
             const newCategory = await this.categoryWebRepository.create({ catweb_id: `catweb_${this.uid.stamp(15)}`, ...createCategory, user_id })
             return newCategory;
         } catch (error) {
@@ -265,7 +266,7 @@ export class CategoriesService {
     async updateCategoryWeb(catweb_id: string, user_id: string, updateCategoryDto: UpdateCategoryDto) {
         try {
             const existCategory = await this.categoryWebRepository.findOne({ catweb_id: { $not: { $eq: catweb_id } }, name: updateCategoryDto.name })
-            if (existCategory) throw new BadRequestException("Category name is existing.")
+            if (existCategory) throw new BadRequestException(CATEGORY_ALREADY_IN_USE)
             const newCategory = await this.categoryWebRepository.findOneAndUpdate({ catweb_id }, { $set: { ...updateCategoryDto, user_id } })
             return {
                 message: "success"

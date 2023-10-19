@@ -29,6 +29,7 @@ import { CommentsRepository } from '../comments/comments.repository';
 import { CARTS_SERVICE, WISHLIST_DELETE_ITEMS_BY_MERCHANT_ID_EVENT } from '@app/common/constants/carts.constant';
 import { IDeleteMerchantId } from '@app/common/interfaces/carts.interface';
 import { CategoriesRepository } from '../categories/categories.repository';
+import { APPROVES_ERROR } from '@app/common/constants/error.constant';
 interface StatusTotal {
     _id: MerchantStatus;
     count: number
@@ -729,8 +730,7 @@ export class MerchantsService {
         try {
             const { status } = updateMerchantDto
             const merchant = await this.merchantsRepository.findOne({ mcht_id: id })
-            console.log(merchant)
-            if (merchant.status !== MerchantStatus.IN_PROGRESS) throw new BadRequestException("Invalid credential.")
+            if (merchant.status !== MerchantStatus.IN_PROGRESS) throw new BadRequestException(APPROVES_ERROR)
             return await this.merchantsRepository.findOneAndUpdate({ mcht_id: id }, { $set: { status: status } })
         } catch (error) {
             console.log(error)
