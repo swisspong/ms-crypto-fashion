@@ -27,34 +27,16 @@ export class AssetsService {
   }
 
   async getImageCitizenCard(name: string, res: Response) {
-    const imagePath = path.join(__dirname, '../../../../../../../', 'public', 'merchant',name);
+    const imagePath = path.join(__dirname, '../../../../../../../', 'public', 'merchant', name);
     this.logger.log('card image', imagePath)
     if (!fs.existsSync(imagePath)) {
-      this.logger.error("not found",fs.existsSync(imagePath))
+      this.logger.error("not found", fs.existsSync(imagePath))
       throw new NotFoundException('Image not found');
     }
-    
-    // Send the image file as a response
-    // res.setHeader('Content-Type', 'image/*');
-    // res.sendFile(imagePath);
-    
+    const imageBinaryData = fs.readFileSync(imagePath);
+    // res.setHeader('Content-Type', 'image/jpeg');
+    res.end(imageBinaryData);
 
-    fs.readdir(imagePath, (err, files) => {
-      if (err) {
-        console.error(`Error reading directory: ${err}`);
-        return;
-      }
-    
-      // Iterate through the list of files and log them
-      files.forEach((file) => {
-        const filePath = path.join(imagePath, file);
-        // Check if the item is a file (not a directory)
-        if (fs.statSync(filePath).isFile()) {
-          console.log(file);
-        }
-      });
-    });
-    // return
   }
 
 }
