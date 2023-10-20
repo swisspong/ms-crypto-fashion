@@ -1,6 +1,7 @@
 interface TCommentPayload {
-    comments: TComment[],
+    comments: TComment[]
     order_id: string
+    mcht_id: string
     user_name: string
 }
 

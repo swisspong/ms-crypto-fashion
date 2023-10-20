@@ -59,6 +59,8 @@ export default function Comment() {
         [pageIndex, pageSize]
     );
 
+    console.log(dataQuery.data);
+    
     // !!! END DataTable
 
     return (

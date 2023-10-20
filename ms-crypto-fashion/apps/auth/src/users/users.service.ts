@@ -18,6 +18,7 @@ import { Response } from 'express';
 import { ChangePasswordUserDto } from './dto/change-password-user.dto';
 import { SendEmailResetDto } from './dto/send-email-reset-pass.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ACCOUNT_NOT_FOUND, EMAIL_IS_ALREADY_IN_USE, NOT_FIX_YOURSELF } from '@app/common/constants/error.constant';
 @Injectable()
 export class UsersService {
   protected readonly logger = new Logger(UsersService.name);
@@ -51,7 +52,7 @@ export class UsersService {
 
   async me(userId: string) {
     const user = await this.userRepository.findOne({ user_id: userId })
-    if (!user) throw new NotFoundException("User not found.")
+    if (!user) throw new NotFoundException(ACCOUNT_NOT_FOUND)
     return user
   }
 
@@ -71,11 +72,11 @@ export class UsersService {
       const { permissions, email, google_id, password, username, role } = updateUserDto
       const admin = await this.userRepository.findOne({ user_id: id })
 
-      if (user_current === admin.user_id) throw new HttpException("You can't fix yourself.", HttpStatus.BAD_REQUEST);
+      if (user_current === admin.user_id) throw new HttpException(NOT_FIX_YOURSELF, HttpStatus.BAD_REQUEST);
 
       if (admin.email !== email) {
         const owner = await this.userRepository.findOne({ email })
-        if (owner) throw new HttpException('Email is already exise.', HttpStatus.BAD_REQUEST);
+        if (owner) throw new HttpException(EMAIL_IS_ALREADY_IN_USE, HttpStatus.BAD_REQUEST);
       }
 
 
@@ -99,7 +100,7 @@ export class UsersService {
       const { email, password, permissions } = createAdmin
       const user = await this.userRepository.findOne({ email })
       console.log(user)
-      if (user) throw new HttpException('Email is already exise.', HttpStatus.BAD_REQUEST);
+      if (user) throw new HttpException(EMAIL_IS_ALREADY_IN_USE, HttpStatus.BAD_REQUEST);
 
       const permission = await this.formatPermission(permissions)
       const hash = await this.hashService.hashPassword(password)
@@ -146,7 +147,12 @@ export class UsersService {
   async deleteMerchantIdInUser(data: DeleteMerchantData) {
     try {
       this.logger.warn("update_merchant", data)
-      const result = await this.userRepository.findAndUpdate({ mcht_id: data.mcht_id }, { $set: { mcht_id: "", role: RoleFormat.USER } })
+      const result = await this.userRepository.findAndUpdate({ mcht_id: data.mcht_id }, { 
+        $set: {  role: RoleFormat.USER },
+        $unset: {
+          mcht_id: 1
+        } 
+      })
       this.logger.warn("update to merchant =>", result)
       await lastValueFrom(
         this.productClient.emit(MERCHANT_DELETE_P, data)
@@ -232,7 +238,7 @@ export class UsersService {
 
       const user = await this.userRepository.findOne({ user_id })
 
-      if (!user) throw new NotFoundException('Account not found.');
+      if (!user) throw new NotFoundException(ACCOUNT_NOT_FOUND);
 
       if (!await this.hashService.comparePassword(old_password, user.password))
         return { status: "failure" }
@@ -263,7 +269,7 @@ export class UsersService {
 
       const user = await this.userRepository.findOne({ email })
 
-      if (!(user && user.isVerified)) throw new NotFoundException('Account not found.');
+      if (!(user && user.isVerified)) throw new NotFoundException(ACCOUNT_NOT_FOUND);
 
       const token = await this.uid.randomUUID(60)
 

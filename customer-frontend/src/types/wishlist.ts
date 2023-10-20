@@ -4,6 +4,7 @@ interface IWishlistPayload {
 
 interface IWishlistResponse {
     items: IWishlistItem[]
+    errorItems: IWishlistItem[]
 }
 
 interface IWishlistItem {

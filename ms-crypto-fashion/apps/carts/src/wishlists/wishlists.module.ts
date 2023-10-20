@@ -1,5 +1,5 @@
 import { DatabaseModule, RmqModule } from "@app/common";
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { WishListRepository } from "./wishlists.repository";
 import { WishList, WishListSchema } from "./schemas/wishlists.schema";
 import { WishListService } from "./wishlists.service";
@@ -7,6 +7,7 @@ import { WishListController } from "./wishlists.controller";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { PRODUCTS_SERVICE } from "@app/common/constants/products.constant";
+import { CartsModule } from "../carts.module";
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { PRODUCTS_SERVICE } from "@app/common/constants/products.constant";
             },
         ]),
         RmqModule,
+        forwardRef(() => CartsModule)
     ],
     controllers: [WishListController],
     providers: [

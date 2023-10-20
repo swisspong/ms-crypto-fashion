@@ -14,6 +14,7 @@ interface comment {
   user_id: string
   prod_id: string
   order_id: string
+  mcht_id: string
   text: string
   rating: number
   user_name: string
@@ -30,16 +31,8 @@ export class CommentsService {
 
   async create(user_id: string, createCommentDto: CreateCommentDto) {
     try {
-      const { comments, order_id, user_name } = createCommentDto
+      const { comments, order_id, user_name, mcht_id } = createCommentDto
       // ! Check status order | if status paid == true
-
-      // // return data from order service
-      // const order = await lastValueFrom(
-      //   this.orderClient.send(FINDONE_ORDER_EVENT, { order_id })
-      // )
-      // // const order = await this.orderRepository.findOne({ order_id })
-      // if (!order) throw new BadRequestException("order is empty.")
-      // if (order.reviewStatus === ReviewFormat.REVIEWED) throw new BadRequestException('Reviewed.')
 
       const newComments: comment[] = await comments.map((comment) => {
         const object: comment = {
@@ -47,7 +40,8 @@ export class CommentsService {
           ...comment,
           user_id: user_id,
           order_id,
-          user_name
+          user_name,
+          mcht_id
         }
 
         return object

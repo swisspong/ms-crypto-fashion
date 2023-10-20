@@ -1,4 +1,5 @@
 import { API, SERVICE_FORMAT, dynamicApi } from "@/lib/utils";
+import queryString from "query-string";
 
 const api = dynamicApi({ ssr: false, service: SERVICE_FORMAT.WISHLIST })
 export const postWishList = async (body: IWishlistPayload): Promise<void> => {
@@ -9,6 +10,12 @@ export const postWishList = async (body: IWishlistPayload): Promise<void> => {
 
 export const getMyWishlist = async (): Promise<IWishlistResponse> => {
     return await api.get(`/wishlists`).then(
+        (response) => response.data
+    );
+};
+
+export const deleteManyItemInWishlist = async (body: IDeleteManyItem): Promise<void> => {
+    await api.delete(`/wishlists/?${queryString.stringify({ items: body.items })}`).then(
         (response) => response.data
     );
 };

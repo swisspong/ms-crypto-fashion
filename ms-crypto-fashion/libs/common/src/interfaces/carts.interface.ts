@@ -1,4 +1,6 @@
+import { Type } from "@nestjs/common";
 import { IProduct } from "./order-event.interface";
+import { Types } from "mongoose";
 
 
 export interface ICartItem {
@@ -15,4 +17,8 @@ export interface IDeleteChktEventPayload {
 }
 export interface IDeleteProductId {
     prod_id: string
+}
+
+export interface IDeleteMerchantId {
+    _id: Types.ObjectId
 }

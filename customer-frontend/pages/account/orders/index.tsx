@@ -36,6 +36,7 @@ const OrderListPage = () => {
   const router = useRouter();
   // TODO: Set column in DataTable
   const [idToUpdate, setIdToUpdate] = useState<string>();
+  const [mchtId, setIdMcht] = useState<string>();
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [items, setItems] = useState<Item[] | undefined>(undefined);
@@ -52,7 +53,7 @@ const OrderListPage = () => {
   const orderPolling = useGetOrdersPolling();
   const openDialogHandlerParam = (open: boolean) => {
     if (!open) {
-      setIdHandler(undefined);
+      setIdHandler(undefined, undefined);
     }
     setOpenDialog(open);
   };
@@ -65,12 +66,13 @@ const OrderListPage = () => {
 
   const openSheetHandlerParam = (con: boolean) => {
     if (!con) {
-      setIdHandler(undefined);
+      setIdHandler(undefined,undefined);
     }
     setOpen(con);
   };
-  const setIdHandler = (id: string | undefined) => {
+  const setIdHandler = (id: string | undefined, mcht: string | undefined) => {
     setIdToUpdate(id);
+    setIdMcht(mcht)
   };
 
   // * set Data Item
@@ -82,7 +84,9 @@ const OrderListPage = () => {
   const commentHandler = async (body: TComment[]) => {
     const payload: TCommentPayload = await {
       comments: body,
+      mcht_id: mchtId!,
       order_id: idToUpdate!,
+
       user_name: me?.username!
     };
     commentsHandler(payload);
@@ -135,13 +139,6 @@ const OrderListPage = () => {
               <div className="flex-1 lg:max-w-4xl">
                 {" "}
                 <div className="space-y-6">
-                  {/* <div>
-                    <h3 className="text-lg font-medium">Orders</h3>
-                    <p className="text-sm text-muted-foreground">
-                      This is how others will see you on the site.
-                    </p>
-                  </div>
-                  <Separator /> */}
                   <DataTable
                     title="รายการคำสั่งซื้อทั้งหมด"
                     setPagination={setPagination}

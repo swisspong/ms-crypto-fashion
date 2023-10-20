@@ -13,7 +13,7 @@ export const useGetAllMerchantApproves = (data: { pageIndex: number, pageSize: n
 };
 
 export const useGetAllMerchant = (data: { pageIndex: number, pageSize: number }) => {
-    return useQuery(["merchants", data], () => getAllMerchants(data), {
+    return useQuery(["merchant", data], () => getAllMerchants(data), {
         onError: (error: AxiosError) => {
             console.log(error)
         },

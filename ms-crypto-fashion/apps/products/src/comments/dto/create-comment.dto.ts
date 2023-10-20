@@ -44,6 +44,13 @@ export class CreateCommentDto {
     order_id: string
 
     @ApiProperty()
+    @Transform(({ value }) => typeof value === "string" ? value?.trim() : value)
+    @IsString()
+    @IsNotEmpty()
+    @Length(3)
+    mcht_id: string
+
+    @ApiProperty()
     @IsOptional()
     @Transform(({ value }) => typeof value === "string" ? value?.trim() : value)
     @IsString()

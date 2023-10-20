@@ -88,7 +88,7 @@ export const useDeleteMerchant = () => {
             // useErrorBoundary:true,
             // Always refetch after error or success:
             onSettled: () => {
-                queryClient.invalidateQueries(["merchants"]);
+                queryClient.invalidateQueries(["merchant"]);
             },
         }
     );

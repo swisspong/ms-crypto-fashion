@@ -29,6 +29,9 @@ const OPTION_NOT_MATCH = 'ตัวเลือกไม่ตรงกัน'
 const VARIANT_ALREADY_EXIST = 'ตัวเลือกที่กำหนดไว้มีอยู่แล้ว'
 const INVALID_OPTION_GROUP_OR_OPTION = 'กลุ่มตัวเลือกหรือตัวเลือกไม่ถูกต้อง'
 const INVALID_CATEGORY = 'หมวดหมู่ไม่ถูกต้อง'
+const NOT_FIX_YOURSELF = "คุณไม่สามารถแก้ไขตัวเองได้"
+const APPROVES_ERROR = "เกิดข้อผิดพลาดในการอนุมัติ"
+const WISHLIST_NOT_ADD = "ไม่สามารถเพิ่มเข้าในการที่อยากได้"
 export {
     PRODUCT_NOT_FOUND,
     OUT_OF_STOCK,
@@ -39,5 +42,9 @@ export {
     ACCOUNT_NOT_FOUND,
     PASSWORD_NOT_MATCH,
     EMAIL_IS_ALREADY_IN_USE,
-    EMAIL_NOT_VERIFIED
+    EMAIL_NOT_VERIFIED,
+    NOT_FIX_YOURSELF,
+    CATEGORY_ALREADY_IN_USE,
+    APPROVES_ERROR,
+    WISHLIST_NOT_ADD
 }

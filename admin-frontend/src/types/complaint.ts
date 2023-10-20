@@ -2,7 +2,7 @@ interface IComplaint {
     _id: string;
     comp_id: string
     user: string;
-    mecht_id: string | null;
+    mcht_id: string | null;
     prod_id: string | null;
     detail: string
     type: "PRODUCT" | "MERCHANT"
