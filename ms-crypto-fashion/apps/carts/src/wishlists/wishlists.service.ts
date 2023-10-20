@@ -12,7 +12,7 @@ import { Types } from "mongoose";
 import { CartsRepository } from "../carts.repository";
 import { DeleteManyItemsDto } from "../dto/delet-many-items.dto";
 import { 
-    // PRODUCT_NOT_AVAILABLE,
+    PRODUCT_NOT_AVAILABLE,
      PRODUCT_NOT_FOUND, WISHLIST_NOT_ADD } from "@app/common/constants/error.constant";
 
 @Injectable()
@@ -143,8 +143,8 @@ export class WishListService {
             for (let i = 0; i < items.length; i++) {
                 const item = items[i]
                 try {
-                    // if (!item.product.available) throw new BadRequestException(PRODUCT_NOT_AVAILABLE)
-                    if (!item.product.available) throw new BadRequestException("")
+                    if (!item.product.available) throw new BadRequestException(PRODUCT_NOT_AVAILABLE)
+                    // if (!item.product.available) throw new BadRequestException("")
                     correctItems.push(item)
                 } catch (error) {
                     const errorItem = items[i]
