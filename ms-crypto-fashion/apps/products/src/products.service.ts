@@ -1262,7 +1262,7 @@ export class ProductsService {
               if (data.payment_method === PaymentMethodFormat.CREDIT) {
                 this.logger.warn("Emit to payment", data.payment_method)
 
-                await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+                // await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
                 await lastValueFrom(
                   this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
                     ...product
@@ -1288,7 +1288,7 @@ export class ProductsService {
             if (product && this.productsUtilService.isEnoughStock(product, 0)) {
               if (data.payment_method === PaymentMethodFormat.CREDIT) {
                 this.logger.warn("Emit to payment no options", data.payment_method)
-                await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+                // await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
                 await lastValueFrom(
                   this.cartsClient.emit(CARTS_UPDATE_PRODUCT_EVENT, {
                     ...product
@@ -1328,6 +1328,17 @@ export class ProductsService {
           // }
         }
       }))
+      if (data.payment_method === PaymentMethodFormat.CREDIT) {
+        const payload: PaidOrderingEvent = {
+          payment_method: data.payment_method,
+          user_id: data.user_id,
+          chkt_id: data.chkt_id,
+          amount_: data.total,
+          token: data.token,
+          orders: data.orders
+        }
+        await lastValueFrom(this.paymentClient.emit(PAID_ORDERING_EVENT, payload))
+      }
     } catch (error) {
       this.logger.error(error)
     }

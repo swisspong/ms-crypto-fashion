@@ -43,15 +43,20 @@ interface Props {
 
 const formSchema = z.object({
   name: z
+    .string({ required_error: "ต้องกรอก" })
+    .trim()
+    // .min(5, { message: "name card must be at least 5 characters." }),
+    .min(5, { message: "ชื่อต้องมีอย่างน้อย 5 ตัวอักษร" }),
+  number: z
+    .string({ required_error: "ต้องกรอก" })
+    .max(16, { message: "หมายเลขบัตรต้องมี 16 หมายเลข" })
+    .min(16, { message: "หมายเลขบัตรต้องมี 16 หมายเลข" }),
+  expiration_month: z.string({ required_error: "ต้องเลือก" }).trim(),
+  expiration_year: z.string({ required_error: "ต้องเลือก" }).trim(),
+  security_code: z
     .string()
     .trim()
-    .min(5, { message: "name card must be at least 5 characters." }),
-  number: z
-    .string()
-    .max(16, { message: "number card must be at most 16 number." }),
-  expiration_month: z.string().trim(),
-  expiration_year: z.string().trim(),
-  security_code: z.string().trim().min(3, { message: "least 1 number." }),
+    .min(3, { message: "ต้องมีอย่างน้อย 3 หมายเลข" }),
 });
 
 export function PaymentMethod({ data, address }: Props) {
@@ -67,13 +72,11 @@ export function PaymentMethod({ data, address }: Props) {
   });
   const router = useRouter();
   const orderMutate = useCreateOrder();
-  const checkoutOrderMutate = useCheckoutOrdering()
+  const checkoutOrderMutate = useCheckoutOrdering();
   useEffect(() => {
     if (checkoutOrderMutate.isSuccess) {
       if (checkoutOrderMutate.data.chkt) {
-
       } else {
-
         router.replace("/account/orders");
       }
     }
@@ -109,7 +112,7 @@ export function PaymentMethod({ data, address }: Props) {
           tel_number: address?.tel_number,
           token: token.id,
           payment_method: "credit",
-        }
+        },
       });
     }
     // creditHandler(body)
@@ -121,9 +124,7 @@ export function PaymentMethod({ data, address }: Props) {
     <Card className="mt-4">
       <CardHeader>
         <CardTitle>วิธีการชำระเงิน</CardTitle>
-        <CardDescription>
-          เลือกวิธีการชำระเงินของคุณ
-        </CardDescription>
+        <CardDescription>เลือกวิธีการชำระเงินของคุณ</CardDescription>
       </CardHeader>
 
       <Form {...form}>
@@ -222,7 +223,11 @@ export function PaymentMethod({ data, address }: Props) {
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
                       <FormLabel>เดือนหมดอายุบัตร</FormLabel>
-                      <Select disabled={ tokenLoading} onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        disabled={tokenLoading}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger id="month">
                             <SelectValue placeholder="เลือกเดือน" />
@@ -255,7 +260,11 @@ export function PaymentMethod({ data, address }: Props) {
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
                       <FormLabel>ปีหมดอายุบัตร</FormLabel>
-                      <Select disabled={ tokenLoading} onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        disabled={tokenLoading}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger id="year">
                             <SelectValue placeholder="เลือกปี" />

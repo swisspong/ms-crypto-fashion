@@ -34,13 +34,13 @@ import { Loader2 } from "lucide-react";
 
 const profileFormSchema = z.object({
   username: z
-    .string()
+    .string({ required_error: "ต้องกรอก" })
     .min(2, {
-      message: "Username must be at least 2 characters.",
+      message: "ต้องมีอย่างน้อย 2 ตัวอักษร",
     })
     .max(30, {
-      message: "Username must not be longer than 30 characters.",
-    })
+      message: "ต้องมีไม่เกิน 30 ตัวอักษร",
+    }),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -51,21 +51,12 @@ interface ProfileProps {
   me: IUserRes;
 }
 
-
-
-export function ProfileForm({
-  meLoading,
-  meSuccess,
-  me
-}: ProfileProps) {
-
-  
-
-  const { mutate: handleProdile, isSuccess, isLoading } = useUpdateProfile()
+export function ProfileForm({ meLoading, meSuccess, me }: ProfileProps) {
+  const { mutate: handleProdile, isSuccess, isLoading } = useUpdateProfile();
 
   // This can come from your database or API.
   const defaultValues: Partial<ProfileFormValues> = {
-    username: me?.username
+    username: me?.username,
   };
 
   const form = useForm<ProfileFormValues>({
@@ -77,19 +68,18 @@ export function ProfileForm({
   useEffect(() => {
     if (meSuccess) {
       form.reset({
-        username: me?.username
-      })
+        username: me?.username,
+      });
     }
-  }, [meSuccess])
-
+  }, [meSuccess]);
 
   function onSubmit(data: ProfileFormValues) {
-    handleProdile(data)
+    handleProdile(data);
   }
 
   useEffect(() => {
-    if (isSuccess) toast.success('บันทึกชื่อผู้ใช้สำเร็จ')
-  }, [isSuccess])
+    if (isSuccess) toast.success("บันทึกชื่อผู้ใช้สำเร็จ");
+  }, [isSuccess]);
 
   return (
     <Form {...form}>
@@ -101,10 +91,14 @@ export function ProfileForm({
             <FormItem>
               <FormLabel>ชื่อผู้ใช้</FormLabel>
               <FormControl>
-                <Input placeholder="ชื่อผู้ใช้ที่ต้องการเปลี่ยนแปลง" {...field} />
+                <Input
+                  placeholder="ชื่อผู้ใช้ที่ต้องการเปลี่ยนแปลง"
+                  {...field}
+                />
               </FormControl>
               <FormDescription>
-                นี่คือชื่อที่แสดงต่อสาธารณะของคุณ อาจเป็นชื่อจริงหรือนามแฝงของคุณ
+                นี่คือชื่อที่แสดงต่อสาธารณะของคุณ
+                อาจเป็นชื่อจริงหรือนามแฝงของคุณ
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -112,19 +106,16 @@ export function ProfileForm({
         />
 
         <Button disabled={isLoading} type="submit">
-          {isLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : null}
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           บันทึกการเปลี่ยนแปลงชื่อผู้ใช้
         </Button>
       </form>
     </Form>
-
-
   );
 }
 
-{/* <FormField
+{
+  /* <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
@@ -161,4 +152,5 @@ export function ProfileForm({
               <FormMessage />
             </FormItem>
           )}
-        /> */}
+        /> */
+}

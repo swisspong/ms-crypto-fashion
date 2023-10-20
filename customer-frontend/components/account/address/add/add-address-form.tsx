@@ -90,16 +90,18 @@ export function AddAddressForm({ children }: Props) {
                   render={({ field }) => (
                     <FormItem className="w-full grid grid-cols-4 items-center  gap-4">
                       <FormLabel className="text-right">ผู้รับ</FormLabel>
-                      <FormControl>
-                        <Input
-                          className="col-span-3"
-                          // disabled={isLoading}
-                          placeholder="ผู้รับ (ต้องกรอก)"
-                          type="text"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
+                      <div className="col-span-3">
+                        <FormControl>
+                          <Input
+                            // className="col-span-3"
+                            // disabled={isLoading}
+                            placeholder="ผู้รับ (ต้องกรอก)"
+                            type="text"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
                     </FormItem>
                   )}
                 />
@@ -111,16 +113,18 @@ export function AddAddressForm({ children }: Props) {
                   render={({ field }) => (
                     <FormItem className="w-full grid grid-cols-4 items-center  gap-4">
                       <FormLabel className="text-right">โทรศัพท์</FormLabel>
-                      <FormControl>
-                        <Input
-                          className="col-span-3"
-                          // disabled={isLoading}
-                          placeholder="เบอร์โทร (ต้องกรอก)"
-                          type="tel"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
+                      <div className="col-span-3">
+                        <FormControl>
+                          <Input
+                            // className="col-span-3"
+                            // disabled={isLoading}
+                            placeholder="เบอร์โทร (ต้องกรอก)"
+                            type="number"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
                     </FormItem>
                   )}
                 />
@@ -134,10 +138,12 @@ export function AddAddressForm({ children }: Props) {
                       <FormLabel className="text-right">
                         รายละเอียดที่อยู่
                       </FormLabel>
-                      <FormControl>
-                        <Textarea className="col-span-3" {...field} />
-                      </FormControl>
-                      <FormMessage />
+                      <div className="col-span-3">
+                        <FormControl>
+                          <Textarea {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
                     </FormItem>
                   )}
                 />
@@ -149,16 +155,17 @@ export function AddAddressForm({ children }: Props) {
                   render={({ field }) => (
                     <FormItem className="w-full grid grid-cols-4 items-center  gap-4">
                       <FormLabel className="text-right">รหัสไปรษณีย์</FormLabel>
-                      <FormControl>
-                        <Input
-                          className="col-span-3"
-                          // disabled={isLoading}
-                          placeholder="เลขรหัสไปรษณีย์ (ต้องกรอก)"
-                          type="text"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
+                      <div className="col-span-3">
+                        <FormControl>
+                          <Input
+                            // disabled={isLoading}
+                            placeholder="เลขรหัสไปรษณีย์ (ต้องกรอก)"
+                            type="number"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
                     </FormItem>
                   )}
                 />

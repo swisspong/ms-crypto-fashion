@@ -58,10 +58,7 @@ const items = [
   },
 ] as const;
 const formSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, { message: "Name must be at least 2 characters." }),
+  name: z.string().trim().min(2, { message: "ต้องมีอย่างน้อย 2 ตัวอักษร" }),
   sku: z
     .string()
     .trim()
