@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, Res } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
@@ -8,12 +8,12 @@ import { extname } from 'path';
 import { diskStorage } from 'multer';
 import { Roles } from '@app/common/decorators';
 import { RoleFormat } from '@app/common/enums';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 
 @Controller('assets')
 export class AssetsController {
-  constructor(private readonly assetsService: AssetsService) {}
+  constructor(private readonly assetsService: AssetsService) { }
 
   @Post()
   @ApiConsumes('multipart/form-data')
@@ -39,7 +39,7 @@ export class AssetsController {
       },
     })
   }))
-  create(@Req() req:Request,@UploadedFile() file: Express.Multer.File) {
+  create(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
     console.log(req)
     return this.assetsService.create(file);
   }
@@ -100,6 +100,12 @@ export class AssetsController {
   }))
   createBannerAsset(@UploadedFile() file: Express.Multer.File) {
     return this.assetsService.createBanner(file);
+  }
+
+  @Roles(RoleFormat.MERCHANT, RoleFormat.ADMIN)
+  @Get('citizen-card/:filename')
+  getCitizenImage(@Param('filename') filename: string, @Res({ passthrough: true }) res: Response) {
+    return this.assetsService.getImageCitizenCard(filename, res)
   }
 
 }

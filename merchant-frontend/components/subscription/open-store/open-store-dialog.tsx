@@ -23,6 +23,7 @@ import FileUploadOne from "../../file-upload-one";
 
 import useOpenStoreHook from "./use-open-store-hook";
 import { Loader2 } from "lucide-react";
+import { postAssetCitizen } from "@/src/services/asset.service";
 const OpenStoreDialog = () => {
   const { form, loading, onSubmit, success } = useOpenStoreHook();
   return (
@@ -87,6 +88,7 @@ const OpenStoreDialog = () => {
                             <FileUploadOne
                               onChange={field.onChange}
                               image_url={field.value}
+                              cbAsset={postAssetCitizen}
                               //   remove={imageRemove}
                             />
                           </FormControl>

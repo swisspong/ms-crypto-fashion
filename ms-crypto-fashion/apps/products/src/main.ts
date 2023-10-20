@@ -17,6 +17,9 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(ProductsModule);
   app.useStaticAssets(join(__dirname, '../../../../../../', 'public'));
+  console.log("=====================================")
+  console.log("init main",join(__dirname, '../../../../../../', 'public'))
+  console.log("=====================================")
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -61,6 +64,9 @@ async function bootstrap() {
   })
 
   await app.listen(configService.get<number>('PORT'));
+  console.log("=====================================")
+  console.log("init main",join(__dirname, '../../../../../../', 'public'))
+  console.log("=====================================")
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

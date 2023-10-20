@@ -1,4 +1,4 @@
-import {  SERVICE_FORMAT, dynamicApi } from "@/lib/utils";
+import { SERVICE_FORMAT, dynamicApi } from "@/lib/utils";
 
 const api = dynamicApi({ ssr: false, service: SERVICE_FORMAT.PRODUCT })
 
@@ -16,3 +16,11 @@ export const postAssetBanner = async (data: FormData): Promise<{ image_url: stri
         (response) => response.data
     );
 };
+
+export const postAssetCitizen = async (data: FormData): Promise<{ image_url: string }> => {
+    return api.post(`/assets/merchant`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+    }).then(
+        (response) => response.data
+    );
+}
