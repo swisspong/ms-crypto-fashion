@@ -30,9 +30,9 @@ import { useGetAdminById } from "@/src/hooks/admin/queries";
 import { useUpdateAdmin } from "@/src/hooks/admin/mutaions";
 
 const formSchema = z.object({
-    name: z.string().trim().min(1, { message: "admin name must be at least 1 characters." }).optional(),
-    email: z.string().trim().min(1, { message: "email must be at least 1 characters." }).optional(),
-    password: z.string().trim().min(4, { message: "password must be at leat 4 characters. " }).optional()
+    name: z.string({ required_error: "ต้องกรอก" }).min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim(),
+    email: z.string({ required_error: "ต้องกรอก" }).min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim(),
+    password: z.string({ required_error: "ต้องกรอก" }).min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim()
 })
 
 

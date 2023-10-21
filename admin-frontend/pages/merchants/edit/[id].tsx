@@ -15,8 +15,8 @@ import { useGetMerchantById } from "@/src/hooks/merchant/queries";
 import { useUpdateMerchant } from "@/src/hooks/merchant/mutaions";
 
 const formSchema = z.object({
-    store_name: z.string().trim().min(2, { message: "name store must be at least 2 characters." }),
-    banner_title: z.string().trim().min(2, { message: "banner must be at least 2 characters." }),
+    store_name: z.string({ required_error: "ต้องกรอก" }).min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim(),
+    banner_title: z.string({ required_error: "ต้องกรอก" }).min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim(),
     img_id_card: z.string().trim().url().optional(),
     image_url: z.string().trim().url().optional()
 })
