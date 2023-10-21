@@ -24,8 +24,8 @@ import { useSignin } from "@/src/hooks/auth/mutations"
 interface AdminAuthFormProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 const formSchema = z.object({
-  email: z.string().trim().min(1, { message: "email must be at least 1 characters." }),
-  password: z.string().trim().min(4, { message: "password must be at leat 4 characters. " })
+  email: z.string({ required_error: "ต้องกรอก" }).email({message: "กรอกอีเมลให้ถูกต้อง"}).trim(),
+  password: z.string({ required_error: "ต้องกรอก" }).min(4, { message: "ต้องมีตัวอักษรอย่างน้อย 4 ตัว" }).trim()
 })
 
 export default function AdminAuthForm({ className, ...props }: AdminAuthFormProps) {

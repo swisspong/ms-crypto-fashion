@@ -16,12 +16,10 @@ import * as z from "zod"
 
 const formSchema = z.object({
     name: z
-        .string()
-        .trim()
-        .min(2, { message: "Name must be at least 2 characters." }),
+        .string({ required_error: "ต้องกรอก" })
+        .min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim(),
     image_url: z.string().url().optional(),
 });
-
 export default function Edit() {
 
     const router = useRouter()
@@ -37,7 +35,6 @@ export default function Edit() {
         defaultValues: {
             image_url:
                 "https://t4.ftcdn.net/jpg/04/99/93/31/360_F_499933117_ZAUBfv3P1HEOsZDrnkbNCt4jc3AodArl.jpg",
-            name: "",
         }
     })
 

@@ -16,9 +16,8 @@ import * as z from "zod"
 
 const formSchema = z.object({
     name: z
-        .string()
-        .trim()
-        .min(2, { message: "Name must be at least 2 characters." }),
+        .string({ required_error: "ต้องกรอก" })
+        .min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim(),
     image_url: z.string().url().optional(),
 });
 
@@ -33,8 +32,6 @@ export default function Add() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: '',
-            image_url: undefined
         }
     })
 
