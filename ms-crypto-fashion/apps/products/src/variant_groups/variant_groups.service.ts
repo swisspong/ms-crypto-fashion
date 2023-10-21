@@ -13,6 +13,7 @@ import { CARTS_SERVICE, CARTS_UPDATE_PRODUCT_EVENT } from '@app/common/constants
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { CreateGroupDto } from './dto/create-group.dto';
+import { MERCHANT_NOT_FOUND, OPTION_ALREADY_IN_USE, OPTION_GROUP_ALREDAY_IN_USE, OPTION_GROUP_DUPLICATE, OPTION_GROUP_NOT_EXIST, OPTION_GROUP_NOT_MATCH, OPTION_NOT_MATCH, PRODUCT_NOT_FOUND, VARIANT_ALREADY_EXIST } from '@app/common/constants/error.constant';
 
 @Injectable()
 export class VariantGroupsService {
@@ -25,13 +26,13 @@ export class VariantGroupsService {
 
   async create(merchantId: string, productId: string, createVariantGroupDto: CreateVariantGroupDto) {
     const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
-    if (!merchant) throw new NotFoundException("Merchant not found.")
+    if (!merchant) throw new NotFoundException(MERCHANT_NOT_FOUND)
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchant._id) })
-    if (!product) throw new NotFoundException("Product not found.")
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
     const tmpGroups = [...createVariantGroupDto.groups, ...product.groups]
 
 
-    if (this.isDuplicateGroup(tmpGroups)) throw new BadRequestException("Group name is duplicate.")
+    if (this.isDuplicateGroup(tmpGroups)) throw new BadRequestException(OPTION_GROUP_ALREDAY_IN_USE)
     const newVariantGroups: VariantGroup[] = [...product.groups]
     createVariantGroupDto.groups.forEach(group => {
       const vgrp = new VariantGroup()
@@ -50,11 +51,11 @@ export class VariantGroupsService {
     const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
     if (!merchant) throw new ForbiddenException()
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: merchant._id })
-    if (!product) throw new NotFoundException("Product not found.")
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
 
     //validate group name is exist
     const isExistGroup = product.groups.some(group => group.name === payload.name)
-    if (isExistGroup) throw new BadRequestException("Group name is duplicate.")
+    if (isExistGroup) throw new BadRequestException(OPTION_GROUP_ALREDAY_IN_USE)
     const groups = product.groups
     groups.push(payload)
     const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId, merchant: merchant._id },
@@ -75,19 +76,19 @@ export class VariantGroupsService {
     const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
     if (!merchant) throw new ForbiddenException()
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: merchant._id })
-    if (!product) throw new NotFoundException("Product not found.")
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
 
     //validate group name is exist
     const existGroup = product.groups.find(group => group.name === payload.name && group.vgrp_id !== payload.vgrp_id)
-    if (existGroup) throw new BadRequestException("Group name is exist.")
+    if (existGroup) throw new BadRequestException(OPTION_GROUP_ALREDAY_IN_USE)
     const eGroupIndex = product.groups.findIndex(group => group.vgrp_id === payload.vgrp_id)
-    if (eGroupIndex < 0) throw new BadRequestException("Group not exist")
+    if (eGroupIndex < 0) throw new BadRequestException(OPTION_GROUP_NOT_EXIST)
     product.groups[eGroupIndex].name = payload.name
     product.groups[eGroupIndex].options = payload.options
     const optionIsInUse = product.variants.some(vrnt =>
       vrnt.variant_selecteds.some(vrnts => vrnts.vgrp_id === payload.vgrp_id && !payload.options.some(optn => optn.optn_id === vrnts.optn_id))
     )
-    if (optionIsInUse) throw new BadRequestException("Variant already use option")
+    if (optionIsInUse) throw new BadRequestException(OPTION_ALREADY_IN_USE)
     const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: productId, merchant: merchant._id },
       {
         groups: product.groups,
@@ -107,11 +108,11 @@ export class VariantGroupsService {
     const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
     if (!merchant) throw new ForbiddenException()
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: merchant._id })
-    if (!product) throw new NotFoundException("Product not found.")
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
 
     product.groups = product.groups.filter(group => id !== group.vgrp_id)
     const isIncludeInVariant = product.variants.some(vrnt => vrnt.variant_selecteds.some(vrnts => vrnts.vgrp_id === id))
-    if (isIncludeInVariant) throw new BadRequestException("Groups is already in use")
+    if (isIncludeInVariant) throw new BadRequestException(OPTION_GROUP_ALREDAY_IN_USE)
     // if (this.isDuplicateGroup(product.groups)) throw new BadRequestException("Group name is duplicate.")
     // if (this.variantIsIncludeInGroups(product.variants, product.groups) || this.isDuplicateVariant(product.variants)) {
     //   //set product is not available
@@ -158,14 +159,14 @@ export class VariantGroupsService {
     const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
     if (!merchant) throw new ForbiddenException()
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: merchant._id })
-    if (!product) throw new NotFoundException("Product not found.")
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
     //validate is duplicate
     upsertDto.groups.map((group, gidx) => {
       const firstElementIdx = upsertDto.groups.findIndex(grp => grp.name === group.name)
-      if (firstElementIdx !== gidx) throw new BadRequestException("Group name is duplicate.")
+      if (firstElementIdx !== gidx) throw new BadRequestException(OPTION_GROUP_ALREDAY_IN_USE)
       group.options.map((option, oidx) => {
         const firstElementIdx = group.options.findIndex(optn => optn.name === option.name)
-        if (firstElementIdx !== oidx) throw new BadRequestException("Option name is duplicate.")
+        if (firstElementIdx !== oidx) throw new BadRequestException(OPTION_ALREADY_IN_USE)
       })
     })
 
@@ -173,22 +174,22 @@ export class VariantGroupsService {
       //is include in groups
       variant.variant_selecteds.map((variant_selected) => {
         const group = upsertDto.groups.find(group => group.vgrp_id === variant_selected.vgrp_id)
-        if (!group) throw new BadRequestException("Group not match.")
+        if (!group) throw new BadRequestException(OPTION_GROUP_NOT_MATCH)
         const option = group.options.find(option => option.optn_id === variant_selected.optn_id)
-        if (!option) throw new BadRequestException("Option not match.")
+        if (!option) throw new BadRequestException(OPTION_NOT_MATCH)
       })
       //is not duplicate in save variant
       variant.variant_selecteds.map((variant_selected, vsidx) => {
         const groupIndex = variant.variant_selecteds.findIndex((variant_selected2) => variant_selected2.vgrp_id === variant_selected.vgrp_id)
-        if (groupIndex !== vsidx) throw new BadRequestException("Group is duplicate in variant.")
+        if (groupIndex !== vsidx) throw new BadRequestException(OPTION_GROUP_DUPLICATE)
         const optionIndex = variant.variant_selecteds.findIndex((variant_selected2) => variant_selected2.optn_id === variant_selected.optn_id)
-        if (optionIndex !== vsidx) throw new BadRequestException("Group is duplicate in variant.")
+        if (optionIndex !== vsidx) throw new BadRequestException(OPTION_GROUP_DUPLICATE)
       })
       //is not duplicate variant
       upsertDto.variants.map((variant2, vidx2) => {
         if (variant2.variant_selecteds.length === variant.variant_selecteds.length) {
           const isEvery = variant2.variant_selecteds.every((vrntSelcted2) => variant.variant_selecteds.find(vrntSelcted => vrntSelcted2.vgrp_id === vrntSelcted.vgrp_id && vrntSelcted2.optn_id === vrntSelcted.optn_id) ? true : false)
-          if (isEvery && vidx !== vidx2) throw new BadRequestException("Variant is duplicate.")
+          if (isEvery && vidx !== vidx2) throw new BadRequestException(VARIANT_ALREADY_EXIST)
         }
       })
 
@@ -216,18 +217,11 @@ export class VariantGroupsService {
   }
 
 
-  findAll() {
-    return `This action returns all variantGroups`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} variantGroup`;
-  }
 
   async update(merchantId: string, productId: string, updateVariantGroupDto: UpdateVariantGroupDto) {
 
     const product = await this.productsRepository.findOne({ prod_id: productId, merchant: new Types.ObjectId(merchantId) })
-    if (!product) throw new NotFoundException("Product not found.")
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
     product.groups = product.groups.map(group => {
       const newGroup = updateVariantGroupDto.groups.find(vgrp => vgrp.vgrp_id === group.vgrp_id)
       if (newGroup) {
@@ -245,7 +239,7 @@ export class VariantGroupsService {
         return group
       }
     })
-    if (this.isDuplicateGroup(product.groups)) throw new BadRequestException("Group name is duplicate.")
+    if (this.isDuplicateGroup(product.groups)) throw new BadRequestException(OPTION_GROUP_ALREDAY_IN_USE)
     if (this.variantIsIncludeInGroups(product.variants, product.groups) || this.isDuplicateVariant(product.variants)) {
       //set product is not available
       product.available = false
@@ -374,7 +368,7 @@ export class VariantGroupsService {
       }
     }
     if (isDuplicate) {
-      throw new BadRequestException("Option is duplicate.")
+      throw new BadRequestException(OPTION_ALREADY_IN_USE)
     }
     return isDuplicate
   }

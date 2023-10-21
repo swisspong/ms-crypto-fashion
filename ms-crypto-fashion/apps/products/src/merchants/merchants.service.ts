@@ -29,7 +29,7 @@ import { CommentsRepository } from '../comments/comments.repository';
 import { CARTS_SERVICE, WISHLIST_DELETE_ITEMS_BY_MERCHANT_ID_EVENT } from '@app/common/constants/carts.constant';
 import { IDeleteMerchantId } from '@app/common/interfaces/carts.interface';
 import { CategoriesRepository } from '../categories/categories.repository';
-import { APPROVES_ERROR } from '@app/common/constants/error.constant';
+import { APPROVES_ERROR, INVALID_CREDENTIAL, MERCHANT_NOT_FOUND } from '@app/common/constants/error.constant';
 interface StatusTotal {
     _id: MerchantStatus;
     count: number
@@ -52,7 +52,7 @@ export class MerchantsService {
     private readonly uid = new ShortUniqueId()
     async findAllProductsForUser(mchtId: string, productFilter: GetProductNoTypeSerchatDto) {
         const merchant = await this.merchantsRepository.findOne({ mcht_id: mchtId, status: MerchantStatus.OPENED })
-        if (!merchant) throw new NotFoundException("Not found merchant.")
+        if (!merchant) throw new NotFoundException(MERCHANT_NOT_FOUND)
         let sort = {}
         if (productFilter.sort) {
             const sortArr = productFilter.sort.split(",")
@@ -520,13 +520,13 @@ export class MerchantsService {
 
     async createCredential(merchantId: string, dto: CredentialMerchantDto) {
         const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
-        if (merchant.status !== MerchantStatus.CLOSED && merchant.status !== MerchantStatus.DISAPPROVAL) throw new BadRequestException("Invalid credential.")
+        if (merchant.status !== MerchantStatus.CLOSED && merchant.status !== MerchantStatus.DISAPPROVAL) throw new BadRequestException(INVALID_CREDENTIAL)
         await this.merchantsRepository.findOneAndUpdate({ mcht_id: merchantId }, { $set: { status: MerchantStatus.IN_PROGRESS, first_name: dto.first_name, last_name: dto.last_name, id_card_img: dto.image_url } })
         return { message: "success" }
     }
     async editMerchantProfile(mchtId: string, updateMerchantDto: UpdateMerchantDto) {
         const merchant = await this.merchantsRepository.findOne({ mcht_id: mchtId })
-        if (!merchant) throw new BadRequestException("Invalid credential.");
+        if (!merchant) throw new BadRequestException(INVALID_CREDENTIAL);
         const { name, banner_title, banner_url, first_name, last_name } = updateMerchantDto
         await this.merchantsRepository.findOneAndUpdate({ mcht_id: merchant.mcht_id }, {
             $set: {
@@ -655,9 +655,9 @@ export class MerchantsService {
 
             const deleteComments = await this.commentsRepository.findAndDelete({ mcht_id: merchant.mcht_id })
 
-            const deleteCategory = await this.categoryRepository.findAndDelete({mcht_id: merchant.mcht_id})
+            const deleteCategory = await this.categoryRepository.findAndDelete({ mcht_id: merchant.mcht_id })
 
-           
+
 
             await lastValueFrom(
                 this.cartClient.emit(WISHLIST_DELETE_ITEMS_BY_MERCHANT_ID_EVENT, {
@@ -665,7 +665,7 @@ export class MerchantsService {
                 })
             )
 
-           
+
             await lastValueFrom(
                 this.authClient.emit(DELETE_MERCHANT_EVENT, {
                     ...data

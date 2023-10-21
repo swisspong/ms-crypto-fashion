@@ -28,7 +28,7 @@ import { ProductsValidator } from '@app/common/utils/products/products-validator
 import { ObjectId } from 'mongodb';
 import { ComplaintsRepository } from './complaints/complaints.repository';
 import { CommentsRepository } from './comments/comments.repository';
-import { PRODUCT_NOT_FOUND } from '@app/common/constants/error.constant';
+import { CATEGORY_NOT_FOUND, INVALID_CATEGORY, MERCHANT_NOT_FOUND, PRODUCT_EXIST, PRODUCT_NOT_FOUND } from '@app/common/constants/error.constant';
 
 @Injectable()
 export class ProductsService {
@@ -49,7 +49,7 @@ export class ProductsService {
     const merchant = await this.merchantsRepository.findOne({ user_id: userId })
     if (!merchant) throw new ForbiddenException()
     const existProduct = await this.productsRepository.findOne({ merchant: merchant._id, name: createProductDto.name })
-    if (existProduct) throw new BadRequestException("Product is exist.")
+    if (existProduct) throw new BadRequestException(PRODUCT_EXIST)
 
     console.log(createProductDto.categories.map(item => item.cat_id));
 
@@ -68,8 +68,8 @@ export class ProductsService {
       }
     })
     // console.log(categories, createProductDto.categories, createProductDto.categories.map(item => item.cat_id))
-    if (categories.length !== createProductDto.categories.length) throw new BadRequestException("Invalid Category")
-    if (categoriesWeb.length !== createProductDto.categories_web.length) throw new BadRequestException("Invalid Category")
+    if (categories.length !== createProductDto.categories.length) throw new BadRequestException(INVALID_CATEGORY)
+    if (categoriesWeb.length !== createProductDto.categories_web.length) throw new BadRequestException(INVALID_CATEGORY)
     const newProduct = await this.productsRepository.create({
       prod_id: `prod_${this.uid.stamp(15)}`, ...createProductDto, merchant: merchant._id, image_urls: createProductDto.image_urls.map(image => image.url),
       categories: categories.map(cat => cat._id),
@@ -840,7 +840,7 @@ export class ProductsService {
   }
   async findAllProductInMerchant(mchtId: string, productFilter: GetProductNoTypeSerchatDto) {
     const merchant = await this.merchantsRepository.findOne({ mcht_id: mchtId, status: MerchantStatus.OPENED })
-    if (!merchant) throw new NotFoundException("Not found merchant.")
+    if (!merchant) throw new NotFoundException(MERCHANT_NOT_FOUND)
     // console.log(merchant)
     let sort = {}
     if (productFilter.sort) {
@@ -1106,15 +1106,15 @@ export class ProductsService {
   }
   async update(prodId: string, merchantId: string, updateProductDto: UpdateProductDto) {
     const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
-    if (!merchant) throw new NotFoundException("Merchant not found.")
+    if (!merchant) throw new NotFoundException(MERCHANT_NOT_FOUND)
     const product = await this.productsRepository.findOne({ prod_id: prodId, merchant: merchant._id })
-    if (!product) throw new NotFoundException("Prodct not found.")
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
 
     const existProduct = await this.productsRepository.findOne({ prod_id: { $not: { $eq: prodId } }, name: updateProductDto.name, merchant: merchant._id })
     // const existProduct = await this.productsRepository.findOnePopulate({ prod_id: { $not: { $eq: prodId } }, name: updateProductDto.name }, [{ path: "merchant", match: { mcht_id: merchantId } }])
     // const existProduct = await this.productsRepository.findOne({ prod_id: { $not: { $eq: prodId } }, name: updateProductDto.name })
 
-    if (existProduct) throw new BadRequestException("Product name is existing.")
+    if (existProduct) throw new BadRequestException(PRODUCT_EXIST)
     const categories = await this.categoriesRepository.find({
       mcht_id: merchant.mcht_id,
       cat_id: {
@@ -1127,8 +1127,8 @@ export class ProductsService {
       }
     })
     this.logger.warn("category invalid", categories, updateProductDto.categories)
-    if (categories.length !== updateProductDto.categories.length) throw new BadRequestException("Invalid Category")
-    if (categoriesWeb.length !== updateProductDto.categories_web.length) throw new BadRequestException("Invalid Category")
+    if (categories.length !== updateProductDto.categories.length) throw new BadRequestException(INVALID_CATEGORY)
+    if (categoriesWeb.length !== updateProductDto.categories_web.length) throw new BadRequestException(INVALID_CATEGORY)
     const newProduct = await this.productsRepository.findOneAndUpdate({ prod_id: product.prod_id, merchant: product.merchant }, {
       ...updateProductDto,
       image_urls: updateProductDto.image_urls.map(image => image.url),
@@ -1190,7 +1190,7 @@ export class ProductsService {
     const merchant = await this.merchantsRepository.findOne({ mcht_id: merchantId })
     if (!merchant) throw new ForbiddenException()
     const product = await this.productsRepository.findOne({ prod_id: catId, merchant: merchant._id })
-    if (!product) throw new NotFoundException("Category not found.")
+    if (!product) throw new NotFoundException(CATEGORY_NOT_FOUND)
     await this.productsRepository.findOneAndDelete({ prod_id: catId, merchant: merchant._id })
     const payload: IDeleteProductId = {
       prod_id: product.prod_id

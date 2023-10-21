@@ -19,6 +19,7 @@ import { Product } from 'apps/products/src/schemas/product.schema';
 import { ProductsValidator } from '@app/common/utils/products/products-validator';
 import { CartItemsValidator } from '@app/common/utils/carts/cart-items-validator';
 import { WishListRepository } from './wishlists/wishlists.repository';
+import { CART_ITEM_ALREADY_EXIST, CART_ITEM_NOT_FOUND, CART_NOT_FOUND, PRODUCT_HAS_NO_OPTIONS, PRODUCT_HAS_OPTIONS, PRODUCT_NOT_FOUND } from '@app/common/constants/error.constant';
 
 @Injectable()
 export class CartsService {
@@ -62,7 +63,7 @@ export class CartsService {
     //     },
     //   },
     // })
-    
+
     const cartsUpdate = await this.cartsRepository.findAndUpdate({
       "items.prod_id": data.prod_id
     }, {
@@ -107,24 +108,24 @@ export class CartsService {
     //fix if product is exist not request to product server
     let cart = await this.cartsRepository.findOne({ user_id: userId })
     cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
-    if (!cart) throw new NotFoundException("Cart not found.")
+    if (!cart) throw new NotFoundException(CART_NOT_FOUND)
     const { data: product }: { data: Product } = await lastValueFrom(this.productsClient.send({ cmd: 'get_product' }, { prod_id: productId }));
     this.logger.log("res from product =>", product)
-    if (!product) throw new NotFoundException("Product not found.")
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
     this.productsValidator.validate(product)
 
     if (
       this.productsValidator.validateIsHasGroups(product.groups) &&
       this.productsValidator.validateIsHasOptions(product.variants)
     ) {
-      if (!addToCartDto.vrnt_id) throw new BadRequestException("Product has options")
+      if (!addToCartDto.vrnt_id) throw new BadRequestException(PRODUCT_HAS_OPTIONS)
       this.productsValidator.validateIncludeOptions(product.variants, addToCartDto.vrnt_id)
     } else if (
       !this.productsValidator.validateIsHasGroups(product.groups) &&
       !this.productsValidator.validateIsHasOptions(product.variants)
     ) {
       if (addToCartDto.vrnt_id) {
-        throw new BadRequestException("Product has no options")
+        throw new BadRequestException(PRODUCT_HAS_NO_OPTIONS)
       }
     }
 
@@ -269,11 +270,11 @@ export class CartsService {
       let cart = await this.cartsRepository.findOne({ user_id: userId })
       cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
       const existItemIndex = cart.items.findIndex(item => item.item_id === itemId)
-      if (existItemIndex < 0) throw new NotFoundException("Item not found.")
+      if (existItemIndex < 0) throw new NotFoundException(CART_ITEM_NOT_FOUND)
       const existItem = cart.items[existItemIndex]
       const product = existItem.product
 
-      if (!product) throw new NotFoundException("Product not found.")
+      if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND)
       this.cartItemsValidator.validate(existItem)
 
 
@@ -281,14 +282,14 @@ export class CartsService {
         this.productsValidator.validateIsHasGroups(product.groups) &&
         this.productsValidator.validateIsHasOptions(product.variants)
       ) {
-        if (!updateCartDto.vrnt_id) throw new BadRequestException("Product has options")
+        if (!updateCartDto.vrnt_id) throw new BadRequestException(PRODUCT_HAS_OPTIONS)
         this.productsValidator.validateIncludeOptions(product.variants, updateCartDto.vrnt_id)
       } else if (
         !this.productsValidator.validateIsHasGroups(product.groups) &&
         !this.productsValidator.validateIsHasOptions(product.variants)
       ) {
         if (updateCartDto.vrnt_id) {
-          throw new BadRequestException("Product has no options")
+          throw new BadRequestException(PRODUCT_HAS_NO_OPTIONS)
         }
       }
 
@@ -308,7 +309,7 @@ export class CartsService {
             }
             return false
           })
-          if (itemDuplicate) throw new BadRequestException("Item already exist.")
+          if (itemDuplicate) throw new BadRequestException(CART_ITEM_ALREADY_EXIST)
         }
         cart.items[existItemIndex].vrnt_id = updateCartDto.vrnt_id
       } else {
@@ -385,7 +386,7 @@ export class CartsService {
     let cart = await this.cartsRepository.findOne({ user_id: userId })
     cart = cart ? cart : await this.cartsRepository.create({ user_id: userId, cart_id: `cart_${this.uid.stamp(15)}`, items: [] })
     const itemIndex = cart.items.findIndex(item => item.item_id === itemId)
-    if (itemIndex < 0) throw new BadRequestException("Item not found.")
+    if (itemIndex < 0) throw new BadRequestException(CART_ITEM_NOT_FOUND)
     cart.items.splice(itemIndex, 1)
     const errorItems: CartItem[] = []
     this.filterItem(errorItems, cart.items)

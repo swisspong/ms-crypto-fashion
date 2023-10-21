@@ -27,11 +27,18 @@ const OPTION_GROUP_NOT_EXIST = 'ไม่มีกลุ่มตัวเลื
 const OPTION_ALREADY_EXIST = 'ตัวเลือกมีอยู่แล้ว'
 const OPTION_NOT_MATCH = 'ตัวเลือกไม่ตรงกัน'
 const VARIANT_ALREADY_EXIST = 'ตัวเลือกที่กำหนดไว้มีอยู่แล้ว'
+const VARIANT_NOT_FOUND = 'ไม่พบตัวเลือกที่กำหนดไว้'
+const OPTION_GROUP_DUPLICATE = 'กลุ่มตัวเลือกซ้ำกัน'
+const OPTION_ALREADY_IN_USE = 'ตัวเลือกถูกใช้งานอยู่'
 const INVALID_OPTION_GROUP_OR_OPTION = 'กลุ่มตัวเลือกหรือตัวเลือกไม่ถูกต้อง'
 const INVALID_CATEGORY = 'หมวดหมู่ไม่ถูกต้อง'
 const NOT_FIX_YOURSELF = "คุณไม่สามารถแก้ไขตัวเองได้"
 const APPROVES_ERROR = "เกิดข้อผิดพลาดในการอนุมัติ"
 const WISHLIST_NOT_ADD = "ไม่สามารถเพิ่มเข้าในการที่อยากได้"
+const INVALID_ITEM_IN_CART = 'สินค้าในตะกร้าไม่ถูกต้อง'
+const CANT_REVCEIVE_ORDER = "ไม่สามารถยืนยันรับสินค้าได้"
+const INVALID_CREDENTIAL = 'ข้อมูลส่วนตัวไม่ถูกต้อง'
+const PRODUCT_EXIST = 'สินค้ามีอยู่แล้ว'
 export {
     PRODUCT_NOT_FOUND,
     OUT_OF_STOCK,
@@ -47,5 +54,30 @@ export {
     CATEGORY_ALREADY_IN_USE,
     APPROVES_ERROR,
     WISHLIST_NOT_ADD,
-    PRODUCT_NOT_AVAILABLE
+    PRODUCT_NOT_AVAILABLE,
+    CART_NOT_FOUND,
+    PRODUCT_HAS_OPTIONS,
+    PRODUCT_HAS_NO_OPTIONS,
+    INVALID_OPTIONS,
+    STORE_NOT_AVAILABLE,
+    CART_ITEM_NOT_FOUND,
+    CART_ITEM_ALREADY_EXIST,
+    PRODUCT_INFORMATION_HAS_CHANGED,
+    INVALID_PAYMENT,
+    CHECKOUT_NOT_FOUND,
+    OPTION_GROUP_ALREDAY_IN_USE,
+    OPTION_GROUP_NOT_MATCH,
+    OPTION_GROUP_NOT_EXIST,
+    OPTION_ALREADY_EXIST,
+    OPTION_NOT_MATCH,
+    VARIANT_ALREADY_EXIST,
+    INVALID_OPTION_GROUP_OR_OPTION,
+    INVALID_CATEGORY,
+    INVALID_ITEM_IN_CART,
+    CANT_REVCEIVE_ORDER,
+    INVALID_CREDENTIAL,
+    OPTION_ALREADY_IN_USE,
+    OPTION_GROUP_DUPLICATE,
+    VARIANT_NOT_FOUND,
+    PRODUCT_EXIST
 }

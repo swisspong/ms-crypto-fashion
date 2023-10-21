@@ -19,6 +19,7 @@ import { TransactionTemporaryRepository } from './transaction-temporary.reposito
 import { WithdrawDto } from './dto/create-recipient.dto';
 import axios from 'axios';
 import { WithdrawEthDto } from './dto/withdraw-eth.dto';
+import { INSUFFICIENT_BALANCE } from '@app/common/constants/error.constant';
 
 
 @Injectable()
@@ -78,7 +79,7 @@ export class PaymentsService {
         card: token
       });
 
-      
+
 
 
       // const amount_convert = charge.amount / 100;
@@ -472,11 +473,11 @@ export class PaymentsService {
           }
         }
       ])
-      if (aggregate.length <= 0) throw new BadRequestException("Insufficient balance")
+      if (aggregate.length <= 0) throw new BadRequestException(INSUFFICIENT_BALANCE)
       const totalDeposit = aggregate.find(item => item._id === TransactionFormat.DEPOSIT)?.totalAmount ?? 0
       const totalWithdraw = aggregate.find(item => item._id === TransactionFormat.WITHDRAW)?.totalAmount ?? 0
       const amount = totalDeposit - totalWithdraw - 50
-      if (amount <= 0) throw new BadRequestException("Insufficient balance")
+      if (amount <= 0) throw new BadRequestException(INSUFFICIENT_BALANCE)
       // if (payload.amount > amount) throw new BadRequestException("Insufficient balance")
       const transfer = await this.omise.transfers.create({
         // amount: payload.amount * 100,
@@ -708,7 +709,7 @@ export class PaymentsService {
       const rateInTHB = data.THB
       const rate = (1 * 10 ** 18) / rateInTHB
       const fiftyInWei = rate * 50
-      if (aggregate.length <= 0) throw new BadRequestException("Insufficient balance")
+      if (aggregate.length <= 0) throw new BadRequestException(INSUFFICIENT_BALANCE)
       const tmpTx = await this.transactionTemporaryRepository.find({ payment_method: PaymentMethodFormat.WALLET, type: TransactionFormat.WITHDRAW, mcht_id: mchtId, user_id: userId })
       const tmpTotal = tmpTx.reduce((prev, curr) => prev + curr.amount, 0)
 
@@ -718,7 +719,7 @@ export class PaymentsService {
       // if (payload.amount * (1 * 10 ** 18) > amount) throw new BadRequestException("Insufficient balance")
       this.logger.log(totalDeposit, totalWithdraw)
       this.logger.log("amount 1", amount)
-      if (amount <= 0) throw new BadRequestException("Insufficient balance")
+      if (amount <= 0) throw new BadRequestException(INSUFFICIENT_BALANCE)
       await this.transactionTemporaryRepository.create({
 
         tx_id: `tx_${this.uid.stamp(15)}`,

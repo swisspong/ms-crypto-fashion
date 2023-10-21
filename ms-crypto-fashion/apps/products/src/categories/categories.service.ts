@@ -14,7 +14,7 @@ import { GetCategoryByOwnerDto } from './dto/get-category-by-owner.dto';
 import { Types } from 'mongoose';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryWebRepository } from './category-web.repository';
-import { CATEGORY_ALREADY_IN_USE } from '@app/common/constants/error.constant';
+import { CATEGORY_ALREADY_IN_USE, CATEGORY_NOT_FOUND } from '@app/common/constants/error.constant';
 
 
 @Injectable()
@@ -27,7 +27,7 @@ export class CategoriesService {
     private readonly uid = new ShortUniqueId()
     async create(mcht_id: string, createCategoryDto: CreateCategoryDto) {
         const existCategory = await this.categoriesRepository.findOne({ mcht_id, name: createCategoryDto.name })
-        if (existCategory) throw new BadRequestException("Category is exist.")
+        if (existCategory) throw new BadRequestException(CATEGORY_ALREADY_IN_USE)
         const newCategory = await this.categoriesRepository.create({ cat_id: `cat_${this.uid.stamp(15)}`, ...createCategoryDto, mcht_id })
         return {
             message: "success"
@@ -109,7 +109,7 @@ export class CategoriesService {
         ])
 
         console.log(categories);
-        
+
 
         return {
             data: categories,
@@ -210,21 +210,21 @@ export class CategoriesService {
 
 
     async findOneByOwner(id: string, merchantId: string) {
-        const category = await this.categoriesRepository.findOne({ cat_id: id, mcht_id:merchantId })
+        const category = await this.categoriesRepository.findOne({ cat_id: id, mcht_id: merchantId })
         return category
     }
 
     async update(catId: string, merchantId: string, updateCategoryDto: UpdateCategoryDto) {
         const category = await this.categoriesRepository.findOne({ cat_id: catId, mcht_id: merchantId })
-        if (!category) throw new NotFoundException("Category not found.")
+        if (!category) throw new NotFoundException(CATEGORY_NOT_FOUND)
         const existCategory = await this.categoriesRepository.findOne({ cat_id: { $not: { $eq: catId } }, mcht_id: merchantId, name: updateCategoryDto.name })
-        if (existCategory) throw new BadRequestException("Category name is existing.")
+        if (existCategory) throw new BadRequestException(CATEGORY_ALREADY_IN_USE)
         const newCategory = await this.categoriesRepository.findOneAndUpdate({ cat_id: category.cat_id, mcht_id: category.mcht_id }, updateCategoryDto)
         return newCategory
     }
     async remove(catId: string, merchantId: string) {
         const category = await this.categoriesRepository.findOne({ cat_id: catId, mcht_id: merchantId })
-        if (!category) throw new NotFoundException("Category not found.")
+        if (!category) throw new NotFoundException(CATEGORY_NOT_FOUND)
         return await this.categoriesRepository.findOneAndDelete({ cat_id: catId, mcht_id: merchantId })
     }
 

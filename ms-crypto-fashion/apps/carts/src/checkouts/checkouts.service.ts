@@ -17,6 +17,7 @@ import { CheckoutItem } from './schemas/checkout.schema';
 import axios from 'axios';
 import { CartItemsValidator } from '@app/common/utils/carts/cart-items-validator';
 import { ProductsValidator } from '@app/common/utils/products/products-validator';
+import { CART_NOT_FOUND, CHECKOUT_NOT_FOUND, INVALID_ITEM_IN_CART, INVALID_PAYMENT, PRODUCT_INFORMATION_HAS_CHANGED } from '@app/common/constants/error.constant';
 
 @Injectable()
 export class CheckoutsService {
@@ -38,9 +39,9 @@ export class CheckoutsService {
             user_id: userId
         })
 
-        if (!cart) throw new NotFoundException("Cart not found.")
+        if (!cart) throw new NotFoundException(CART_NOT_FOUND)
         const itemsSelecteds = cart.items.filter(item => createCheckoutDto.items.some(itemDto => itemDto === item.item_id))
-        if (itemsSelecteds.length !== createCheckoutDto.items.length) throw new NotFoundException("Invalid item in cart.")
+        if (itemsSelecteds.length !== createCheckoutDto.items.length) throw new NotFoundException(INVALID_ITEM_IN_CART)
         for (const item of itemsSelecteds) {
             this.cartItemsValidator.validate(item)
             this.productsValidator.validateIncludePayment(item.product, createCheckoutDto.payment_method)
@@ -122,9 +123,9 @@ export class CheckoutsService {
     // }
     async getCheckout(chkt_id: string) {
         const checkout = await this.checkoutsRepository.findOne({ chkt_id })
-        if (!checkout) throw new NotFoundException("Checkout not found.")
+        if (!checkout) throw new NotFoundException(CHECKOUT_NOT_FOUND)
         const cart = await this.cartsRepository.findOne({ user_id: checkout.user_id })
-        if (!cart) throw new NotFoundException("Cart not found.")
+        if (!cart) throw new NotFoundException(CART_NOT_FOUND)
 
 
 
@@ -142,10 +143,10 @@ export class CheckoutsService {
     }
     async deleteCheckout(userId: string, chktId: string) {
         const checkout = await this.checkoutsRepository.findOne({ chkt_id: chktId, user_id: userId })
-        if (!checkout) throw new NotFoundException("Checkout not found.")
+        if (!checkout) throw new NotFoundException(CHECKOUT_NOT_FOUND)
         await this.checkoutsRepository.findOneAndDelete({ chkt_id: chktId, user_id: userId })
         const cart = await this.cartsRepository.findOne({ user_id: checkout.user_id })
-        if (!cart) throw new NotFoundException("Cart not found.")
+        if (!cart) throw new NotFoundException(CART_NOT_FOUND)
 
 
         const errorItems = this.filterErrorItem(checkout.payment_method, checkout.items, cart.items)
@@ -160,19 +161,19 @@ export class CheckoutsService {
         try {
 
             const checkout = await this.checkoutsRepository.findOne({ chkt_id: chktId, user_id: userId })
-            if (!checkout) throw new NotFoundException("Checkout not found.")
+            if (!checkout) throw new NotFoundException(CHECKOUT_NOT_FOUND)
             const cart = await this.cartsRepository.findOne({ user_id: userId })
-            if (!cart) throw new NotFoundException("Cart not found.")
+            if (!cart) throw new NotFoundException(CART_NOT_FOUND)
             const errorItems = this.filterErrorItem(checkout.payment_method, checkout.items, cart.items)
             if (!orderingDto.token && orderingDto.payment_method === PaymentMethodFormat.CREDIT) {
-                throw new BadRequestException("Invalid payment")
+                throw new BadRequestException(INVALID_PAYMENT)
             }
             if (checkout.payment_method === PaymentMethodFormat.WALLET && !checkout.is_orederd) {
                 await this.checkoutsRepository.findAndUpdate({ _id: checkout._id }, { $set: { is_orederd: true } })
 
             }
             if (errorItems.length > 0) {
-                throw new BadRequestException("Product information is incorrect")
+                throw new BadRequestException(PRODUCT_INFORMATION_HAS_CHANGED)
                 //  await this.cartsRepository.findOneAndUpdate({ _id: cart._id }, { $set: { items: cart.items } })
             } else {
                 this.logger.warn("emit event ordering")

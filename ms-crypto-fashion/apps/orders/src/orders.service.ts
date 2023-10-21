@@ -23,6 +23,7 @@ import { ObserverArrayService } from './observer-array.service';
 import { Response } from 'express';
 import { IReceivedOrder, IRefundEvent } from '@app/common/interfaces/payment.event.interface';
 import { TxHashDto } from './dto/tx-hash.dto';
+import { CANT_REVCEIVE_ORDER, ORDER_NOT_FOUND } from '@app/common/constants/error.constant';
 
 @Injectable()
 export class OrdersService {
@@ -66,7 +67,7 @@ export class OrdersService {
   }
   async receiveOrder(orderId: string, userId: string) {
     const order = await this.ordersRepository.findOne({ order_id: orderId, user_id: userId })
-    if (!order) throw new BadRequestException("Order not found.")
+    if (!order) throw new BadRequestException(ORDER_NOT_FOUND)
     if (order.status === StatusFormat.FULLFILLMENT && order.payment_status === PaymentFormat.PAID) {
       await this.ordersRepository.findAndUpdate({ order_id: orderId, user_id: userId }, {
         $set: {
@@ -81,7 +82,7 @@ export class OrdersService {
       await lastValueFrom(this.paymentsClient.emit(RECEIVED_ORDER_EVENT, payload))
       return { message: "success" }
     } else {
-      throw new BadRequestException("Can't receive order")
+      throw new BadRequestException(CANT_REVCEIVE_ORDER)
     }
   }
   async myOrders(userId: string, filter: OrderPaginationDto) {
