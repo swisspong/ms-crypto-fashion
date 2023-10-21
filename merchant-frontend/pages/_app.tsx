@@ -8,6 +8,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { data } from "autoprefixer";
 import { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
 import { ThemeProvider } from "next-themes";
@@ -85,6 +86,7 @@ export default function App({ Component, pageProps }: AppProps) {
               });
             }
           },
+       
         }),
         queryCache: new QueryCache({
           onError: (
@@ -126,7 +128,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <div className="h-screen w-screen rounded-lg p-8 flex justify-center items-center">
           <div className="flex space-x-2 items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <h1 className="text-xl font-bold tracking-tight">กรุณารอสักครู่...</h1>
+            <h1 className="text-xl font-bold tracking-tight">
+              กรุณารอสักครู่...
+            </h1>
           </div>
         </div>
       ) : (
@@ -134,21 +138,21 @@ export default function App({ Component, pageProps }: AppProps) {
           <ReactQueryDevtools />
           <MyThemeProvider>
             <Component {...pageProps} />
-            <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={true}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme={"light"}
-            />
           </MyThemeProvider>
         </QueryClientProvider>
       )}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={"light"}
+      />
     </ThemeProvider>
   );
 }

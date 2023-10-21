@@ -174,7 +174,7 @@ const VariantAdvancedForm: FC<Props> = ({ variant, open, toggleHandler }) => {
                       <FormControl>
                         <Input
                           placeholder="Stock"
-                         // type="number"
+                          // type="number"
                           {...field}
                           onChange={(e) => {
                             const inputValue = e.target.value;
@@ -202,6 +202,7 @@ const VariantAdvancedForm: FC<Props> = ({ variant, open, toggleHandler }) => {
                       <FormControl>
                         <FileUploadOne
                           onChange={field.onChange}
+                          fixSize
                           // image_url={field.value}
                           image_url={imageValue}
                           isLoading={false}

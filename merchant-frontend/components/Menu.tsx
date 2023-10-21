@@ -1,4 +1,4 @@
-import { Loader2, LogOut } from "lucide-react";
+import { Loader2, LogOut, Router } from "lucide-react";
 import { PlusCircle, MenuIcon } from "lucide-react";
 import {
   Menubar,
@@ -29,6 +29,34 @@ import { useMerchantById } from "@/src/hooks/merchant/queries";
 
 export function Menu() {
   const router = useRouter();
+  const labelHeading = (path: string) => {
+    switch (path) {
+      case "/":
+        // code block
+        return "ภาพรวม";
+
+      case "orders":
+        return "รายการคำสั่งซื้อ";
+      // code block
+      case "[orderId]":
+        return router.query.orderId;
+      case "categories":
+        return "หมวดหมู่สินค้าภายในร้านค้า";
+      case "[catId]":
+        return router.query.catId;
+      case "products":
+        return "รายการสินค้า";
+      case "[prodId]":
+        return router.query.prodId;
+      case "setting":
+        return "ตั้งค่าบัญชีร้านค้า"
+      case "subscription":
+        return "สมัครเปิดร้านค้า"
+      default:
+        return path;
+      // code block
+    }
+  };
   const [open, setOpen] = useState<string>("");
   const [canChange, setCanChange] = useState<boolean>(false);
   const pathName = router.pathname
@@ -63,7 +91,14 @@ export function Menu() {
     >
       <div className="flex items-center space-x-2 ">
         <h1 className="font-bold">
-          {router.pathname === `/` ? `Dashboard` : pathName}
+          {/* {router.pathname === `/` ? `ภาพรวม` : pathName} */}
+          {router.pathname === `/`
+            ? `ภาพรวม`
+            : router.pathname
+                .substring(1)
+                .split("/")
+                .map((path) => labelHeading(path))
+                .join(" > ")}
         </h1>
       </div>
 
@@ -104,7 +139,7 @@ export function Menu() {
           className="bg-background"
         >
           <SheetHeader>
-            <SheetTitle>Admin Sms</SheetTitle>
+            <SheetTitle>Merchant Crypto Fashion</SheetTitle>
           </SheetHeader>
           <Sidebar className="bg-background" />
         </SheetContent>

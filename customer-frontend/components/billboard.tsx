@@ -8,7 +8,7 @@ interface BillboardProps {
 const Billboard: React.FC<BillboardProps> = ({ name, info }) => {
   console;
   return (
-    <div className="p-4 sm:p-6 lg:p-8 rounded-xl overflow-hidden">
+    <div className="p-4 sm:p-6 lg:p-8 rounded-xl overflow-hidden ">
       <div
         style={{
           backgroundImage: `url(${
@@ -19,14 +19,15 @@ const Billboard: React.FC<BillboardProps> = ({ name, info }) => {
         }}
         className="rounded-xl relative aspect-square md:aspect-[2.4/1] overflow-hidden bg-cover"
       >
-        <Alert className="col-span-2 flex items-center space-x-4 bg-transparent border-none absolute">
+        <div className="w-full h-full bg-black z-40 absolute opacity-25"></div>
+        <Alert className="col-span-2 flex items-center space-x-4 bg-transparent border-none absolute z-50 text-white uppercase">
           {/* <div className="rounded-full h-14 w-14 border flex items-center justify-center bg-slate-100">
             img
           </div> */}
           {/* <Terminal className="h-4 w-4" /> */}
           <div>
-            <AlertTitle className="underline">
-              {info?.name}
+            <AlertTitle className="text-lg">
+              {info?.name?"ร้านค้า "+info.name:""}
               {/* fdsfdsf */}
             </AlertTitle>
           </div>
@@ -37,8 +38,8 @@ const Billboard: React.FC<BillboardProps> = ({ name, info }) => {
               {"Sabai Shop"}
             </div>
           ) : null}
-          <div className="font-bold text-2xl sm:text-4xl lg:text-5xl sm:max-w-xl max-w-xs">
-            {info?.banner_title?info.banner_title:"ร้านค้าที่ดีที่สุดในโลก"}
+          <div className="font-bold text-2xl sm:text-4xl lg:text-5xl sm:max-w-xl max-w-xs text-white  p-2 z-50 ">
+            {info?.banner_title ? info.banner_title : "ร้านค้าที่ดีที่สุดในโลก"}
           </div>
         </div>
       </div>

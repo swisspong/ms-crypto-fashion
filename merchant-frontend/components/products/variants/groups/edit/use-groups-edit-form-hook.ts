@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { useDeleteGroup, useEditGroup } from '@/src/hooks/product/groups/mutations';
 import { useProductById } from '@/src/hooks/product/queries';
 import { formSchema, genId } from '../groups-helper';
+import { toast } from 'react-toastify';
 const useGroupsEditFormHook = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const router = useRouter()
@@ -32,14 +33,28 @@ const useGroupsEditFormHook = () => {
   const initForm = (group: IGroup) => {
     useEffect(() => {
       if (productQuery.data) {
+
         form.reset({
           name: group.name,
           vgrp_id: group.vgrp_id,
           options: productQuery.data.groups.find(grp => grp.vgrp_id === group.vgrp_id)?.options,
         })
       }
-    }, [productQuery.isSuccess,  editGroupMutate.isError,productQuery.data])
+    }, [productQuery.isSuccess, editGroupMutate.isError, productQuery.data])
   }
+
+  useEffect(() => {
+    if (editGroupMutate.isSuccess) {
+      toast.success("แก้ไขสำเร็จ!", {
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }, [editGroupMutate.isSuccess])
   const toggleEdit = () => {
     setIsEdit(prev => !prev)
   }

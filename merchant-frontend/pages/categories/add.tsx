@@ -35,11 +35,12 @@ import { useAddCategory } from "@/src/hooks/category/mutations";
 import { useRouter } from "next/router";
 import { withUser } from "@/src/hooks/user/auth/auth-hook";
 import { RoleFormat } from "@/src/types/user";
+import { toast } from "react-toastify";
 const formSchema = z.object({
   name: z
-    .string()
+    .string({ required_error: "ต้องกรอก" })
     .trim()
-    .min(4, { message: "Category name must be at least 4 characters." }),
+    .min(3, { message: "ต้องมีอย่างน้อย 3 ตัวอักษร" }),
   // description: z
   //   .string()
   //   .trim()
@@ -81,15 +82,21 @@ export default function AddCategory() {
   const setIdHandler = (id: string | undefined) => {
     setIdToUpdate(id);
   };
- 
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-   
     console.log(values);
     mutate(values);
   }
   useEffect(() => {
     if (isSuccess) {
+      toast.success("บันทึกสำเร็จ!", {
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       router.push("/categories");
     }
   }, [isSuccess]);
@@ -97,7 +104,9 @@ export default function AddCategory() {
     <Layout>
       <div className="space-between flex items-center mb-4">
         <div className="">
-          <h1 className="text-xl font-bold tracking-tight">เพิ่มหมวดหมู่สินค้าภายในร้านค้า</h1>
+          <h1 className="text-xl font-bold tracking-tight">
+            เพิ่มหมวดหมู่สินค้าภายในร้านค้า
+          </h1>
         </div>
       </div>
       <Form {...form}>

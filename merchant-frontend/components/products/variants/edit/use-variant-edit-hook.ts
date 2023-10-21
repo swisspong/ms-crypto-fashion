@@ -6,6 +6,7 @@ import * as z from 'zod'
 import { formSchema, genId, showSelectItems, showSelectPlaceholder, showSelectValue } from "../add/variant-add-helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEditVariant } from "@/src/hooks/product/variant/mutations";
+import { toast } from "react-toastify";
 
 const useVariantEditHook = () => {
     const [isEdit, setIsEdit] = useState<boolean>(false)
@@ -34,6 +35,18 @@ const useVariantEditHook = () => {
         editMutate.mutate({ prodId: router.query.prodId as string, body: values })
         setIsEdit(false)
     }
+    useEffect(() => {
+        if (editMutate.isSuccess) {
+            toast.success("แก้ไขสำเร็จ!", {
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+    }, [editMutate.isSuccess])
     const initForm = (variant: IVariant) => {
         useEffect(() => {
             if (productQuery) {

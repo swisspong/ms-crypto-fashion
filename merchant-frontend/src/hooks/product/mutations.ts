@@ -24,7 +24,6 @@ export const useAddProduct = () => {
                     queryClient.setQueryData(["products"], context.previousInfos);
                 }
             },
-
             onSettled: () => {
                 queryClient.invalidateQueries(["products"]);
             },

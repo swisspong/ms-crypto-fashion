@@ -6,6 +6,7 @@ import { formSchema, genId, showSelectItems, showSelectPlaceholder, showSelectVa
 import { useProductById } from '@/src/hooks/product/queries';
 import { useRouter } from 'next/router';
 import { useAddVariant } from '@/src/hooks/product/variant/mutations';
+import { toast } from 'react-toastify';
 const useVariantAddHook = () => {
   const router = useRouter()
   const addVariantMutate = useAddVariant()
@@ -52,6 +53,14 @@ const useVariantAddHook = () => {
 
   useEffect(() => {
     if (addVariantMutate.isSuccess) {
+      toast.success("บันทึกสำเร็จ!", {
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       form.reset({
         vrnt_id: genId("vrnt"),
         variant_selecteds: productQuery.data?.groups.map(group => ({ vgrp_id: group.vgrp_id, optn_id: '' })) ?? [],

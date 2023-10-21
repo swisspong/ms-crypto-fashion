@@ -26,12 +26,18 @@ const ProductCard: React.FC<ProductCard> = ({ data, className, pushUrl }) => {
     <div
       onClick={handleClick}
       className={cn(
-        "bg-white group cursor-pointer rounded-xl border p-3 space-y-4",
+        "bg-white group cursor-pointer rounded-xl border p-3 space-y-4 relative",
         className
       )}
     >
+      <div className="bg-black bg-opacity-20 absolute inset-0 rounded-xl z-20 flex justify-center items-center">
+        <span className="text-destructive z-30 text-xl">สินค้าหมด</span>
+      </div>
       {/* Image & actions */}
-      <div className="aspect-square rounded-xl bg-gray-100 relative">
+      <div
+        //  className="aspect-square rounded-xl bg-gray-100 relative"
+        className="aspect-square rounded-xl  relative"
+      >
         <img
           src={data.image_urls?.[0]}
           alt=""

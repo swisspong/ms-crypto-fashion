@@ -51,6 +51,7 @@ import {
 import { Badge } from "../ui/badge";
 import { useFullfillmentOrder } from "@/src/hooks/order/mutations";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 interface Props {
   //   openHandler: (open: boolean) => void;
@@ -105,7 +106,17 @@ const FullfillForm: FC<Props> = ({ data }) => {
         orderId: router.query.orderId as string,
         body: values,
       })
-      .then(() => setOpen(false));
+      .then(() => {
+        toast.success("บันทึกสำเร็จ!", {
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setOpen(false);
+      });
   }
 
   return (

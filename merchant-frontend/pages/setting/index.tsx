@@ -57,23 +57,23 @@ import { toast } from "react-toastify";
 import { useGetMerchantCredential } from "@/src/hooks/merchant/queries";
 const formSchema = z.object({
   name: z
-    .string()
+    .string({ required_error: "ต้องกรอก" })
     .trim()
-    .min(2, { message: "Name must be at least 2 characters." }),
+    .min(3, { message: "ต้องมีอย่างน้อย 3 ตัวอักษร" }),
   first_name: z
-    .string()
+    .string({ required_error: "ต้องกรอก" })
     .trim()
-    .min(2, { message: "Name must be at least 2 characters." }),
+    .min(3, { message: "ต้องมีอย่างน้อย 3 ตัวอักษร" }),
   last_name: z
-    .string()
+    .string({ required_error: "ต้องกรอก" })
     .trim()
-    .min(2, { message: "Name must be at least 2 characters." }),
+    .min(3, { message: "ต้องมีอย่างน้อย 3 ตัวอักษร" }),
   banner_title: z
-    .string()
+    .string({ required_error: "ต้องกรอก" })
     .trim()
-    .min(2, { message: "Name must be at least 2 characters." }),
+    .min(3, { message: "ต้องมีอย่างน้อย 3 ตัวอักษร" }),
 
-  banner_url: z.string().url(),
+  banner_url: z.string({ required_error: "ต้องมี 1 รูป" }).url(),
 });
 export default function SettingPage() {
   const router = useRouter();
@@ -97,7 +97,7 @@ export default function SettingPage() {
   }
 
   useEffect(() => {
-    if (userQuery.isSuccess) {
+    if (userQuery.isSuccess || merchantQuery.isSuccess) {
       form.reset({
         banner_title: merchantQuery.data?.banner_title,
         banner_url: merchantQuery.data?.banner_url,
@@ -106,11 +106,18 @@ export default function SettingPage() {
         name: merchantQuery.data?.name,
       });
     }
-  }, [userQuery.isSuccess]);
+  }, [userQuery.isSuccess, merchantQuery.isSuccess]);
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success("Save data successfully");
+      toast.success("แก้ไขสำเร็จ!", {
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   }, [isSuccess]);
   return (
@@ -126,7 +133,7 @@ export default function SettingPage() {
             <div className="col-span-3 grid gap-4">
               <Card>
                 <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl">Details</CardTitle>
+                  <CardTitle className="text-2xl">รายละเอียด</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2 col-span-2">
@@ -135,7 +142,7 @@ export default function SettingPage() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Store name</FormLabel>
+                          <FormLabel>ชื่อร้านค้า</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Name (required)"
@@ -154,7 +161,7 @@ export default function SettingPage() {
                       name="first_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Firstname</FormLabel>
+                          <FormLabel>ชื่อ</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Firstname (required)"
@@ -173,7 +180,7 @@ export default function SettingPage() {
                       name="last_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Lastname</FormLabel>
+                          <FormLabel>นามสกุล</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Lastname (required)"
@@ -190,7 +197,7 @@ export default function SettingPage() {
               </Card>
               <Card>
                 <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl">Banner</CardTitle>
+                  <CardTitle className="text-2xl">แบนเนอร์</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                   <div className="grid gap-2">
@@ -199,7 +206,7 @@ export default function SettingPage() {
                       name="banner_url"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Banner image</FormLabel>
+                          <FormLabel>รูปแบนเนอร์</FormLabel>
                           <FormControl>
                             <FileUploadOne
                               onChange={field.onChange}
@@ -219,7 +226,7 @@ export default function SettingPage() {
                       name="banner_title"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Banner title</FormLabel>
+                          <FormLabel>สโลแกน</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Banner titile (required)"
@@ -242,7 +249,7 @@ export default function SettingPage() {
                     {isLoading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : null}
-                    Save Changes
+                    บันทึกการเปลี่ยนแปลง
                   </Button>
                 </CardHeader>
               </Card>

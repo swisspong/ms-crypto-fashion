@@ -36,11 +36,12 @@ import { useCategoryById } from "@/src/hooks/category/queries";
 import { useRouter } from "next/router";
 import { useEditCategory } from "@/src/hooks/category/mutations";
 import { RoleFormat } from "@/src/types/user";
+import { toast } from "react-toastify";
 const formSchema = z.object({
   name: z
-    .string()
+    .string({ required_error: "ต้องกรอก" })
     .trim()
-    .min(2, { message: "Name must be at least 2 characters." }),
+    .min(3, { message: "ต้องมีอย่างน้อย 3 ตัวอักษร" }),
   // description: z
   //   .string()
   //   .trim()
@@ -73,6 +74,14 @@ export default function EditCategory() {
   }, [catSuccess]);
   useEffect(() => {
     if (isSuccess) {
+      toast.success("แก้ไขสำเร็จ!", {
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       router.push("/categories");
     }
   }, [isSuccess]);
@@ -108,7 +117,6 @@ export default function EditCategory() {
     pageSize: 10,
   });
 
- 
   const defaultData = useMemo(() => [], []);
   const pagination = useMemo(
     () => ({
@@ -129,7 +137,9 @@ export default function EditCategory() {
     <Layout>
       <div className="space-between flex items-center mb-4">
         <div className="">
-          <h1 className="text-xl font-bold tracking-tight">แก้ไขหมวดหมู่สินค้าภายในร้านค้า</h1>
+          <h1 className="text-xl font-bold tracking-tight">
+            แก้ไขหมวดหมู่สินค้าภายในร้านค้า
+          </h1>
         </div>
       </div>
       <Form {...form}>

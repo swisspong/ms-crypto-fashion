@@ -6,6 +6,7 @@ import * as z from 'zod'
 import { useRouter } from 'next/router';
 import { useProductById } from '@/src/hooks/product/queries';
 import { useEditVariant } from '@/src/hooks/product/variant/mutations';
+import { toast } from 'react-toastify';
 const useVariantAdvancedHook = () => {
     const [open, setOpen] = useState(false)
     const router = useRouter();
@@ -72,6 +73,14 @@ const useVariantAdvancedHook = () => {
     const whenEditSuccess = (cb: () => void) => {
         useEffect(() => {
             if (editMutate.isSuccess) {
+                toast.success("แก้ไขสำเร็จ!", {
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
                 cb()
             }
         }, [editMutate.isSuccess])
@@ -88,8 +97,8 @@ const useVariantAdvancedHook = () => {
         toggle,
         whenEditSuccess,
         showSelectValue,
-        showSelectPlaceholder:showSelectPlaceholder,
-        showSelectItems:showSelectItems
+        showSelectPlaceholder: showSelectPlaceholder,
+        showSelectItems: showSelectItems
     }
 }
 

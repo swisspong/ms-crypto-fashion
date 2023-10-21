@@ -10,14 +10,20 @@ interface Props {
   onChange: (...event: any[]) => void;
   image_url?: string;
   cbAsset?: (data: FormData) => Promise<{ image_url: string }>;
+  fixSize?: boolean;
   // remove: UseFieldArrayRemove;
 }
-const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
+const FileUploadOne: FC<Props> = ({
+  image_url,
+  onChange,
+  cbAsset,
+  fixSize = false,
+}) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<{ url: string }[]>([]);
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     console.log(e.target.files);
-    if (e.target.files && e.target.files.length>0) {
+    if (e.target.files && e.target.files.length > 0) {
       //  onChange(URL.createObjectURL(e.target.files[0]));
       //setFile([{ url: URL.createObjectURL(e.target.files[0]) }]);
 
@@ -25,7 +31,7 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
       formData.append("file", e.target.files[0]);
       if (cbAsset) {
         cbAsset(formData).then((res) => {
-          console.log(res.image_url)
+          console.log(res.image_url);
           onChange(res.image_url);
         });
       } else {
@@ -38,7 +44,11 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
   }
   return (
     <div className="flex flex-col shrink-0 items-center justify-center rounded-md border border-dashed px-3">
-      <div className="grid grid-cols-4 gap-2 w-full py-2">
+      <div
+        className={`${
+          fixSize ? "max-w-[420px]" : ""
+        } grid grid-cols-4 gap-2 w-full py-2`}
+      >
         {image_url ? (
           <div className="aspect-square group rounded-md bg-muted relative">
             <img
@@ -66,16 +76,16 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
             </div>
           </div>
         ) : // <div id={url} className="relative w-full h-full bg-black">
-          //   <img  src={url} className="col-span-1 rounded-md" />
-          //   <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5 top-0">
-          //     <div className="flex gap-x-6 justify-center">
-          //       <Button>
-          //         <Expand size={20} className="text-gray-600" />
-          //       </Button>
-          //     </div>
-          //   </div>
-          // </div>
-          null}
+        //   <img  src={url} className="col-span-1 rounded-md" />
+        //   <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5 top-0">
+        //     <div className="flex gap-x-6 justify-center">
+        //       <Button>
+        //         <Expand size={20} className="text-gray-600" />
+        //       </Button>
+        //     </div>
+        //   </div>
+        // </div>
+        null}
       </div>
       <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center py-4">
         {image_url ? (
@@ -83,7 +93,9 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
         ) : (
           <>
             <Upload className="h-10 w-10 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold">ยังไม่มีการเพิ่มเนื้อหา</h3>
+            <h3 className="mt-4 text-lg font-semibold">
+              ยังไม่มีการเพิ่มเนื้อหา
+            </h3>
             <p className="mb-4 mt-2 text-sm text-muted-foreground">
               คุณยังไม่ได้เพิ่มเนื้อหาใดๆ เพิ่มหนึ่งรายการด้านล่าง
             </p>
@@ -107,7 +119,7 @@ const FileUploadOne: FC<Props> = ({ image_url, onChange, cbAsset }) => {
             // disabled={isLoading}
             accept="image/png, image/gif, image/jpeg"
             onChange={handleChange}
-          // onChange={handleFileChange}
+            // onChange={handleFileChange}
           />
         </label>
       </div>

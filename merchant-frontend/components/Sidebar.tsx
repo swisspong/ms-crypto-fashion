@@ -26,7 +26,7 @@ type SidebarProp = {
 // const prefix = "";
 export const sidebarItems: SidebarProp = [
   {
-    name: "แผงควบคุม",
+    name: "ภาพรวม",
     href: `/`,
     icon: LayoutGrid,
   },

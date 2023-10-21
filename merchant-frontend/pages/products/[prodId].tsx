@@ -51,6 +51,7 @@ import { useProductById } from "@/src/hooks/product/queries";
 import VariantAllForm from "@/components/products/variant-all-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import Variants from "@/components/products/variants/variants";
+import ProductsEditForm from "@/components/products/edit/products-edit-form";
 const items = [
   {
     id: "credit",
@@ -63,127 +64,127 @@ const items = [
 ] as const;
 const formSchema = z.object({
   name: z
-    .string()
+    .string({ required_error: "ต้องกรอก" })
     .trim()
-    .min(2, { message: "Name must be at least 2 characters." }),
+    .min(2, { message: "ต้องมีอย่างน้อย 2 ตัวอักษร" }),
   sku: z
-    .string()
+    .string({ required_error: "ต้องกรอก" })
     .trim()
-    .min(2, { message: "Sku must be at least 2 characters." }),
+    .min(2, { message: "ต้องมีอย่างน้อย 2 ตัวอักษร" }),
   stock: z.number().int().min(0),
   price: z.number().int().min(0),
   description: z
     .string()
     .trim()
-    .min(2, { message: "Description must be at least 2 characters." }),
+    .min(2, { message: "ต้องมีอย่างน้อย 2 ตัวอักษร" }),
   image_urls: z
     .array(z.object({ url: z.string().url() }))
-    .min(1, { message: "Must have at least 1 image" }),
-  categories: z
-    .array(z.object({ cat_id: z.string() })),
-    // .min(1, { message: "Must have at least 1 category" }),
-  categories_web: z
-    .array(z.object({ cat_id: z.string() })),
-    // .min(1, { message: "Must have at least 1 category" }),
+    .min(1, { message: "ต้องมีอย่างน้อย 1 รูป" }),
+  categories: z.array(z.object({ cat_id: z.string() })),
+  // .min(1, { message: "Must have at least 1 category" }),
+  categories_web: z.array(z.object({ cat_id: z.string() })),
+  // .min(1, { message: "Must have at least 1 category" }),
 
   available: z.boolean(),
   payment_methods: z
     .array(z.string())
     .refine((value) => value.some((item) => item), {
-      message: "You have to select at least one item.",
+      message: "ต้องเลือกอย่างน้อย 1 ช่องทาง",
     }),
 });
 export default function EditProduct() {
-  const router = useRouter();
-  const { data, isSuccess: prodSuccess } = useProductById(
-    router.query.prodId as string
-  );
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      //   available: true,
-      //   name: "Smart Watch",
-      //   sku: "SW-WHM-A",
-      //   stock: 20,
-      //   price: 100,
-      //   description:
-      //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ut euismod enim, at rutrum urna. Etiam finibus, sapien vitae molestie laoreet, dolor massa ultrices urna, eget aliquam enim urna sit amet massa. Aliquam imperdiet erat id risus posuere blandit. Nam imperdiet diam lectus, id dapibus enim interdum sed. Curabitur fermentum.",
-      //   image_url:
-      //     "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80",
-      //   categories: [
-      //     { cat_id: "123", name: "Shirt" },
-      //     { cat_id: "1234", name: "Jeans" },
-      //   ],
-    },
-  });
+  // const router = useRouter();
+  // const { data, isSuccess: prodSuccess } = useProductById(
+  //   router.query.prodId as string
+  // );
+  // const form = useForm<z.infer<typeof formSchema>>({
+  //   resolver: zodResolver(formSchema),
+  //   defaultValues: {
+  //     //   available: true,
+  //     //   name: "Smart Watch",
+  //     //   sku: "SW-WHM-A",
+  //     //   stock: 20,
+  //     //   price: 100,
+  //     //   description:
+  //     //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ut euismod enim, at rutrum urna. Etiam finibus, sapien vitae molestie laoreet, dolor massa ultrices urna, eget aliquam enim urna sit amet massa. Aliquam imperdiet erat id risus posuere blandit. Nam imperdiet diam lectus, id dapibus enim interdum sed. Curabitur fermentum.",
+  //     //   image_url:
+  //     //     "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80",
+  //     //   categories: [
+  //     //     { cat_id: "123", name: "Shirt" },
+  //     //     { cat_id: "1234", name: "Jeans" },
+  //     //   ],
+  //   },
+  // });
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "categories",
-  });
-  const {
-    fields: catFields,
-    append: catAppend,
-    remove: catRemove,
-  } = useFieldArray({
-    control: form.control,
-    name: "categories_web",
-  });
+  // const { fields, append, remove } = useFieldArray({
+  //   control: form.control,
+  //   name: "categories",
+  // });
+  // const {
+  //   fields: catFields,
+  //   append: catAppend,
+  //   remove: catRemove,
+  // } = useFieldArray({
+  //   control: form.control,
+  //   name: "categories_web",
+  // });
 
-  // TODO: Set column in DataTable
+  // // TODO: Set column in DataTable
 
-  const { mutate, isLoading, isSuccess } = useEditProduct();
-  const { data: categories, isLoading: catLoading } = useCategories({
-    page: 1,
-    per_page: 100,
-  });
-  const dataQeury = useCategoriesMain({
-    page: 1,
-    per_page: 100,
-  });
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // if (!id) addHandler(values)
-    // else updateHandler(values)
-    console.log(values);
-    mutate({ prodId: router.query.prodId as string, body: values });
-  }
- 
-  const {
-    fields: images,
-    append: imageAppend,
-    remove: imageRemove,
-  } = useFieldArray({
-    control: form.control,
-    name: "image_urls",
-  });
-  useEffect(() => {
-    if (isSuccess) {
-      router.push("/products");
-    }
-  }, [isSuccess]);
-  useEffect(() => {
-    if (prodSuccess) {
-      form.reset({
-        available: data.available,
-        categories: data.categories?.map((cat) => ({ cat_id: cat.cat_id })),
-        categories_web: data.categories_web?.map((cat) => ({
-          cat_id: cat.catweb_id,
-        })),
-        description: data.description,
-        image_urls: data.image_urls?.map((img) => ({ url: img })),
-        name: data.name,
-        price: data.price,
-        sku: data.sku,
-        stock: data.stock,
-        payment_methods: data.payment_methods.map((payment) => payment),
-      });
-    }
-  }, [prodSuccess]);
+  // const { mutate, isLoading, isSuccess } = useEditProduct();
+  // const { data: categories, isLoading: catLoading } = useCategories({
+  //   page: 1,
+  //   per_page: 100,
+  // });
+  // const dataQeury = useCategoriesMain({
+  //   page: 1,
+  //   per_page: 100,
+  // });
+  // function onSubmit(values: z.infer<typeof formSchema>) {
+  //   // if (!id) addHandler(values)
+  //   // else updateHandler(values)
+  //   console.log(values);
+  //   mutate({ prodId: router.query.prodId as string, body: values });
+  // }
+
+  // const {
+  //   fields: images,
+  //   append: imageAppend,
+  //   remove: imageRemove,
+  // } = useFieldArray({
+  //   control: form.control,
+  //   name: "image_urls",
+  // });
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     router.push("/products");
+  //   }
+  // }, [isSuccess]);
+  // useEffect(() => {
+  //   if (prodSuccess) {
+  //     form.reset({
+  //       available: data.available,
+  //       categories: data.categories?.map((cat) => ({ cat_id: cat.cat_id })),
+  //       categories_web: data.categories_web?.map((cat) => ({
+  //         cat_id: cat.catweb_id,
+  //       })),
+  //       description: data.description,
+  //       image_urls: data.image_urls?.map((img) => ({ url: img })),
+  //       name: data.name,
+  //       price: data.price,
+  //       sku: data.sku,
+  //       stock: data.stock,
+  //       payment_methods: data.payment_methods.map((payment) => payment),
+  //     });
+  //   }
+  // }, [prodSuccess]);
   return (
     <Layout>
       <div className="space-between flex items-center mb-4">
         <div className="">
-          <h1 className="text-xl font-bold tracking-tight">แก้ไขข้อมูลสินค้า</h1>
+          <h1 className="text-xl font-bold tracking-tight">
+            แก้ไขข้อมูลสินค้า
+          </h1>
         </div>
       </div>
 
@@ -195,7 +196,7 @@ export default function EditProduct() {
           </TabsList>
         </div>
         <TabsContent value="product" className="border-none p-0 outline-none">
-          <Form {...form}>
+          {/* <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="grid grid-cols-5 gap-4">
                 <div className="col-span-3 grid gap-4">
@@ -327,7 +328,9 @@ export default function EditProduct() {
                   </Card>
                   <Card>
                     <CardHeader className="space-y-1">
-                      <CardTitle className="text-2xl">วิธีการชำระเงิน</CardTitle>
+                      <CardTitle className="text-2xl">
+                        วิธีการชำระเงิน
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                       <div className="grid gap-2">
@@ -384,7 +387,9 @@ export default function EditProduct() {
                   </Card>
                   <Card>
                     <CardHeader className="space-y-1">
-                      <CardTitle className="text-2xl">เนื้อหารูปภาพสินค้า</CardTitle>
+                      <CardTitle className="text-2xl">
+                        เนื้อหารูปภาพสินค้า
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                       <div className="grid gap-2">
@@ -436,7 +441,9 @@ export default function EditProduct() {
                                 />
 
                                 <FormLabel className="items-center">
-                                {field.value === true ? "เปิดขายสินค้า" : "ปิดการขายสินค้า"}
+                                  {field.value === true
+                                    ? "เปิดขายสินค้า"
+                                    : "ปิดการขายสินค้า"}
                                 </FormLabel>
                               </div>
                             </FormControl>
@@ -617,14 +624,15 @@ export default function EditProduct() {
                 </div>
               </div>
             </form>
-          </Form>
+          </Form> */}
+          <ProductsEditForm />
         </TabsContent>
         <TabsContent
           value="variants"
           className="h-full flex-col border-none p-0 data-[state=active]:flex"
         >
           {/* <VariantAllForm /> */}
-          <Variants/>
+          <Variants />
           {/* <VariantForm /> */}
 
           {/* <div className="flex items-center justify-between">

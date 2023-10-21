@@ -5,6 +5,7 @@ import { formSchema, genId } from '../groups-helper';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod'
+import { toast } from 'react-toastify';
 const useGroupsAddForm = () => {
     const router = useRouter()
     const addGroupMutate = useAddGroup();
@@ -26,6 +27,14 @@ const useGroupsAddForm = () => {
 
     useEffect(() => {
         if (addGroupMutate.isSuccess) {
+            toast.success("บันทึกสำเร็จ!", {
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
             form.reset({
                 vgrp_id: genId('vgrp'),
                 name: '',

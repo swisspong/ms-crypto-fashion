@@ -47,105 +47,103 @@ import { useCategories, useCategoriesMain } from "@/src/hooks/category/queries";
 import { useAddProduct } from "@/src/hooks/product/mutations";
 import { useRouter } from "next/router";
 import { Checkbox } from "@/components/ui/checkbox";
-const items = [
-  {
-    id: "credit",
-    label: "ชำระด้วย credit card",
-  },
-  {
-    id: "wallet",
-    label: "ชำระด้วย metamask wallet",
-  },
-] as const;
-const formSchema = z.object({
-  name: z.string().trim().min(2, { message: "ต้องมีอย่างน้อย 2 ตัวอักษร" }),
-  sku: z
-    .string()
-    .trim()
-    .min(2, { message: "Sku must be at least 2 characters." }),
-  stock: z.number().int().min(0),
-  price: z.number().int().min(0),
-  description: z
-    .string()
-    .trim()
-    .min(2, { message: "Description must be at least 2 characters." }),
-  image_urls: z
-    .array(z.object({ url: z.string().url() }))
-    .min(1, { message: "Must have at least 1 image" }),
-  categories: z.array(z.object({ cat_id: z.string() })),
-  // .min(1, { message: "Must have at least 1 category" }),
-  categories_web: z.array(z.object({ cat_id: z.string() })),
-  // .min(1, { message: "Must have at least 1 category" }),
-  available: z.boolean(),
-  payment_methods: z
-    .array(z.string())
-    .refine((value) => value.some((item) => item), {
-      message: "You have to select at least one item.",
-    }),
-});
+import ProductsAddForm from "@/components/products/add/products-add-form";
+// const items = [
+//   {
+//     id: "credit",
+//     label: "ชำระด้วย credit card",
+//   },
+//   {
+//     id: "wallet",
+//     label: "ชำระด้วย metamask wallet",
+//   },
+// ] as const;
+// const formSchema = z.object({
+//   name: z.string().trim().min(2, { message: "ต้องมีอย่างน้อย 2 ตัวอักษร" }),
+//   sku: z.string().trim().min(2, { message: "ต้องมีอย่างน้อย 2 ตัวอักษร" }),
+//   stock: z.number().int().min(0),
+//   price: z.number().int().min(0),
+//   description: z
+//     .string()
+//     .trim()
+//     .min(2, { message: "ต้องมีอย่างน้อย 2 ตัวอักษร" }),
+//   image_urls: z
+//     .array(z.object({ url: z.string().url() }))
+//     .min(1, { message: "ต้องมีอย่างน้อย 1 รูป" }),
+//   categories: z.array(z.object({ cat_id: z.string() })),
+//   // .min(1, { message: "Must have at least 1 category" }),
+//   categories_web: z.array(z.object({ cat_id: z.string() })),
+//   // .min(1, { message: "Must have at least 1 category" }),
+//   available: z.boolean(),
+//   payment_methods: z
+//     .array(z.string())
+//     .refine((value) => value.some((item) => item), {
+//       message: "ต้องเลือกอย่างน้อย 1 ช่องทาง",
+//     }),
+// });
 export default function AddProduct() {
-  const fileRef = useRef<HTMLInputElement>(null);
-  const form = useForm<z.infer<typeof formSchema>>({
-    //  mode:"all",
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      available: false,
-      stock: 0,
-      price: 0,
-      payment_methods: [],
-      // categories: [
-      //   { cat_id: "123", name: "Shirt" },
-      //   { cat_id: "1234", name: "Jeans" },
-      // ],
-    },
-  });
-  const router = useRouter();
-  const { mutate, isLoading, isSuccess } = useAddProduct();
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "categories",
-  });
-  const {
-    fields: catFields,
-    append: catAppend,
-    remove: catRemove,
-  } = useFieldArray({
-    control: form.control,
-    name: "categories_web",
-  });
+  // const fileRef = useRef<HTMLInputElement>(null);
+  // const form = useForm<z.infer<typeof formSchema>>({
+  //   //  mode:"all",
+  //   resolver: zodResolver(formSchema),
+  //   defaultValues: {
+  //     available: false,
+  //     stock: 0,
+  //     price: 0,
+  //     payment_methods: [],
+  //     // categories: [
+  //     //   { cat_id: "123", name: "Shirt" },
+  //     //   { cat_id: "1234", name: "Jeans" },
+  //     // ],
+  //   },
+  // });
+  // const router = useRouter();
+  // const { mutate, isLoading, isSuccess } = useAddProduct();
+  // const { fields, append, remove } = useFieldArray({
+  //   control: form.control,
+  //   name: "categories",
+  // });
+  // const {
+  //   fields: catFields,
+  //   append: catAppend,
+  //   remove: catRemove,
+  // } = useFieldArray({
+  //   control: form.control,
+  //   name: "categories_web",
+  // });
 
-  // TODO: Set column in DataTable
+  // // TODO: Set column in DataTable
 
-  const { data: categories, isLoading: catLoading } = useCategories({
-    page: 1,
-    per_page: 100,
-  });
-  const dataQeury = useCategoriesMain({
-    page: 1,
-    per_page: 100,
-  });
+  // const { data: categories, isLoading: catLoading } = useCategories({
+  //   page: 1,
+  //   per_page: 100,
+  // });
+  // const dataQeury = useCategoriesMain({
+  //   page: 1,
+  //   per_page: 100,
+  // });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // if (!id) addHandler(values)
-    // else updateHandler(values)
-    console.log(values);
-    mutate(values);
-  }
+  // function onSubmit(values: z.infer<typeof formSchema>) {
+  //   // if (!id) addHandler(values)
+  //   // else updateHandler(values)
+  //   console.log(values);
+  //   mutate(values);
+  // }
 
-  const {
-    fields: images,
-    append: imageAppend,
-    remove: imageRemove,
-  } = useFieldArray({
-    control: form.control,
-    name: "image_urls",
-  });
+  // const {
+  //   fields: images,
+  //   append: imageAppend,
+  //   remove: imageRemove,
+  // } = useFieldArray({
+  //   control: form.control,
+  //   name: "image_urls",
+  // });
 
-  useEffect(() => {
-    if (isSuccess) {
-      router.push("/products");
-    }
-  }, [isSuccess]);
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     router.push("/products");
+  //   }
+  // }, [isSuccess]);
   return (
     <Layout>
       <div className="space-between flex items-center mb-4">
@@ -164,7 +162,7 @@ export default function AddProduct() {
           </TabsList>
         </div>
         <TabsContent value="product" className="border-none p-0 outline-none">
-          <Form {...form}>
+          {/* <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="grid grid-cols-5 gap-4">
                 <div className="col-span-3 grid gap-4">
@@ -584,7 +582,8 @@ export default function AddProduct() {
                 </div>
               </div>
             </form>
-          </Form>
+          </Form> */}
+          <ProductsAddForm />
         </TabsContent>
         <TabsContent
           value="podcasts"
