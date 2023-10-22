@@ -68,43 +68,50 @@ export function Menu() {
       className="rounded-none sticky top-0 backdrop-blur-sm bg-white/30 dark:bg-black/30 border-b border-none  px-2 lg:px-6 flex justify-between mb-0 mt-5"
     >
       <div className="flex items-center space-x-2 ">
-        <h1 className="font-bold"><Link href={`/${pathParts[0] !== undefined ? pathParts[0] : ''}`}>{router.pathname === `/` ? `Dashboard` : pathName.toUpperCase()}</Link></h1>
-
-
+        <h1 className="font-bold">
+          <Link href={`/${pathParts[0] !== undefined ? pathParts[0] : ''}`}>
+            {router.pathname === `/` ? `Dashboard` : pathName.toUpperCase()}
+          </Link>
+        </h1>
       </div>
 
-      <div className="flex items-center  space-x-2 ">
-        <SelectTheme />
-        <MenubarMenu>
-          <MenubarTrigger className="cursor-pointer">บัญชีผู้ใช้</MenubarTrigger>
-          <MenubarContent forceMount>
-            <MenubarLabel inset>บัญชีผู้ใช้</MenubarLabel>
-            <MenubarSeparator />
-            <MenubarRadioGroup value={data?.username}>
-              <MenubarRadioItem disabled={isLoading} value={data?.username ?? ''}>
-                {data?.username}
-              </MenubarRadioItem>
-            </MenubarRadioGroup>
-            <MenubarSeparator />
-            <MenubarItem
-              className="cursor-pointer"
-              onClick={() => {
-                setCanChange((prev) => !prev);
-                mutate();
-              }}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <LogOut className="h-4 w-4 mr-2" />
-              )}
-              ออกจากระบบ
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
+      <div className="flex items-center space-x-2 justify-end flex-1">
 
+        
+
+        <div style={{ marginLeft: 'auto' }}>
+
+          <MenubarMenu>
+            <MenubarTrigger className="cursor-pointer">บัญชีผู้ใช้</MenubarTrigger>
+            <MenubarContent forceMount>
+              <MenubarLabel inset>บัญชีผู้ใช้</MenubarLabel>
+              <MenubarSeparator />
+              <MenubarRadioGroup value={data?.username}>
+                <MenubarRadioItem disabled={isLoading} value={data?.username ?? ''}>
+                  {data?.username}
+                </MenubarRadioItem>
+              </MenubarRadioGroup>
+              <MenubarSeparator />
+              <MenubarItem
+                className="cursor-pointer"
+                onClick={() => {
+                  setCanChange((prev) => !prev);
+                  mutate();
+                }}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <LogOut className="h-4 w-4 mr-2" />
+                )}
+                ออกจากระบบ
+              </MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </div>
       </div>
+      <SelectTheme />
 
       <Sheet>
         <SheetTrigger asChild>
@@ -116,11 +123,7 @@ export function Menu() {
             <MenuIcon className="h-6 w-6" />
           </Button>
         </SheetTrigger>
-        <SheetContent
-          position={"left"}
-          size="content"
-          className="bg-background"
-        >
+        <SheetContent position={"left"} size="content" className="bg-background">
           <SheetHeader>
             <SheetTitle>Admin Sms</SheetTitle>
           </SheetHeader>
@@ -128,5 +131,6 @@ export function Menu() {
         </SheetContent>
       </Sheet>
     </Menubar>
+
   );
 }

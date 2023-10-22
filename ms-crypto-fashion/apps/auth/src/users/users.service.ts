@@ -58,6 +58,8 @@ export class UsersService {
 
   async removeAdvanced(id: string) {
     try {
+      const admin = await this.userRepository.findOne({ user_id: id })
+      if (admin.permission.includes(PermissionFormat.SYSTEM_OWNER)) throw new HttpException(NOT_FIX_OWNER, HttpStatus.BAD_REQUEST);
       const result = await this.userRepository.findOneAndDelete({ user_id: id })
       return result
     } catch (error) {
@@ -73,7 +75,7 @@ export class UsersService {
       const admin = await this.userRepository.findOne({ user_id: id })
 
       if (user_current === admin.user_id) throw new HttpException(NOT_FIX_YOURSELF, HttpStatus.BAD_REQUEST);
-      if (admin.permission.includes(PermissionFormat.SYSTEM_OWNER)) throw new HttpException(NOT_FIX_OWNER , HttpStatus.BAD_REQUEST);
+      if (admin.permission.includes(PermissionFormat.SYSTEM_OWNER)) throw new HttpException(NOT_FIX_OWNER, HttpStatus.BAD_REQUEST);
       if (admin.email !== email) {
         const owner = await this.userRepository.findOne({ email })
         if (owner) throw new HttpException(EMAIL_IS_ALREADY_IN_USE, HttpStatus.BAD_REQUEST);
@@ -147,11 +149,11 @@ export class UsersService {
   async deleteMerchantIdInUser(data: DeleteMerchantData) {
     try {
       this.logger.warn("update_merchant", data)
-      const result = await this.userRepository.findAndUpdate({ mcht_id: data.mcht_id }, { 
-        $set: {  role: RoleFormat.USER },
+      const result = await this.userRepository.findAndUpdate({ mcht_id: data.mcht_id }, {
+        $set: { role: RoleFormat.USER },
         $unset: {
           mcht_id: 1
-        } 
+        }
       })
       this.logger.warn("update to merchant =>", result)
       await lastValueFrom(
@@ -328,10 +330,10 @@ export class UsersService {
         }
       })
 
-      return {status: "success"}
+      return { status: "success" }
     } catch (error) {
       console.log(error);
-      
+
     }
   }
 
