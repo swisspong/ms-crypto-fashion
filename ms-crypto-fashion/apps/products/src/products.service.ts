@@ -40,6 +40,7 @@ export class ProductsService {
     private readonly categoriesWebRepository: CategoryWebRepository,
     private readonly merchantsRepository: MerchantsRepository,
     private readonly productsUtilService: ProductsUtilService,
+    private readonly commentsRepository: CommentsRepository,
     private readonly cartsUtilService: CartsUtilService,
     private readonly productsValidator: ProductsValidator,
     @Inject(PAYMENT_SERVICE) private readonly paymentClient: ClientProxy,
@@ -1192,6 +1193,9 @@ export class ProductsService {
     const product = await this.productsRepository.findOne({ prod_id: catId, merchant: merchant._id })
     if (!product) throw new NotFoundException(CATEGORY_NOT_FOUND)
     await this.productsRepository.findOneAndDelete({ prod_id: catId, merchant: merchant._id })
+    await this.commentsRepository.findAndDelete({
+      prod_id: product.prod_id
+    })
     const payload: IDeleteProductId = {
       prod_id: product.prod_id
     }
@@ -1200,6 +1204,8 @@ export class ProductsService {
         ...payload
       })
     )
+
+    
 
     return {
       message: "success"
