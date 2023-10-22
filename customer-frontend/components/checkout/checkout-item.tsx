@@ -70,30 +70,32 @@ const CheckoutItem: React.FC<CheckoutItemProps> = ({
               {data.product?.name}
             </p>
             {data.vrnt_id ? (
-              <div className="flex space-x-1 bg-muted rounded-sm cursor-pointer">
-                <span className="flex text-xs items-center whitespace-nowrap sm:text-sm">
-                  ตัวเลือก:
-                </span>
-                <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
-                  {data.product.variants
-                    .find((vrnt) => vrnt.vrnt_id === data.vrnt_id)
-                    ?.variant_selecteds.map((vrnts) => {
-                      const group = data.product.groups.find(
-                        (group) => group.vgrp_id === vrnts.vgrp_id
-                      );
-                      const option = group?.options.find(
-                        (optn) => optn.optn_id === vrnts.optn_id
-                      );
-                      return option?.name;
-                    })
-                    .map((optn) => {
-                      return optn;
-                    })
-                    .join(", ")}
-                </p>
-                <span className="flex text-xs items-center whitespace-nowrap sm:text-sm">
-                  <ChevronDown size={10} />
-                </span>
+              <div className="flex">
+                <div className="flex space-x-1 bg-muted rounded-sm cursor-pointer">
+                  <span className="flex text-xs items-center whitespace-nowrap sm:text-sm">
+                    ตัวเลือก:
+                  </span>
+                  <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                    {data.product.variants
+                      .find((vrnt) => vrnt.vrnt_id === data.vrnt_id)
+                      ?.variant_selecteds.map((vrnts) => {
+                        const group = data.product.groups.find(
+                          (group) => group.vgrp_id === vrnts.vgrp_id
+                        );
+                        const option = group?.options.find(
+                          (optn) => optn.optn_id === vrnts.optn_id
+                        );
+                        return option?.name;
+                      })
+                      .map((optn) => {
+                        return optn;
+                      })
+                      .join(", ")}
+                  </p>
+                  {/* <span className="flex text-xs items-center whitespace-nowrap sm:text-sm">
+                    <ChevronDown size={10} />
+                  </span> */}
+                </div>
               </div>
             ) : undefined}
             <div className="flex space-x-1 items-center">
@@ -129,7 +131,6 @@ const CheckoutItem: React.FC<CheckoutItemProps> = ({
                   : data.product?.price) * data.quantity}
               </span>
             </div>
-            
           </div>
         </div>
       </li>

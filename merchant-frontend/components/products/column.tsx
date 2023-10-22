@@ -13,6 +13,7 @@ import { Button } from "../ui/button";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Edit } from "lucide-react";
+import { showPrice, showStock } from "./products-helper";
 
 interface columnProps {
   setIdHandler: (id: string | undefined) => void;
@@ -39,17 +40,50 @@ export const columns = ({
       ),
     },
     {
-      accessorKey: "stock",
+      id: "stock",
+      // accessorKey: "stock",
       header: () => <div>จำนวนที่เหลืออยู่</div>,
+      cell: ({ row }) => {
+        return (
+          <div>
+            {row.original.variants.length > 1
+              ? showStock(row.original.variants).map((val, index) => (
+                  <>
+                    {index === 1 ? " ~ " : undefined} {val}
+                  </>
+                ))
+              : row.original.variants.length > 0
+              ? row.original.variants[0].stock
+              : row.original.stock}
+          </div>
+        );
+      },
     },
     // {
     //   accessorKey: "order",
     //   header: () => <div>ORDERS</div>,
     // },
     {
-      accessorKey: "price",
+      id: "price",
+      // accessorKey: "price",
       header: () => <div>ราคา</div>,
-      cell: ({ row }) => <div>฿{row.original.price.toFixed(2)}</div>,
+      cell: ({ row }) => {
+        showPrice(row.original.variants);
+        return (
+          <div>
+            {row.original.variants.length > 1
+              ? showPrice(row.original.variants).map((val, index) => (
+                  <>
+                    {index === 1 ? " ~ " : undefined} ฿{val?.toFixed(2)}
+                    {/* <Currency value={val} /> */}
+                  </>
+                ))
+              : row.original.variants.length > 0
+              ? "฿" + row.original.variants[0].price.toFixed(2)
+              : "฿" + row.original.price.toFixed(2)}
+          </div>
+        );
+      },
     },
     {
       id: "actions",
@@ -68,7 +102,9 @@ export const columns = ({
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigator.clipboard.writeText(row.original.prod_id.toString());
+                    navigator.clipboard.writeText(
+                      row.original.prod_id.toString()
+                    );
                   }}
                 >
                   คัดลอกไอดี

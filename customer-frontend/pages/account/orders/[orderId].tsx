@@ -166,13 +166,27 @@ export default function Order() {
                                     <div className="text-sm flex space-x-1 items-center mb-1">
                                       <span>{orderItem.name}</span>
                                     </div>
-                                    <div className="flex gap-0.5 flex-wrap">
+                                    <div className="flex">
+                                      <div className="flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer">
+                                        <span className="flex text-xs items-center whitespace-nowrap sm:text-sm">
+                                          ตัวเลือก:
+                                        </span>
+                                        <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                          {orderItem.variant
+                                            .map((optn) => {
+                                              return optn.option_name;
+                                            })
+                                            .join(", ")}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    {/* <div className="flex gap-0.5 flex-wrap">
                                       {orderItem.variant.map((variant) => (
                                         <Badge className="text-xs">
                                           {variant.option_name}
                                         </Badge>
                                       ))}
-                                    </div>
+                                    </div> */}
                                   </div>
                                 </div>
                               </div>
@@ -462,6 +476,39 @@ export default function Order() {
                   </div>
                   <p className="">{dataQuery.data?.address}</p>
                   <p className="font-normal">{dataQuery.data?.post_code}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
+                  <CardTitle className="text-lg">ช่องทางการชำระเงิน</CardTitle>
+                  {/* <CustomerForm /> */}
+                </CardHeader>
+                <CardContent className="grid gap-6">
+                  <div className="grid grid-cols-3 gap-4">
+                    {dataQuery?.data && dataQuery.data.wei > 0 ? (
+                      <div className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary">
+                        <Icons.metamask className="mb-3 h-6 w-6" />
+                        Metamask
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          className="mb-3 h-6 w-6"
+                        >
+                          <rect width="20" height="14" x="2" y="5" rx="2" />
+                          <path d="M2 10h20" />
+                        </svg>
+                        Card
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </div>

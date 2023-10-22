@@ -31,6 +31,7 @@ import { useEffect, useState } from "react";
 import { useProducts } from "@/src/hooks/product/user/queries";
 import FilterState from "@/components/filterState";
 import { useCategoriesMain } from "@/src/hooks/category/queries";
+import MobileFilterNew from "@/components/mobile-filter-new";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -50,7 +51,21 @@ export default function Home() {
         <Billboard info={undefined} />
         <div className="px-4 sm:px-6 lg:px-8 pb-24">
           <div className="lg:grid lg:grid-cols-5 lg:gap-x-8">
-            <MobileFilters sizes={[]} colors={[]} />
+            {/* <MobileFilters sizes={[]} colors={[]} /> */}
+            <MobileFilterNew selectedCheckboxes={selectedCheckboxes}
+                setSelectedCheckboxes={setSelectedCheckboxes}
+                search={search}
+                setSerarch={setSerarch}
+                type={type}
+                // name="Categories"
+                selectType={selectType}
+                setSelectType={setSelectType}
+                data={[
+                  ...(catWebQuery.data?.data.map((category) => ({
+                    id: category.catweb_id,
+                    name: category.name,
+                  })) ?? []),
+                ]}/>
             <div className="hidden lg:block">
               {/* <Filter
                 valueKey="sizeId"
@@ -66,11 +81,11 @@ export default function Home() {
               <FilterState
                 selectedCheckboxes={selectedCheckboxes}
                 setSelectedCheckboxes={setSelectedCheckboxes}
-                search={search}
+                // search={search}
                 setSerarch={setSerarch}
-                valueKey="sizeId"
+             
                 type={type}
-                name="Categories"
+                // name="Categories"
                 selectType={selectType}
                 setSelectType={setSelectType}
                 data={[

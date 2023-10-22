@@ -5,12 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod'
 import { useRouter } from 'next/router';
 import { useProductById } from '@/src/hooks/product/queries';
-import { useEditVariant } from '@/src/hooks/product/variant/mutations';
+import { useEditVariant, useEditVariantAdvanced } from '@/src/hooks/product/variant/mutations';
 import { toast } from 'react-toastify';
 const useVariantAdvancedHook = () => {
     const [open, setOpen] = useState(false)
     const router = useRouter();
-    const editMutate = useEditVariant()
+    const editMutate = useEditVariantAdvanced()
     const productQuery = useProductById(
         router.query.prodId as string
     );

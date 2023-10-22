@@ -19,8 +19,8 @@ const Billboard: React.FC<BillboardProps> = ({ name, info }) => {
         }}
         className="rounded-xl relative aspect-square md:aspect-[2.4/1] overflow-hidden bg-cover"
       >
-        <div className="w-full h-full bg-black z-40 absolute opacity-25"></div>
-        <Alert className="col-span-2 flex items-center space-x-4 bg-transparent border-none absolute z-50 text-white uppercase">
+        <div className="w-full h-full bg-black z-30 absolute opacity-25"></div>
+        <Alert className="col-span-2 flex items-center space-x-4 bg-transparent border-none absolute z-40 text-white uppercase">
           {/* <div className="rounded-full h-14 w-14 border flex items-center justify-center bg-slate-100">
             img
           </div> */}
@@ -38,7 +38,7 @@ const Billboard: React.FC<BillboardProps> = ({ name, info }) => {
               {"Sabai Shop"}
             </div>
           ) : null}
-          <div className="font-bold text-2xl sm:text-4xl lg:text-5xl sm:max-w-xl max-w-xs text-white  p-2 z-50 ">
+          <div className="font-bold text-2xl sm:text-4xl lg:text-5xl sm:max-w-xl max-w-xs text-white  p-2 z-40 ">
             {info?.banner_title ? info.banner_title : "ร้านค้าที่ดีที่สุดในโลก"}
           </div>
         </div>

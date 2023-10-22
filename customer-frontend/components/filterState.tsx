@@ -14,24 +14,24 @@ import { SearchType } from "@/src/types/enums/product";
 
 interface FilterProps {
   data: any[];
-  search: string | undefined;
+  // search: string | undefined;
   setSerarch: Dispatch<SetStateAction<string | undefined>>;
   setSelectedCheckboxes: Dispatch<SetStateAction<string[]>>;
   selectedCheckboxes: string[];
   setSelectType?: Dispatch<SetStateAction<string | undefined>>;
   selectType?: string | undefined;
-  name: string;
-  valueKey: string;
+  // name: string;
+
   type?: string;
 }
 
 const FilterState: React.FC<FilterProps> = ({
   data,
-  name,
-  valueKey,
+  // name,
+
   setSelectedCheckboxes,
   selectedCheckboxes,
-  search,
+  // search,
   setSerarch,
   type,
   selectType,
@@ -74,7 +74,7 @@ const FilterState: React.FC<FilterProps> = ({
   return (
     <>
       <div className="mb-8">
-        <h3 className="text-lg font-semibold">Search</h3>
+        <h3 className="text-lg font-semibold">ค้นหา</h3>
         <hr className="my-4" />
         <Input
           placeholder="search"
@@ -82,7 +82,8 @@ const FilterState: React.FC<FilterProps> = ({
         />
         {type && type === SearchType.MERCHANT ? (
           <>
-            <p className="text-xs font-semibold mt-3">ประเภทการค้นหา:</p>
+            {/* <p className="text-xs font-semibold mt-3">ประเภทการค้นหา:</p> */}
+            <p className="text-lg font-semibold mt-3">ประเภทการค้นหา</p>
             <div className="flex flex-wrap gap-2 mt-2 items-center">
               <div className="flex items-center space-x-2 border p-2 rounded-md">
                 <Checkbox
@@ -127,7 +128,8 @@ const FilterState: React.FC<FilterProps> = ({
       </div>
       <div className="mb-8">
         <h3 className="text-lg font-semibold">
-          {name === "Categories" ? "หมวดหมู่" : ""}
+          {/* {name === "Categories" ? "หมวดหมู่" : ""} */}
+          หมวดหมู่
         </h3>
         <hr className="my-4" />
         <div className="flex flex-wrap gap-2">

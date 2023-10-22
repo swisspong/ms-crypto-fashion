@@ -118,54 +118,54 @@ export const columns = ({
       header: () => <div>ยอดชำระ</div>,
       cell: ({ row }) => <div>฿{row.original.total.toFixed(2)}</div>,
     },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        return (
-          <div className="text-right">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">เปิดเมนู</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>การกระทำ</DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigator.clipboard.writeText(
-                      row.original.order_id.toString()
-                    );
-                  }}
-                >
-                  คัดลอกไอดี
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
+    // {
+    //   id: "actions",
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div className="text-right">
+    //         <DropdownMenu>
+    //           <DropdownMenuTrigger asChild>
+    //             <Button variant="ghost" className="h-8 w-8 p-0">
+    //               <span className="sr-only">เปิดเมนู</span>
+    //               <MoreHorizontal className="h-4 w-4" />
+    //             </Button>
+    //           </DropdownMenuTrigger>
+    //           <DropdownMenuContent align="end">
+    //             <DropdownMenuLabel>การกระทำ</DropdownMenuLabel>
+    //             <DropdownMenuItem
+    //               onClick={(e) => {
+    //                 e.stopPropagation();
+    //                 navigator.clipboard.writeText(
+    //                   row.original.order_id.toString()
+    //                 );
+    //               }}
+    //             >
+    //               คัดลอกไอดี
+    //             </DropdownMenuItem>
+    //             <DropdownMenuSeparator />
 
-                <Link href={`orders/edit/${row.original.order_id}`} passHref>
-                  <DropdownMenuItem>
-                    <Edit className="w-4 h-4 mr-2" />
-                    แก้ไข
-                  </DropdownMenuItem>
-                </Link>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIdHandler(row.original.order_id as string);
-                    openDialogHandler();
-                  }}
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  ลบ
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        );
-      },
-    },
+    //             <Link href={`orders/edit/${row.original.order_id}`} passHref>
+    //               <DropdownMenuItem>
+    //                 <Edit className="w-4 h-4 mr-2" />
+    //                 แก้ไข
+    //               </DropdownMenuItem>
+    //             </Link>
+    //             <DropdownMenuItem
+    //               onClick={(e) => {
+    //                 e.stopPropagation();
+    //                 setIdHandler(row.original.order_id as string);
+    //                 openDialogHandler();
+    //               }}
+    //             >
+    //               <Trash2 className="w-4 h-4 mr-2" />
+    //               ลบ
+    //             </DropdownMenuItem>
+    //           </DropdownMenuContent>
+    //         </DropdownMenu>
+    //       </div>
+    //     );
+    //   },
+    // },
   ];
 
   return columns;

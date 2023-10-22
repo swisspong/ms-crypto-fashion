@@ -21,6 +21,11 @@ export const patchVariant = async (data: { prodId: string, body: IVariant }): Pr
         (response) => response.data
     );
 };
+export const patchVariantAdvanced = async (data: { prodId: string, body: IVariant }): Promise<void> => {
+    await api.patch(`/products/${data.prodId}/variants/advanced`, data.body).then(
+        (response) => response.data
+    );
+};
 export const deleteVariant = async (data: { prodId: string, vrntId: string, }): Promise<void> => {
     await api.delete(`/products/${data.prodId}/variants/${data.vrntId}`).then(
         (response) => response.data

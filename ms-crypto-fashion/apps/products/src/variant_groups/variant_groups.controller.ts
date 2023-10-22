@@ -19,10 +19,10 @@ export class VariantGroupsController {
   create(@GetUser('merchant') merchantId: string, @Param('productId') productId: string, @Body() dto: CreateGroupDto) {
     return this.variantGroupsService.addGroup(merchantId, productId, dto);
   }
-  @Get()
-  findAll() {
-    return this.variantGroupsService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.variantGroupsService.findAll();
+  // }
   @Roles(RoleFormat.MERCHANT)
   @Patch()
   updateGroup(@GetUser('merchant') merchantId: string, @Param('productId') productId: string, @Body() dto: CreateGroupDto) {

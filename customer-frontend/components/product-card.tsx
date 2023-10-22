@@ -8,6 +8,10 @@ import { useRouter } from "next/navigation";
 import IconButton from "./icon-button";
 import Currency from "./currency";
 import { cn } from "@/lib/utils";
+import {
+  productIsNotAvailable,
+  showPrice,
+} from "./product/product-card/product-card-helper";
 
 interface ProductCard {
   data: IProductRow;
@@ -19,7 +23,8 @@ const ProductCard: React.FC<ProductCard> = ({ data, className, pushUrl }) => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(pushUrl);
+    const notAvailable = productIsNotAvailable(data);
+    if (!notAvailable) router.push(pushUrl);
   };
 
   return (
@@ -30,9 +35,11 @@ const ProductCard: React.FC<ProductCard> = ({ data, className, pushUrl }) => {
         className
       )}
     >
-      <div className="bg-black bg-opacity-20 absolute inset-0 rounded-xl z-20 flex justify-center items-center">
-        <span className="text-destructive z-30 text-xl">สินค้าหมด</span>
-      </div>
+      {productIsNotAvailable(data) ? (
+        <div className="bg-black bg-opacity-20 absolute inset-0 rounded-xl z-20 flex justify-center items-center">
+          <span className="text-destructive z-30 text-xl">สินค้าหมด</span>
+        </div>
+      ) : undefined}
       {/* Image & actions */}
       <div
         //  className="aspect-square rounded-xl bg-gray-100 relative"
@@ -66,26 +73,27 @@ const ProductCard: React.FC<ProductCard> = ({ data, className, pushUrl }) => {
       {/* Price & Reiew */}
       <div className="flex items-center justify-between">
         {data.variants.length > 1 ? (
-          data.variants
-            .reduce(
-              (prev: [undefined | number, undefined | number], curr) => {
-                prev[0] =
-                  prev[0] === undefined || curr.price < prev[0]
-                    ? curr.price
-                    : prev[0];
-                prev[1] =
-                  prev[1] === undefined || curr.price > prev[1]
-                    ? curr.price
-                    : prev[1];
-                console.log(prev, curr);
-                return prev;
-              },
-              [undefined, undefined]
-            )
+          showPrice(data.variants)
+            // data.variants
+            //   .reduce(
+            //     (prev: [undefined | number, undefined | number], curr) => {
+            //       prev[0] =
+            //         prev[0] === undefined || curr.price < prev[0]
+            //           ? curr.price
+            //           : prev[0];
+            //       prev[1] =
+            //         prev[1] === undefined || curr.price > prev[1]
+            //           ? curr.price
+            //           : prev[1];
+            //       console.log(prev, curr);
+            //       return prev;
+            //     },
+            //     [undefined, undefined]
+            //   )
             .map((val, index) => (
               <>
+                {index === 1 ? " ~ " : undefined}
                 <Currency value={val} />
-                {index === 0 ? " ~ " : undefined}
               </>
             ))
         ) : (

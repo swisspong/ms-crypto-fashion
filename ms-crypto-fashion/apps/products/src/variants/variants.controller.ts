@@ -30,6 +30,12 @@ export class VariantsController {
   editVariant(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Body() payload: AddVariantDto) {
     return this.variantsService.editVariant(merchantId, productId, payload);
   }
+  @Roles(RoleFormat.MERCHANT)
+  @Patch('advanced')
+  editVariantAdvanced(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Body() payload: AddVariantDto) {
+    return this.variantsService.editVariantAdvanced(merchantId, productId, payload);
+  }
+
   // @Roles(RoleFormat.MERCHANT)
   // @Patch()
   // update(@GetUser("merchant") merchantId: string, @Param("productId") productId: string, @Body() updateVariantDto: UpdateVariantDto) {

@@ -20,7 +20,7 @@ const formSchema = z.object({
     }, { message: "ต้องมีอย่างน้อย 1 ตัวเลือก" }),
     price: z.number().min(0),
     stock: z.number().int().min(0),
-    image_url: z.string({ required_error: 'ต้องมี 1 รูป', invalid_type_error: 'ต้องมี 1 รูป' }).url({ message: 'ต้องมี 1 รูป' }),
+    image_url: z.string({ required_error: 'ต้องมี 1 รูป', invalid_type_error: 'ต้องมี 1 รูป' }).url({ message: 'ต้องมี 1 รูป' }).optional(),
 })
 const genId = (prefix: string) => {
     const uid = new ShortUniqueId();

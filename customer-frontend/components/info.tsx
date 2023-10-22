@@ -19,6 +19,7 @@ import { useAddToCart } from "@/src/hooks/cart/mutations";
 import { toast } from "react-toastify";
 import { useAddToWishlist } from "@/src/hooks/wishlist/mutations";
 import useAddItemHook, { useAddItemHookNew } from "./use-add-item-hook";
+import { showPrice } from "./product/product-card/product-card-helper";
 
 interface InfoProps {
   data?: IProductRow;
@@ -105,25 +106,26 @@ const Info: React.FC<InfoProps> = ({
       <div className="mt-3 flex items-end justify-between">
         <p className="text-2xl text-gray-900 flex space-x-2">
           {data?.variants && data.variants.length > 1 ? (
-            data.variants
-              .reduce(
-                (prev: [undefined | number, undefined | number], curr) => {
-                  prev[0] =
-                    prev[0] === undefined || curr.price < prev[0]
-                      ? curr.price
-                      : prev[0];
-                  prev[1] =
-                    prev[1] === undefined || curr.price > prev[1]
-                      ? curr.price
-                      : prev[1];
-                  return prev;
-                },
-                [undefined, undefined]
-              )
+            showPrice(data.variants)
+              // data.variants
+              //   .reduce(
+              //     (prev: [undefined | number, undefined | number], curr) => {
+              //       prev[0] =
+              //         prev[0] === undefined || curr.price < prev[0]
+              //           ? curr.price
+              //           : prev[0];
+              //       prev[1] =
+              //         prev[1] === undefined || curr.price > prev[1]
+              //           ? curr.price
+              //           : prev[1];
+              //       return prev;
+              //     },
+              //     [undefined, undefined]
+              //   )
               .map((val, index) => (
                 <>
+                  {index === 1 ? <div>~</div> : undefined}
                   <Currency value={val} />
-                  {index === 0 ? <div>~</div> : undefined}
                 </>
               ))
           ) : (

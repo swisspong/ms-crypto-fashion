@@ -47,21 +47,21 @@ const Filter: React.FC<FilterProps> = ({ data, name, valueKey }) => {
 
     router.push(url);
   };
-  useEffect(() => {
-    const url = qs.stringifyUrl(
-      {
-        url: window.location.href,
-        query: { cat: selectedCheckboxes },
-      },
-      { skipNull: true }
-    );
-    router.push(url);
-    const parsed = qs.parse(location.search);
-  }, [selectedCheckboxes]);
+  // useEffect(() => {
+  //   const url = qs.stringifyUrl(
+  //     {
+  //       url: window.location.href,
+  //       query: { cat: selectedCheckboxes },
+  //     },
+  //     { skipNull: true }
+  //   );
+  //   router.push(url);
+  //   const parsed = qs.parse(location.search);
+  // }, [selectedCheckboxes]);
 
   return (
     <>
-      <div className="mb-8">
+      <div className="mb-8 z-50 relative">
         <h3 className="text-lg font-semibold">Search</h3>
         <hr className="my-4" />
         <Input placeholder="search" />
@@ -82,7 +82,7 @@ const Filter: React.FC<FilterProps> = ({ data, name, valueKey }) => {
           </div>
         </div>
       </div>
-      <div className="mb-8">
+      <div className="mb-8 z-50 relative">
         <h3 className="text-lg font-semibold">{name}</h3>
         <hr className="my-4" />
         <div className="flex flex-wrap gap-2">

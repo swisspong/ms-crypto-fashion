@@ -37,6 +37,7 @@ interface IOrderRow {
     updatedAt: string
     shipping_carier?: string
     tracking?: string
+    wei:number
     shipped_at?: string;
     __v: number
 }
