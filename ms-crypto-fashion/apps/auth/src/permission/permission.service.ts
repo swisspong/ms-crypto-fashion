@@ -7,11 +7,11 @@ export class PermissionService {
 
   async findAll() {
     try {
-      var resultArray = Object.keys(PermissionFormat).map( (permissionIndex) => {
+      var resultArray = Object.keys(PermissionFormat).map((permissionIndex) => {
         let permission = PermissionFormat[permissionIndex];
-        // do something with permission
-        return permission;
-      });
+        // ทำบางอย่างกับ permission
+        return permission !== PermissionFormat.SYSTEM_OWNER ? permission : undefined;
+      }).filter(permission => permission !== undefined);
       return resultArray
     } catch (error) {
       throw error

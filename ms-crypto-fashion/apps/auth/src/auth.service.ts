@@ -117,7 +117,7 @@ export class AuthService {
 
 
       await this.mailerService.sendMail(mailOptions)
-      
+
       return { status: "success" }
 
     } catch (error) {
@@ -131,24 +131,20 @@ export class AuthService {
 
       if (!user) throw new NotFoundException(ACCOUNT_NOT_FOUND);
 
-      if (user.role === RoleFormat.ADMIN) {
-        if (!await this.hashService.comparePassword(signinLocalDto.password, user.password))
-          throw new HttpException(PASSWORD_NOT_MATCH, HttpStatus.BAD_REQUEST);
+      if (user.role !== RoleFormat.ADMIN) throw new NotFoundException(ACCOUNT_NOT_FOUND);
+      if (!await this.hashService.comparePassword(signinLocalDto.password, user.password))
+        throw new HttpException(PASSWORD_NOT_MATCH, HttpStatus.BAD_REQUEST);
 
-        const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
-        // res.cookie("token", accessToken)
-        res.cookie("token", accessToken, {
-          // secure: true, 
-          httpOnly: false,
-          // sameSite: 'none',
-          domain: 'example.com'
-        })
-        return { accessToken }
-      } else {
-        // throw new HttpException('You are not admin.', HttpStatus.BAD_REQUEST);
-        throw new ForbiddenException()
+      const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, merchant: user?.mcht_id, permission: user.permission })
+      // res.cookie("token", accessToken)
+      res.cookie("token", accessToken, {
+        // secure: true, 
+        httpOnly: false,
+        // sameSite: 'none',
+        domain: 'example.com'
+      })
+      return { accessToken }
 
-      }
 
     } catch (error) {
       throw error

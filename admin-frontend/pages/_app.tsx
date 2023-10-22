@@ -53,7 +53,15 @@ export default function App({ Component, pageProps }: AppProps) {
                       message: string;
                     })
                   : undefined;
-                if (data?.message) toast.error(data.message);
+                
+                
+                if (data?.message) {
+                  if (data.statusCode === "403") {
+                    toast.error("ผู้ใช้ไม่มีสิทธิ์ในการเข้าถึง");
+                  } else {
+                    toast.error(data.message);
+                  }
+                }
               }
             } else {
               toast(`Something went wrong`, {

@@ -5,7 +5,7 @@ import { UsersRepository } from './users.repository';
 import ShortUniqueId from 'short-unique-id';
 // import { RoleFormat } from './schema/user.schema';
 import { HashService } from '@app/common';
-import { RoleFormat } from '@app/common/enums';
+import { PermissionFormat, RoleFormat } from '@app/common/enums';
 import { CreateMerchantData, DeleteMerchantData } from '@app/common/interfaces';
 import { ClientProxy } from '@nestjs/microservices';
 import { MERCHANT_DELETE_P, PRODUCTS_SERVICE } from '@app/common/constants/products.constant';
@@ -18,7 +18,7 @@ import { Response } from 'express';
 import { ChangePasswordUserDto } from './dto/change-password-user.dto';
 import { SendEmailResetDto } from './dto/send-email-reset-pass.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { ACCOUNT_NOT_FOUND, EMAIL_IS_ALREADY_IN_USE, NOT_FIX_YOURSELF } from '@app/common/constants/error.constant';
+import { ACCOUNT_NOT_FOUND, EMAIL_IS_ALREADY_IN_USE, NOT_FIX_OWNER, NOT_FIX_YOURSELF } from '@app/common/constants/error.constant';
 @Injectable()
 export class UsersService {
   protected readonly logger = new Logger(UsersService.name);
@@ -73,7 +73,7 @@ export class UsersService {
       const admin = await this.userRepository.findOne({ user_id: id })
 
       if (user_current === admin.user_id) throw new HttpException(NOT_FIX_YOURSELF, HttpStatus.BAD_REQUEST);
-
+      if (admin.permission.includes(PermissionFormat.SYSTEM_OWNER)) throw new HttpException(NOT_FIX_OWNER , HttpStatus.BAD_REQUEST);
       if (admin.email !== email) {
         const owner = await this.userRepository.findOne({ email })
         if (owner) throw new HttpException(EMAIL_IS_ALREADY_IN_USE, HttpStatus.BAD_REQUEST);

@@ -32,7 +32,7 @@ import { useUpdateAdmin } from "@/src/hooks/admin/mutaions";
 const formSchema = z.object({
     name: z.string({ required_error: "ต้องกรอก" }).min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim(),
     email: z.string({ required_error: "ต้องกรอก" }).min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim(),
-    password: z.string({ required_error: "ต้องกรอก" }).min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim()
+    password: z.string().min(2, { message: "ต้องมีตัวอักษรอย่างน้อย 2 ตัว" }).trim().optional()
 })
 
 
