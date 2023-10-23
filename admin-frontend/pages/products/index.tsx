@@ -51,6 +51,8 @@ export default function Product() {
         search
     })
 
+    
+
     const defaultData = useMemo(() => [], []);
     const pagination = useMemo(
         () => ({

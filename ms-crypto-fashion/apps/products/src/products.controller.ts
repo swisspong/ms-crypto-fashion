@@ -112,10 +112,6 @@ export class ProductsController {
     return this.productsService.removeByAdmin(id);
   }
 
- 
-
-
-
   @MessagePattern({ cmd: 'get_product' })
   async getProduct(@Payload() data: { prod_id: string }) {
     const product = await this.productsService.findOne(data.prod_id)
