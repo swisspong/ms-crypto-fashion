@@ -87,7 +87,7 @@ export function Menu() {
       }}
       value={open}
       //value="radix-:r3:"
-      className="rounded-none sticky top-0 backdrop-blur-sm bg-white/30 dark:bg-black/30 border-b border-none  px-2 lg:px-6 flex justify-between mb-0 mt-5"
+      className="rounded-none sticky top-0 backdrop-blur-sm  border-b border-none  px-2 lg:px-6 flex justify-between mb-0 mt-5"
     >
       <div className="flex items-center space-x-2 ">
         <h1 className="font-bold">
@@ -95,33 +95,36 @@ export function Menu() {
           {router.pathname === `/`
             ? `ภาพรวม`
             : router.pathname
-                .substring(1)
-                .split("/")
-                .map((path) => labelHeading(path))
-                .join(" > ")}
+              .substring(1)
+              .split("/")
+              .map((path) => labelHeading(path))
+              .join(" > ")}
         </h1>
       </div>
 
-      <div className="flex items-center space-x-2 ">
-        <SelectTheme />
+      <div className="flex items-center space-x-2 justify-end flex-1">
 
-        <MenubarMenu>
-          <MenubarTrigger className="cursor-pointer">บัญชี</MenubarTrigger>
-          <MenubarContent forceMount>
-            <MenubarLabel inset>บัญชี</MenubarLabel>
-            <MenubarSeparator />
-            <MenubarRadioGroup value={`merchant`}>
-              <MenubarRadioItem value={`merchant`}>
-                {merchantInfo?.name}
-              </MenubarRadioItem>
-            </MenubarRadioGroup>
-            <MenubarSeparator />
-            <MenubarItem onClick={() => mutate()} disabled={logoutLoading}>
-              ออกจากระบบ
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
+        <div style={{ marginLeft: 'auto' }}>
+          <MenubarMenu>
+            <MenubarTrigger className="cursor-pointer">บัญชี</MenubarTrigger>
+            <MenubarContent forceMount>
+              <MenubarLabel inset>บัญชี</MenubarLabel>
+              <MenubarSeparator />
+              <MenubarRadioGroup value={`merchant`}>
+                <MenubarRadioItem value={`merchant`}>
+                  {merchantInfo?.name}
+                </MenubarRadioItem>
+              </MenubarRadioGroup>
+              <MenubarSeparator />
+              <MenubarItem onClick={() => mutate()} disabled={logoutLoading}>
+                ออกจากระบบ
+              </MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </div>
+
       </div>
+      <SelectTheme />
 
       <Sheet>
         <SheetTrigger asChild>

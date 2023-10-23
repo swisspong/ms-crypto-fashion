@@ -64,9 +64,6 @@ export default function Complaint() {
         [pageIndex, pageSize]
     );
 
-    console.log(dataQuery.data);
-    
-
     // !!! END DataTable
 
     return (

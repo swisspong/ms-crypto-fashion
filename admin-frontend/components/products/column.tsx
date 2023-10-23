@@ -19,7 +19,7 @@ export const columns = ({
       accessorKey: "image_urls",
       header: () => <div>#สินค้า</div>,
       cell: ({ row }) => (
-        <div className="flex items-center space-x-3">
+        <div className="sm:flex items-center sm:space-x-3">
           <img
             src={row.original.image_urls[0]}
             className="object-cover h-14 w-14 rounded-md"
