@@ -1,0 +1,47 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test Docker command
+      run: docker ps -a
+    - name: Check if Docker containers are running
+      id: check-containers
+      run: |
+        CONTAINERS=$(docker ps -a -q)
+        if [[ -n "$CONTAINERS" ]]; then
+          echo "Containers found. Stopping containers..."
+          echo "::set-output name=containers_found::true"
+        else
+          echo "No containers found."
+          echo "::set-output name=containers_found::false"
+        fi
+    - name: Stop Docker containers
+      if: ${{ steps.check-containers.outputs.containers_found == 'true' }}
+      run: |
+        set -e
+        docker stop $(docker ps -a -q) || true
+    - name: Romove All Container
+      if: ${{ steps.check-containers.outputs.containers_found == 'true' }}
+      run: |
+        set -e
+        docker rm $(docker ps -a -q) || true
+    - name: Rebuild Image
+      run: docker compose build --no-cache
+    - name: Clean up system
+      run: docker system prune -f
+    - name: Clean up volume
+      run: docker volume prune -f
+    - name: Start Compose
+      run: docker compose -f 'docker-compose.dev.yml' up -d
