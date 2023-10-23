@@ -28,7 +28,7 @@ async function bootstrap() {
   app.connectMicroservice(rmqService.getOptoins(PAYMENT_SERVICE))
   await app.startAllMicroservices()
   // * set cors
-  const whitelist = ["http://example.com", "http://merchant.example.com"];
+  const whitelist = ["http://example.com", "http://merchant.example.com",'http://admin.cryptofashion.store', 'http://merchant.cryptofashion.store', 'http://cryptofashion.store'];
 
   app.enableCors({
     origin: (origin, callback) => {
