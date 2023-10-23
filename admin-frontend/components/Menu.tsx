@@ -65,7 +65,7 @@ export function Menu() {
         }
       }}
       value={open}
-      className="rounded-none sticky top-0 backdrop-blur-sm bg-white/30 dark:bg-black/30 border-b border-none  px-2 lg:px-6 flex justify-between mb-0 mt-5"
+      className="rounded-none sticky top-0 backdrop-blur-sm  border-b border-none  px-2 lg:px-6 flex justify-between mb-0 mt-5"
     >
       <div className="flex items-center space-x-2 ">
         <h1 className="font-bold">

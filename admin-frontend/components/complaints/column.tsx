@@ -20,7 +20,14 @@ export const columns = ({
 
         {
             accessorKey: "detail",
-            header: () => <div>#รายละเอียด</div>
+            header: () => <div>#รายละเอียด</div>,
+            cell: ({row}) => {
+                return (
+                    <div className="w-40 sm:w-48">
+                        {row.original.detail}
+                    </div>
+                )
+            }
         },
         {
             accessorKey: "type",
@@ -28,7 +35,9 @@ export const columns = ({
             cell: ({ row }) => {
                 const type = row.original.type.toLocaleUpperCase()
                 return (
-                    <Badge variant={row.original.type.toLocaleUpperCase() === "MERCHANT" ? "secondary" : "zinc"}>{type === "MERCHANT" ? "ร้านค้า" : "สินค้า"}</Badge>
+                    <Badge
+                        className="w-20 justify-center text-center sm:w-24"
+                        variant={row.original.type.toLocaleUpperCase() === "MERCHANT" ? "secondary" : "zinc"}>{type === "MERCHANT" ? "ร้านค้า" : "สินค้า"}</Badge>
                 )
             }
         },
@@ -48,6 +57,7 @@ export const columns = ({
                                 <Button onClick={(e) => {
                                     e.stopPropagation()
                                 }}
+                                    className="w-32 justify-center text-center sm:w-36"
                                     variant="secondary">
                                     รายละเอียดร้าน
                                 </Button>
@@ -73,6 +83,7 @@ export const columns = ({
                                 <Button onClick={(e) => {
                                     e.stopPropagation()
                                 }}
+                                    className="w-32 justify-center text-center sm:w-36"
                                     variant="secondary">
                                     รายละเอียดสินค้า
                                 </Button>
@@ -100,7 +111,9 @@ export const columns = ({
                 const com = ComplaintFormat
                 const status = row.original.status.toLocaleUpperCase()
                 return (
-                    <Badge variant={row.original.status.toLocaleUpperCase() === "PENDING" ? "destructive" : row.original.status.toLocaleUpperCase() === "PROGRESS" ? "sky" : "green"}>
+                    <Badge
+                        className="w-20 justify-center text-center sm:w-28"
+                        variant={row.original.status.toLocaleUpperCase() === "PENDING" ? "destructive" : row.original.status.toLocaleUpperCase() === "PROGRESS" ? "sky" : "green"}>
                         {status === ComplaintFormat.PENDING.toLocaleUpperCase() ? "รอดำเนินการ" :
                             status === ComplaintFormat.PROGRESS.toLocaleUpperCase() ? "กำลังดำเนินการ" :
                                 status === ComplaintFormat.RESOLVED.toLocaleUpperCase() ? "แก้ไขเรียบร้อย" : "ปิด"
@@ -117,7 +130,7 @@ export const columns = ({
                 const statusCurrent = row.original.status.toLocaleUpperCase()
 
                 return (
-                    <div className="w-full flex flex-wrap justify-end" >
+                    <div className="w-36 md:w-full flex flex-wrap justify-end" >
                         <Card className="pt-1 pb-1  text-center ">
                             {status.map((val) => (
                                 <Button onClick={(e) => {

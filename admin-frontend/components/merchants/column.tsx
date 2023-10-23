@@ -33,7 +33,7 @@ export const columns = ({
       accessorKey: "image_url",
       header: () => <div>#ร้านค้า</div>,
       cell: ({ row }) => (
-        <div className="flex items-center space-x-3">
+        <div className="sm:flex items-center sm:space-x-3">
           <img src={row.original.banner_url ??
             "https://t4.ftcdn.net/jpg/04/99/93/31/360_F_499933117_ZAUBfv3P1HEOsZDrnkbNCt4jc3AodArl.jpg"} className="object-cover h-14 w-14 rounded-md" alt="img_merchant" />
           <div>{row.original.name}</div>
@@ -51,7 +51,7 @@ export const columns = ({
         
         const status = row.original.status
         return (
-          <Badge variant="secondary">
+          <Badge variant="secondary"  className="w-20 justify-center text-center sm:w-24">
             {status === MerchantFormat.DISAPPROVAL ? "ไม่อนุมัติ":
             status === MerchantFormat.APPROVED? "อนุมัติ": 
             status === MerchantFormat.IN_PROGRESS? "กำลังรอการอนุมัติ":
