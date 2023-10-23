@@ -18,8 +18,8 @@ jobs:
       run: whoami
     - name: Current directory
       run: pwd
-    - name: Sudo mode
-      run: sudo -i
+    # - name: Sudo mode
+    #   run: sudo -i
     - name: Test Docker command
       run: docker ps
     - name: Check if Docker containers are running
