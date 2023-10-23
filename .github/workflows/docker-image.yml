@@ -43,8 +43,8 @@ jobs:
       run: |
         set -e
         echo "user" | sudo -S docker rm $(echo "user" | sudo -S docker ps -a -q) || true
-    - name: Rebuild Image
-      run: echo "user" | sudo -S docker compose build --no-cache
+    # - name: Rebuild Image
+    #   run: echo "user" | sudo -S docker compose build --no-cache
     - name: Clean up system
       run: echo "user" | sudo -S docker system prune -f
     - name: Clean up volume
