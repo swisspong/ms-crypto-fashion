@@ -81,7 +81,7 @@ export default function Home() {
               <FilterState
                 selectedCheckboxes={selectedCheckboxes}
                 setSelectedCheckboxes={setSelectedCheckboxes}
-                // search={search}
+                search={search}
                 setSerarch={setSerarch}
              
                 type={type}

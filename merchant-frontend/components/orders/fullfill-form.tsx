@@ -138,7 +138,7 @@ const FullfillForm: FC<Props> = ({ data }) => {
         size="content"
         className="p-0 lg:w-[800px]"
       >
-        <ScrollArea className="h-full w-full rounded-md border p-6">
+        <ScrollArea className="h-full w-full rounded-md border p-4">
           <SheetHeader className="pb-4">
             <SheetTitle>การเตรียมสินค้า</SheetTitle>
             <SheetDescription>
@@ -151,61 +151,117 @@ const FullfillForm: FC<Props> = ({ data }) => {
               className="space-y-4 px-1"
             >
               <div className="rounded-md border mb-4">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="">สินค้า</TableHead>
-                      {/* <TableHead>QTY</TableHead> */}
-                      <TableHead className="text-right">จำนวน</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data?.items.map((orderItem) => (
+                <div className="hidden md:block">
+                  <Table>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell className="font-medium">
-                          <div>
-                            <div className="flex items-center space-x-3">
-                              <img
-                                src={orderItem.image}
-                                className="object-cover h-14 w-14 rounded-md"
-                              />
-                              <div>
-                                <div className="text-sm flex space-x-1 items-center mb-1">
-                                  <span>{orderItem.name}</span>
-                                </div>
-                                {/* <div className="flex gap-0.5 flex-wrap">
+                        <TableHead className="">สินค้า</TableHead>
+                        {/* <TableHead>QTY</TableHead> */}
+                        <TableHead className="text-right">จำนวน</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {data?.items.map((orderItem) => (
+                        <TableRow>
+                          <TableCell className="font-medium">
+                            <div>
+                              <div className="flex items-center space-x-3">
+                                <img
+                                  src={orderItem.image}
+                                  className="object-cover h-14 w-14 rounded-md"
+                                />
+                                <div>
+                                  <div className="text-sm flex space-x-1 items-center mb-1">
+                                    <span>{orderItem.name}</span>
+                                  </div>
+                                  {/* <div className="flex gap-0.5 flex-wrap">
                                   {orderItem.variant.map((variant) => (
                                     <Badge className="text-xs">
                                       {variant.option_name}
                                     </Badge>
                                   ))}
                                 </div> */}
-                                    <div className="flex">
-                                      <div className="flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer">
-                                        <span className="flex text-xs font-light items-center whitespace-nowrap sm:text-sm">
-                                          ตัวเลือก:
-                                        </span>
-                                        <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
-                                          {orderItem.variant
-                                            .map((optn) => {
-                                              return optn.option_name;
-                                            })
-                                            .join(", ")}
-                                        </p>
-                                      </div>
+                                  <div className="flex">
+                                    <div className="flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer">
+                                      <span className="flex text-xs font-light items-center whitespace-nowrap sm:text-sm">
+                                        ตัวเลือก:
+                                      </span>
+                                      <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                        {orderItem.variant
+                                          .map((optn) => {
+                                            return optn.option_name;
+                                          })
+                                          .join(", ")}
+                                      </p>
                                     </div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {/* {orderItem.quantity} of {orderItem.quantity} */}
+                            {orderItem.quantity}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                <div className="pt-1 space-y-2">
+                  {data?.items.map((orderItem) => (
+                    <div className="px-2 mb-1 block md:hidden ">
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={orderItem.image}
+                          className="object-cover h-14 w-14 rounded-md"
+                        />
+                        <div className="w-full">
+                          <p className="line-clamp-1 text-sm mb-1">
+                            {orderItem.name}
+                          </p>
+
+                          <div className="flex justify-between pb-1 border-b">
+                            {orderItem.variant.length > 0 ? (
+                              <div
+                                className={`flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer`}
+                              >
+                                <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                  ตัวเลือก:
+                                  {orderItem.variant
+                                    .map((optn) => {
+                                      return optn.option_name;
+                                    })
+                                    .join(", ")}
+                                </p>
+                              </div>
+                            ) : (
+                              <div></div>
+                            )}
+                            {/* <div
+                                  className={`flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer`}
+                                >
+                                  <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                    ตัวเลือก:
+                                    {orderItem.variant
+                                      .map((optn) => {
+                                        return optn.option_name;
+                                      })
+                                      .join(", ")}
+                                  </p>
+                                </div> */}
+
+                            <div className="">
+                              <p className="text-xs justify-self-end text-right">
+                                x{orderItem.quantity}
+                              </p>
+                            </div>
                           </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {/* {orderItem.quantity} of {orderItem.quantity} */}
-                          {orderItem.quantity}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="col-span-1">

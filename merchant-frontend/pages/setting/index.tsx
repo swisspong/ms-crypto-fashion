@@ -124,13 +124,13 @@ export default function SettingPage() {
     <Layout>
       <div className="space-between flex items-center mb-4">
         <div className="">
-          <h1 className="text-xl font-bold tracking-tight">Edit Product</h1>
+          <h1 className="text-xl font-bold tracking-tight">ตั้งค่าบัญชีร้านค้า</h1>
         </div>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-5 gap-4">
-            <div className="col-span-3 grid gap-4">
+            <div className="col-span-5 md:col-span-3 grid gap-4">
               <Card>
                 <CardHeader className="space-y-1">
                   <CardTitle className="text-2xl">รายละเอียด</CardTitle>
@@ -242,7 +242,7 @@ export default function SettingPage() {
                 </CardContent>
               </Card>
             </div>
-            <div className="col-span-2 space-y-4">
+            <div className="col-span-5 md:col-span-2 space-y-4">
               <Card>
                 <CardHeader>
                   <Button type="submit" disabled={isLoading} className="w-full">

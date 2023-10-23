@@ -145,7 +145,7 @@ export default function EditCategory() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-5 gap-4">
-            <div className="col-span-3 grid gap-4">
+            <div className="col-span-5 md:col-span-3 grid gap-4">
               <Card>
                 <CardHeader className="space-y-1">
                   <CardTitle className="text-2xl">กรอกรายละเอียด</CardTitle>
@@ -218,7 +218,7 @@ export default function EditCategory() {
                 </CardContent>
               </Card> */}
             </div>
-            <div className="col-span-2">
+            <div className="col-span-5 md:col-span-2">
               <Card>
                 <CardHeader>
                   <Button type="submit" disabled={isLoading} className="w-full">

@@ -14,7 +14,7 @@ import { SearchType } from "@/src/types/enums/product";
 
 interface FilterProps {
   data: any[];
-  // search: string | undefined;
+  search: string | undefined;
   setSerarch: Dispatch<SetStateAction<string | undefined>>;
   setSelectedCheckboxes: Dispatch<SetStateAction<string[]>>;
   selectedCheckboxes: string[];
@@ -31,7 +31,7 @@ const FilterState: React.FC<FilterProps> = ({
 
   setSelectedCheckboxes,
   selectedCheckboxes,
-  // search,
+  search,
   setSerarch,
   type,
   selectType,
@@ -78,6 +78,7 @@ const FilterState: React.FC<FilterProps> = ({
         <hr className="my-4" />
         <Input
           placeholder="search"
+          value={search}
           onChange={(e) => setSerarch(e.target.value)}
         />
         {type && type === SearchType.MERCHANT ? (

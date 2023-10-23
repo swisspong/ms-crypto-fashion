@@ -136,29 +136,23 @@ export default function EditOrder() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-5 gap-4">
-            <div className="col-span-3 grid gap-4">
+            <div className="col-span-5 md:col-span-3 grid gap-2 md:gap-4">
               <Card>
-                <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
+                <CardHeader className="space-y-1 flex-row  w-full justify-between items-center p-2 md:p-6">
                   <CardTitle className="text-2xl">รายละเอียด</CardTitle>
                   <div className="flex space-x-2">
                     {dataQuery.data?.status !== StatusFormat.FULLFILLMENT &&
                     dataQuery.data?.status !== StatusFormat.RECEIVED &&
                     dataQuery.data?.status !== StatusFormat.CANCEL ? (
-                      // <Button variant={"destructive"} size={"sm"}>
-                      //   Cancel Order
-                      // </Button>
                       <ButtonCancelOrder />
                     ) : undefined}
                     {dataQuery.data?.payment_status !== PaymentFormat.REFUND &&
                     dataQuery.data?.status !== StatusFormat.RECEIVED ? (
-                      // <Button variant={"outline"} size={"sm"}>
-                      //   Refund
-                      // </Button>
                       <ButtonRefundOrder />
                     ) : undefined}
                   </div>
                 </CardHeader>
-                <CardContent className="grid gap-4">
+                <CardContent className="grid gap-4 p-2 md:p-6">
                   <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex justify-between items-center p-3">
                     <div className="flex-col">
                       <p className="text-xs">อ้างอิง</p>
@@ -176,168 +170,14 @@ export default function EditOrder() {
                     </div>
                   </div>
                   <div className="rounded-md border mb-4">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="">สินค้า</TableHead>
-                          <TableHead>จำนวน</TableHead>
-                          <TableHead>ราคา</TableHead>
-                          <TableHead className="text-right">ยอดรวม</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {dataQuery.data?.items.map((orderItem) => (
-                          <TableRow>
-                            <TableCell className="font-medium">
-                              <div>
-                                <div className="flex items-center space-x-3">
-                                  <img
-                                    src={orderItem.image}
-                                    className="object-cover h-14 w-14 rounded-md"
-                                  />
-                                  <div>
-                                    <div className="text-sm flex space-x-1 items-center mb-1">
-                                      <span>{orderItem.name}</span>
-                                    </div>
-                                    <div className="flex">
-                                      <div className="flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer">
-                                        <span className="flex text-xs font-light items-center whitespace-nowrap sm:text-sm">
-                                          ตัวเลือก:
-                                        </span>
-                                        <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
-                                          {orderItem.variant
-                                            .map((optn) => {
-                                              return optn.option_name;
-                                            })
-                                            .join(", ")}
-                                        </p>
-                                      </div>
-                                    </div>
-                                    {/* <div className="flex gap-0.5 flex-wrap">
-                                      {orderItem.variant.map((variant) => (
-                                        <Badge className="text-xs">
-                                          {variant.option_name}
-                                        </Badge>
-                                      ))}
-                                    </div> */}
-                                  </div>
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>{orderItem.quantity}</TableCell>
-                            <TableCell>{orderItem.price}</TableCell>
-                            <TableCell className="text-right">
-                              ฿{orderItem.total.toFixed(2)}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                  <div className="rounded-md border mb-4">
-                    <Table>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className="font-medium">
-                            <div>{"ยอดรวม"}</div>
-                          </TableCell>
-                          <TableCell></TableCell>
-                          <TableCell className="text-right">
-                            ฿{dataQuery.data?.total.toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                        {/* <TableRow>
-                          <TableCell className="font-medium">
-                            <div>{"Shipping"}</div>
-                          </TableCell>
-                          <TableCell></TableCell>
-                          <TableCell className="text-right">
-                            ฿{"0.00"}
-                          </TableCell>
-                        </TableRow> */}
-                        <TableRow>
-                          <TableCell className="font-medium">
-                            <div>{"ยอดสุทธิ"}</div>
-                          </TableCell>
-                          <TableCell></TableCell>
-                          <TableCell className="text-right">
-                            ฿{dataQuery.data?.total.toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
-                  {/* <div className="grid gap-2">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Name (required)" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Tell us a little bit about your category"
-                              className="resize-none"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div> */}
-                </CardContent>
-              </Card>
-              {!dataQuery.data?.shipping_carier ? (
-                <Card>
-                  <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
-                    <CardTitle className="text-2xl">
-                      การเตรียมสินค้าไม่สมบูรณ์
-                    </CardTitle>
-
-                    {/* <Button variant={"outline"} size={"sm"}>
-                    Fullfill
-                  </Button> */}
-                    <FullfillForm
-                      data={dataQuery.data}
-                      // id={2}
-                      // open={open}
-                      // openHandler={openSheetHandlerParam}
-                    />
-                  </CardHeader>
-                  <CardContent className="grid gap-4">
-                    {/* <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex justify-between items-center p-3">
-                    <div className="flex-col">
-                      <p className="text-xs">REFERENCE</p>
-                      <p className="text-sm">FDSAF-1234</p>
-                    </div>
-                    <div className="flex-col items-end">
-                      <p className="text-xs text-end">PLACED</p>
-                      <p className="text-sm">04/24/2023 @ 12:29 AM</p>
-                    </div>
-                  </div> */}
-                    <div className="rounded-md border mb-4">
+                    <div className="hidden md:block">
                       <Table>
                         <TableHeader>
                           <TableRow>
                             <TableHead className="">สินค้า</TableHead>
-                            {/* <TableHead>QTY</TableHead> */}
-                            <TableHead className="text-right">จำนวน</TableHead>
+                            <TableHead>จำนวน</TableHead>
+                            <TableHead>ราคา</TableHead>
+                            <TableHead className="text-right">ยอดรวม</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -368,83 +208,230 @@ export default function EditOrder() {
                                           </p>
                                         </div>
                                       </div>
-                                      {/* <div className="flex gap-0.5 flex-wrap">
-                                        {orderItem.variant.map((variant) => (
-                                          <Badge className="text-xs">
-                                            {variant.option_name}
-                                          </Badge>
-                                        ))}
-                                      </div> */}
                                     </div>
                                   </div>
                                 </div>
                               </TableCell>
+                              <TableCell>{orderItem.quantity}</TableCell>
+                              <TableCell>{orderItem.price}</TableCell>
                               <TableCell className="text-right">
-                                {orderItem.quantity}
-                                {/* {orderItem.quantity} of {orderItem.quantity} */}
+                                ฿{orderItem.total.toFixed(2)}
                               </TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
                       </Table>
                     </div>
-
-                    {/* <div className="grid gap-2">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Name (required)" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Tell us a little bit about your category"
-                              className="resize-none"
-                              {...field}
+                    <div className="pt-1">
+                      {dataQuery.data?.items.map((orderItem) => (
+                        <div className="px-2 mb-1 block md:hidden ">
+                          <div className="flex items-center space-x-3">
+                            <img
+                              src={orderItem.image}
+                              className="object-cover h-14 w-14 rounded-md"
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div> */}
+                            <div className="w-full">
+                              <p className="line-clamp-1 text-sm mb-1">
+                                {orderItem.name}
+                              </p>
+
+                              <div className="flex justify-between">
+                                {orderItem.variant.length > 0 ? (
+                                  <div
+                                    className={`flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer`}
+                                  >
+                                    <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                      ตัวเลือก:
+                                      {orderItem.variant
+                                        .map((optn) => {
+                                          return optn.option_name;
+                                        })
+                                        .join(", ")}
+                                    </p>
+                                  </div>
+                                ) : (
+                                  <div></div>
+                                )}
+                                {/* <div
+                                  className={`flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer`}
+                                >
+                                  <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                    ตัวเลือก:
+                                    {orderItem.variant
+                                      .map((optn) => {
+                                        return optn.option_name;
+                                      })
+                                      .join(", ")}
+                                  </p>
+                                </div> */}
+
+                                <div>
+                                  <p className="text-xs justify-self-end text-right">
+                                    x{orderItem.quantity}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex justify-end border-b pb-1">
+                                <p className="text-xs justify-self-end font-medium">
+                                  ฿{orderItem.total.toFixed(2)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded-md border mb-4">
+                    <Table>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className="font-medium">
+                            <div>{"ยอดรวม"}</div>
+                          </TableCell>
+                          <TableCell></TableCell>
+                          <TableCell className="text-right">
+                            ฿{dataQuery.data?.total.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium">
+                            <div>{"ยอดสุทธิ"}</div>
+                          </TableCell>
+                          <TableCell></TableCell>
+                          <TableCell className="text-right">
+                            ฿{dataQuery.data?.total.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+              {!dataQuery.data?.shipping_carier ? (
+                <Card>
+                  <CardHeader className="space-y-1 flex-row  w-full justify-between items-center p-2 md:p-6">
+                    <CardTitle className="text-2xl">
+                      การเตรียมสินค้าไม่สมบูรณ์
+                    </CardTitle>
+                    <FullfillForm data={dataQuery.data} />
+                  </CardHeader>
+                  <CardContent className="grid gap-4 p-2 md:p-6">
+                    <div className="rounded-md border mb-4">
+                      <div className="hidden md:block">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="">สินค้า</TableHead>
+                              <TableHead className="text-right">
+                                จำนวน
+                              </TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {dataQuery.data?.items.map((orderItem) => (
+                              <TableRow>
+                                <TableCell className="font-medium">
+                                  <div>
+                                    <div className="flex items-center space-x-3">
+                                      <img
+                                        src={orderItem.image}
+                                        className="object-cover h-14 w-14 rounded-md"
+                                      />
+                                      <div>
+                                        <div className="text-sm flex space-x-1 items-center mb-1">
+                                          <span>{orderItem.name}</span>
+                                        </div>
+                                        <div className="flex">
+                                          <div className="flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer">
+                                            <span className="flex text-xs font-light items-center whitespace-nowrap sm:text-sm">
+                                              ตัวเลือก:
+                                            </span>
+                                            <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                              {orderItem.variant
+                                                .map((optn) => {
+                                                  return optn.option_name;
+                                                })
+                                                .join(", ")}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {orderItem.quantity}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                      <div className="pt-1">
+                        {dataQuery.data?.items.map((orderItem) => (
+                          <div className="px-2 mb-1 block md:hidden ">
+                            <div className="flex items-center space-x-3">
+                              <img
+                                src={orderItem.image}
+                                className="object-cover h-14 w-14 rounded-md"
+                              />
+                              <div className="w-full">
+                                <p className="line-clamp-1 text-sm mb-1">
+                                  {orderItem.name}
+                                </p>
+
+                                <div className="flex justify-between pb-1 border-b">
+                                  {orderItem.variant.length > 0 ? (
+                                    <div
+                                      className={`flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer`}
+                                    >
+                                      <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                        ตัวเลือก:
+                                        {orderItem.variant
+                                          .map((optn) => {
+                                            return optn.option_name;
+                                          })
+                                          .join(", ")}
+                                      </p>
+                                    </div>
+                                  ) : (
+                                    <div></div>
+                                  )}
+                                  {/* <div
+                                  className={`flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer`}
+                                >
+                                  <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                    ตัวเลือก:
+                                    {orderItem.variant
+                                      .map((optn) => {
+                                        return optn.option_name;
+                                      })
+                                      .join(", ")}
+                                  </p>
+                                </div> */}
+
+                                  <div className="">
+                                    <p className="text-xs justify-self-end text-right">
+                                      x{orderItem.quantity}
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               ) : (
                 <Card>
-                  <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
+                  <CardHeader className="space-y-1 flex-row  w-full justify-between items-center p-2 md:p-6">
                     <CardTitle className="text-2xl">การจัดส่ง</CardTitle>
-
-                    {/* <Button variant={"outline"} size={"sm"}>
-                  Fullfill
-                </Button> */}
                   </CardHeader>
-                  <CardContent className="grid gap-4">
-                    {/* <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex justify-between items-center p-3">
-                  <div className="flex-col">
-                    <p className="text-xs">REFERENCE</p>
-                    <p className="text-sm">FDSAF-1234</p>
-                  </div>
-                  <div className="flex-col items-end">
-                    <p className="text-xs text-end">PLACED</p>
-                    <p className="text-sm">04/24/2023 @ 12:29 AM</p>
-                  </div>
-                </div> */}
+                  <CardContent className="grid gap-4 p-2 md:p-6">
                     <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex p-3 flex-col space-y-4">
                       <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex justify-between items-center p-3">
                         <div className="flex justify-center">
@@ -481,231 +468,15 @@ export default function EditOrder() {
                           </p>
                         </div>
                       </div>
-                      {/* <div className="rounded-md border w-full">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="">PRODUCT</TableHead>
-                          <TableHead className="text-right">QTY</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center space-x-3">
-                              <img
-                                src={
-                                  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"
-                                }
-                                className="object-cover h-14 w-14 rounded-md"
-                              />
-                              <div>{"watch"}</div>
-                            </div>
-                          </TableCell>
-
-                          <TableCell className="text-right">{"2"}</TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div> */}
                     </div>
-
-                    {/* <div className="grid gap-2">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Name (required)" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Tell us a little bit about your category"
-                            className="resize-none"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div> */}
                   </CardContent>
                 </Card>
               )}
-
-              {/* <Card>
-                <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
-                  <CardTitle className="text-2xl">Details</CardTitle>
-                  <div className="flex space-x-2">
-                    <Button variant={"destructive"} size={"sm"}>
-                      Cancel Order
-                    </Button>
-                    <Button variant={"outline"} size={"sm"}>
-                      Refund
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                  <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex justify-between items-center p-3">
-                    <div className="flex-col">
-                      <p className="text-xs">REFERENCE</p>
-                      <p className="text-sm">FDSAF-1234</p>
-                    </div>
-                    <div className="flex-col items-end">
-                      <p className="text-xs text-end">PLACED</p>
-                      <p className="text-sm">04/24/2023 @ 12:29 AM</p>
-                    </div>
-                  </div>
-                  <div className="rounded-md border mb-4">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="">PRODUCT</TableHead>
-                          <TableHead>QTY</TableHead>
-                          <TableHead className="text-right">AMOUNT</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center space-x-3">
-                              <img
-                                src={
-                                  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"
-                                }
-                                className="object-cover h-14 w-14 rounded-md"
-                              />
-                              <div>{"watch"}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>{1}</TableCell>
-                          <TableCell className="text-right">
-                            {"500.00"}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center space-x-3">
-                              <img
-                                src={
-                                  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"
-                                }
-                                className="object-cover h-14 w-14 rounded-md"
-                              />
-                              <div>{"watch"}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>{1}</TableCell>
-                          <TableCell className="text-right">
-                            {"500.00"}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
-                  <div className="rounded-md border mb-4">
-                    <Table>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className="font-medium">
-                            <div>{"Subtotal"}</div>
-                          </TableCell>
-                          <TableCell></TableCell>
-                          <TableCell className="text-right">
-                            {"$500.00"}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">
-                            <div>{"Shipping"}</div>
-                          </TableCell>
-                          <TableCell></TableCell>
-                          <TableCell className="text-right">
-                            {"$0.00"}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">
-                            <div>{"Total paid"}</div>
-                          </TableCell>
-                          <TableCell></TableCell>
-                          <TableCell className="text-right">
-                            {"$500.00"}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
-           
-                </CardContent>
-              </Card> */}
-              {/* <Card>
-                <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl">Asset</CardTitle>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                  <div className="grid gap-2">
-                    <FormField
-                      control={form.control}
-                      name="image_url"
-                      render={({ field }) => (
-                        <FormItem>
-                       
-                          <FormControl>
-                            <FileUpload
-                              onChange={field.onChange}
-                              image_url={field.value}
-                            />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-              </Card> */}
             </div>
-            <div className="flex flex-col col-span-2 gap-4">
-              {/* <Card>
-                <CardHeader>
-                  <Button type="submit" className="w-full">
-                    Save Changes
-                  </Button>
-                </CardHeader>
-              </Card> */}
-
+            <div className="flex flex-col col-span-5 md:col-span-2 gap-4">
               <div className="rounded-md border">
                 <Table>
                   <TableBody>
-                    {/* <TableRow>
-                      <TableCell className="font-medium">
-                        <div>{"Order Status"}</div>
-                      </TableCell>
-                      <TableCell></TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end items-center">
-                          <div className="rounded-md bg-[#adfa1d] px-1.5 py-0.5 text-xs leading-none  no-underline group-hover:no-underline">
-                            {"OPEN"}
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow> */}
                     <TableRow>
                       <TableCell className="font-medium">
                         <div>การเตรียมสินค้า</div>
@@ -773,10 +544,10 @@ export default function EditOrder() {
                 </Table>
               </div>
               <Card>
-                <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
+                <CardHeader className="px-2 md:px-6 pb-1 space-y-1 flex-row  w-full justify-between items-center pt-2 md:pt-6">
                   <CardTitle className="text-lg">ที่อยู่</CardTitle>
                 </CardHeader>
-                <CardContent className="">
+                <CardContent className="px-2 md:px-6 pb-2 md:pb-6">
                   <div className="flex space-x-2">
                     <p className="font-medium">{dataQuery.data?.recipient}</p>
                     <div>|</div>
@@ -789,11 +560,10 @@ export default function EditOrder() {
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
+                <CardHeader className="px-2 md:px-6 -space-y-1 flex-row  w-full justify-between items-center pb-1 pt-2 md:pt-6">
                   <CardTitle className="text-lg">ช่องทางการชำระเงิน</CardTitle>
-                  {/* <CustomerForm /> */}
                 </CardHeader>
-                <CardContent className="grid gap-6">
+                <CardContent className="px-2 md:px-6 grid gap-6 pb-2 md:pb-6">
                   <div className="grid grid-cols-3 gap-4">
                     {dataQuery?.data && dataQuery.data.wei > 0 ? (
                       <div className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary">
@@ -821,19 +591,6 @@ export default function EditOrder() {
                   </div>
                 </CardContent>
               </Card>
-              {/* <div>
-                <Card>
-                  <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
-                    <CardTitle className="text-lg">Payment Mehtod</CardTitle>
-                  </CardHeader>
-                  <CardContent className="">
-                    <p className="">Qr Propmtpay</p>
-                    <p className="text-muted-foreground text-xs">
-                      CAPTURED: 02/08/2023 @ 4:38 AM
-                    </p>
-                  </CardContent>
-                </Card>
-              </div> */}
             </div>
           </div>
         </form>

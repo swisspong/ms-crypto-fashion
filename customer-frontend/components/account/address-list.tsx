@@ -33,7 +33,7 @@ const AddressList = () => {
   const {mutate: deleteHandler, isLoading: deleteLoading, isSuccess: deleteSuccess} = useDeleteAddress()
   return (
     <div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {addresses.data?.map((address) => (
           <AddressItem key={address.addr_id}
             setUpdateHandler={(data: IAddress) => {

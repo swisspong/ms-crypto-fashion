@@ -77,7 +77,7 @@ export default function Order() {
       <Navbar />
       <Container>
         {/* <Billboard />s */}
-        <div className="px-4 sm:px-6 lg:px-8 pt-4 pb-24">
+        <div className="px-2 sm:px-6 lg:px-8 pt-4 pb-24">
           <div className="space-between flex items-center mb-4">
             <div className="">
               <h1 className="text-xl font-bold tracking-tight">
@@ -87,9 +87,9 @@ export default function Order() {
           </div>
 
           <div className="grid grid-cols-5 gap-4">
-            <div className="col-span-3 grid gap-4">
-              <Card>
-                <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
+            <div className="col-span-5 md:col-span-3 grid gap-4">
+              <Card className="">
+                <CardHeader className="p-2 md:p-6 md:pb-0 space-y-1 flex-row  w-full justify-between items-center">
                   <CardTitle className="text-2xl">รายละเอียด</CardTitle>
                   <div className="flex space-x-2">
                     {dataQuery.data?.status === StatusFormat.FULLFILLMENT &&
@@ -117,7 +117,7 @@ export default function Order() {
                     ) : undefined}
                   </div>
                 </CardHeader>
-                <CardContent className="grid gap-4">
+                <CardContent className="p-2 md:p-6 grid gap-2 md:gap-4">
                   <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex justify-between items-center p-3">
                     <div className="flex-col">
                       <p className="text-xs">อ้างอิง</p>
@@ -143,11 +143,11 @@ export default function Order() {
                     </div>
                   </div>
                   <div className="rounded-md border mb-4">
-                    <Table>
+                    {/* <Table className="hidden md:block">
                       <TableHeader>
                         <TableRow>
                           <TableHead className="">สินค้า</TableHead>
-                          <TableHead>จำนวน</TableHead>
+                          <TableHead className="text-right">จำนวน</TableHead>
                           <TableHead>ราคา</TableHead>
                           <TableHead className="text-right">ราคารวม</TableHead>
                         </TableRow>
@@ -156,42 +156,41 @@ export default function Order() {
                         {dataQuery.data?.items.map((orderItem) => (
                           <TableRow>
                             <TableCell className="font-medium">
-                              <div>
-                                <div className="flex items-center space-x-3">
+                              <div className="">
+                                <div className="flex items-center space-x-3 ">
                                   <img
                                     src={orderItem.image}
                                     className="object-cover h-14 w-14 rounded-md"
                                   />
                                   <div>
-                                    <div className="text-sm flex space-x-1 items-center mb-1">
-                                      <span>{orderItem.name}</span>
-                                    </div>
+                                    <p className="line-clamp-1 text-sm mb-1">
+                                      {orderItem.name}
+                                    </p>
+
                                     <div className="flex">
                                       <div className="flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer">
-                                        <span className="flex text-xs items-center whitespace-nowrap sm:text-sm">
-                                          ตัวเลือก:
-                                        </span>
-                                        <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
-                                          {orderItem.variant
-                                            .map((optn) => {
-                                              return optn.option_name;
-                                            })
-                                            .join(", ")}
-                                        </p>
+                                        {orderItem.variant.length > 0 ? (
+                                          <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                            ตัวเลือก:
+                                            {orderItem.variant
+                                              .map((optn) => {
+                                                return optn.option_name;
+                                              })
+                                              .join(", ")}
+                                          </p>
+                                        ) : (
+                                          <div></div>
+                                        )}
                                       </div>
                                     </div>
-                                    {/* <div className="flex gap-0.5 flex-wrap">
-                                      {orderItem.variant.map((variant) => (
-                                        <Badge className="text-xs">
-                                          {variant.option_name}
-                                        </Badge>
-                                      ))}
-                                    </div> */}
+                             
                                   </div>
                                 </div>
                               </div>
                             </TableCell>
-                            <TableCell>{orderItem.quantity}</TableCell>
+                            <TableCell className="text-right">
+                              {orderItem.quantity}
+                            </TableCell>
                             <TableCell>{orderItem.price}</TableCell>
                             <TableCell className="text-right">
                               ฿{orderItem.total.toFixed(2)}
@@ -199,7 +198,130 @@ export default function Order() {
                           </TableRow>
                         ))}
                       </TableBody>
-                    </Table>
+                    </Table> */}
+                    <div className="hidden md:block">
+                      <Table className="">
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="">สินค้า</TableHead>
+                            <TableHead>จำนวน</TableHead>
+                            <TableHead>ราคา</TableHead>
+                            <TableHead className="text-right">
+                              ราคารวม
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {dataQuery.data?.items.map((orderItem) => (
+                            <TableRow>
+                              <TableCell className="font-medium">
+                                <div>
+                                  <div className="flex items-center space-x-3">
+                                    <img
+                                      src={orderItem.image}
+                                      className="object-cover h-14 w-14 rounded-md"
+                                    />
+                                    <div>
+                                      <p className="line-clamp-1 text-sm mb-1">
+                                        {orderItem.name}
+                                      </p>
+
+                                      <div className="flex">
+                                        <div className="flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer">
+                                          {orderItem.variant.length > 0 ? (
+                                            <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                              ตัวเลือก:
+                                              {orderItem.variant
+                                                .map((optn) => {
+                                                  return optn.option_name;
+                                                })
+                                                .join(", ")}
+                                            </p>
+                                          ) : (
+                                            <div></div>
+                                          )}
+                                        </div>
+                                      </div>
+                                      {/* <div className="flex gap-0.5 flex-wrap">
+                                      {orderItem.variant.map((variant) => (
+                                        <Badge className="text-xs">
+                                          {variant.option_name}
+                                        </Badge>
+                                      ))}
+                                    </div> */}
+                                    </div>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>{orderItem.quantity}</TableCell>
+                              <TableCell>{orderItem.price}</TableCell>
+                              <TableCell className="text-right">
+                                ฿{orderItem.total.toFixed(2)}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                    <div className="pt-1">
+                      {dataQuery.data?.items.map((orderItem) => (
+                        <div className="px-2 mb-1 block md:hidden ">
+                          <div className="flex items-center space-x-3">
+                            <img
+                              src={orderItem.image}
+                              className="object-cover h-14 w-14 rounded-md"
+                            />
+                            <div className="w-full">
+                              <p className="line-clamp-1 text-sm mb-1">
+                                {orderItem.name}
+                              </p>
+
+                              <div className="flex justify-between">
+                                {orderItem.variant.length > 0 ? (
+                                  <div
+                                    className={`flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer`}
+                                  >
+                                    <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                      ตัวเลือก:
+                                      {orderItem.variant
+                                        .map((optn) => {
+                                          return optn.option_name;
+                                        })
+                                        .join(", ")}
+                                    </p>
+                                  </div>
+                                ) : (
+                                  <div></div>
+                                )}
+                                {/* <div
+                                  className={`flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer`}
+                                >
+                                  <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
+                                    ตัวเลือก:
+                                    {orderItem.variant
+                                      .map((optn) => {
+                                        return optn.option_name;
+                                      })
+                                      .join(", ")}
+                                  </p>
+                                </div> */}
+
+                                <div>
+                                  <p className="text-xs justify-self-end text-right">
+                                    x{orderItem.quantity}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex justify-end border-b">
+                                <p className="text-xs justify-self-end font-medium">
+                                  ฿{orderItem.total.toFixed(2)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div className="rounded-md border mb-4">
                     <Table>
@@ -238,10 +360,10 @@ export default function Order() {
               </Card>
               {!dataQuery.data?.shipping_carier ? (
                 <Card>
-                  <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
+                  <CardHeader className="p-2 md:p-6 space-y-1 flex-row  w-full justify-between items-center">
                     <CardTitle className="text-2xl">การจัดส่ง</CardTitle>
                   </CardHeader>
-                  <CardContent className="grid gap-4">
+                  <CardContent className="p-2 md:p-6 grid gap-4">
                     <Alert variant={"destructive"}>
                       <Terminal className="h-4 w-4" />
                       <AlertTitle className="text-center">
@@ -252,10 +374,10 @@ export default function Order() {
                 </Card>
               ) : (
                 <Card>
-                  <CardHeader className="space-y-1 flex-row  w-full justify-between items-center">
+                  <CardHeader className="space-y-1 flex-row  w-full justify-between items-center px-2 md:px-6 pt-2 md:pt-6 pb-1">
                     <CardTitle className="text-2xl">การจัดส่ง</CardTitle>
                   </CardHeader>
-                  <CardContent className="grid gap-4">
+                  <CardContent className="grid gap-4 px-2 md:px-6  pb-2 md:pb-6">
                     <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex p-3 flex-col space-y-4">
                       <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex justify-between items-center p-3">
                         <div className="flex justify-center">
@@ -328,7 +450,7 @@ export default function Order() {
                 </Card>
               )}
             </div>
-            <div className="flex flex-col col-span-2 gap-4">
+            <div className="flex flex-col col-span-5 md:col-span-2 gap-4">
               <div className="rounded-md border">
                 <Table>
                   <TableBody>
@@ -463,10 +585,10 @@ export default function Order() {
                     </Card>
                   </div> */}
               <Card>
-                <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
+                <CardHeader className="px-2 md:px-6 pb-1 space-y-1 flex-row  w-full justify-between items-center pt-2 md:pt-6">
                   <CardTitle className="text-lg">ที่อยู่</CardTitle>
                 </CardHeader>
-                <CardContent className="">
+                <CardContent className="px-2 md:px-6 pb-2 md:pb-6">
                   <div className="flex space-x-2">
                     <p className="font-medium">{dataQuery.data?.recipient}</p>
                     <div>|</div>
@@ -479,11 +601,11 @@ export default function Order() {
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader className="space-y-1 flex-row  w-full justify-between items-center pb-1">
+                <CardHeader className="px-2 md:px-6 -space-y-1 flex-row  w-full justify-between items-center pb-1 pt-2 md:pt-6">
                   <CardTitle className="text-lg">ช่องทางการชำระเงิน</CardTitle>
                   {/* <CustomerForm /> */}
                 </CardHeader>
-                <CardContent className="grid gap-6">
+                <CardContent className="px-2 md:px-6 grid gap-6 pb-2 md:pb-6">
                   <div className="grid grid-cols-3 gap-4">
                     {dataQuery?.data && dataQuery.data.wei > 0 ? (
                       <div className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary">

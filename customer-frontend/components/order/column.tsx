@@ -36,12 +36,12 @@ export const columns = ({
       accessorKey: "image",
       header: () => <div>คำสั่งซื้อ</div>,
       cell: ({ row }) => (
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 whitespace-nowrap w-32 md:w-full">
           <img
             src={row.original.items[0].image}
             className="object-cover h-14 w-14 rounded-md"
           />
-          <div>{row.original.recipient}</div>
+          <p className="truncate">{row.original.recipient}</p>
         </div>
       ),
     },
@@ -49,7 +49,7 @@ export const columns = ({
       accessorKey: "created_at",
       header: () => <div>วัน/เวลา</div>,
       cell: ({ row }) => (
-        <div>
+        <div className="whitespace-nowrap">
           <div>{moment(row.original.createdAt).format("MMM DD, YYYY")}</div>
           <div>{moment(row.original.createdAt).format("hh:mm a")}</div>
         </div>
@@ -59,7 +59,7 @@ export const columns = ({
       accessorKey: "status",
       header: () => <div>สถานะ</div>,
       cell: ({ row }) => (
-        <div className="flex justify-start items-center">
+        <div className="flex justify-start items-center whitespace-nowrap">
           <Badge
             className={`${
               row.original.payment_status === PaymentFormat.PAID
@@ -75,7 +75,7 @@ export const columns = ({
                 : "bg-red-400"
             }`}
           >
-            {row.original.payment_status==="paid" ? "จ่ายแล้ว" : undefined}
+            {row.original.payment_status === "paid" ? "จ่ายแล้ว" : undefined}
             {row.original.payment_status === "refund"
               ? "คืนเงิน"
               : row.original.payment_status === "pending"
@@ -133,9 +133,10 @@ export const columns = ({
       id: "comment",
       cell: ({ row }) => {
         return (
-          <div className="text-reght">
+          <div className="text-reght whitespace-nowrap">
             {row.original.reviewStatus !== ReviewFormat.REVIEWED ? (
               <Button
+                size={"sm"}
                 onClick={async (e) => {
                   e.stopPropagation();
                   const items = row.original.items;
@@ -152,11 +153,14 @@ export const columns = ({
 
                   // console.log(filteredItems)
 
-                  await setDataItems(data );
-                  setIdHandler(row.original.order_id as string, row.original.mcht_id as string);
+                  await setDataItems(data);
+                  setIdHandler(
+                    row.original.order_id as string,
+                    row.original.mcht_id as string
+                  );
                   openSheetHandler();
                 }}
-                variant="default"
+                variant="outline"
                 key={row.original.order_id}
               >
                 แสดงความคิดเห็น

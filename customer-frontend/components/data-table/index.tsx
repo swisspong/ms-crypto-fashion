@@ -37,6 +37,7 @@ interface DataTableProps<TData, TValue> {
   setPagination: Dispatch<SetStateAction<PaginationState>>;
   title: string;
   onRowClick?: (data: TData) => void;
+  responsive?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -47,6 +48,7 @@ export function DataTable<TData, TValue>({
   setPagination,
   title,
   onRowClick,
+  responsive = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -82,7 +84,11 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="rounded-md border mb-4">
+      <div
+        className={`rounded-md border mb-4 ${
+          responsive ? "hidden md:block" : ""
+        }`}
+      >
         <div className="flex justify-between items-center pb-2 pt-4 px-4">
           <h3 className="text-lg font-semibold leading-none tracking-tight">
             {title}
