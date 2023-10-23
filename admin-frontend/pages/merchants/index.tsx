@@ -61,7 +61,7 @@ export default function Merchant() {
     );
 
     // !!! END DataTable
-
+        
     const {mutate: deleteHandler, isLoading: deleteLoading, isSuccess: deleteSuccess} = useDeleteMerchant()
 
 

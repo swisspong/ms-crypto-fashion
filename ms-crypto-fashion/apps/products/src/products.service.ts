@@ -274,6 +274,7 @@ export class ProductsService {
       page: productFilter.page,
       per_page: productFilter.per_page,
       total: total[0]?.count || 0,
+       total_page: Math.ceil((total[0]?.totalCount ?? 0) / Number(productFilter.per_page))
     }
   }
   async findAll(productFilter: GetProductDto) {
