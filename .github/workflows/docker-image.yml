@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Test Docker command
-      run: docker ps -a
+      run: sudo docker ps -a
     - name: Check if Docker containers are running
       id: check-containers
       run: |
@@ -45,4 +45,3 @@ jobs:
       run: docker volume prune -f
     - name: Start Compose
       run: docker compose -f 'docker-compose.dev.yml' up -d
-      
