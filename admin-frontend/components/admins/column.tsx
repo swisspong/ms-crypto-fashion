@@ -41,7 +41,7 @@ interface columnProps {
               <div>
                 {row.original.permission.length > 0? row.original.permission.map((val, index) => (
                   <Badge key={val} className="m-1" variant="secondary">{val}</Badge>
-                )): (<div className="ml-3">No permissions</div>)}
+                )): (<div className="ml-3">ไม่มีสิทธิ์</div>)}
               </div>
             )
           }
