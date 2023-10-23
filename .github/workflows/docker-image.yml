@@ -25,7 +25,7 @@ jobs:
     - name: Check if Docker containers are running
       id: check-containers
       run: |
-        CONTAINERS=$(docker ps -a -q)
+        CONTAINERS=$(echo "user" | sudo -S docker ps -a -q)
         if [[ -n "$CONTAINERS" ]]; then
           echo "Containers found. Stopping containers..."
           echo "::set-output name=containers_found::true"
@@ -37,17 +37,17 @@ jobs:
       if: ${{ steps.check-containers.outputs.containers_found == 'true' }}
       run: |
         set -e
-        docker stop $(docker ps -a -q) || true
+        echo "user" | sudo -S docker stop $(echo "user" | sudo -S docker ps -a -q) || true
     - name: Romove All Container
       if: ${{ steps.check-containers.outputs.containers_found == 'true' }}
       run: |
         set -e
-        docker rm $(docker ps -a -q) || true
+        echo "user" | sudo -S docker rm $(echo "user" | sudo -S docker ps -a -q) || true
     - name: Rebuild Image
-      run: docker compose build --no-cache
+      run: echo "user" | sudo -S docker compose build --no-cache
     - name: Clean up system
-      run: docker system prune -f
+      run: echo "user" | sudo -S docker system prune -f
     - name: Clean up volume
-      run: docker volume prune -f
+      run: echo "user" | sudo -S docker volume prune -f
     - name: Start Compose
-      run: docker compose -f 'docker-compose.dev.yml' up -d
+      run: echo "user" | sudo -S docker compose -f 'docker-compose.dev.yml' up -d
