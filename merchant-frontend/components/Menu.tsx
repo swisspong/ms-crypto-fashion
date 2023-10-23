@@ -36,22 +36,25 @@ export function Menu() {
         return "ภาพรวม";
 
       case "orders":
-        return "รายการคำสั่งซื้อ";
+        return "คำสั่งซื้อ";
       // code block
       case "[orderId]":
-        return router.query.orderId;
+        // return router.query.orderId;
+        return undefined;
       case "categories":
         return "หมวดหมู่สินค้าภายในร้านค้า";
       case "[catId]":
-        return router.query.catId;
+        // return router.query.catId;
+        return undefined;
       case "products":
-        return "รายการสินค้า";
+        return "สินค้า";
       case "[prodId]":
-        return router.query.prodId;
+        // return router.query.prodId;
+        return undefined;
       case "setting":
-        return "ตั้งค่าบัญชีร้านค้า"
+        return "ตั้งค่าบัญชีร้านค้า";
       case "subscription":
-        return "สมัครเปิดร้านค้า"
+        return "สมัครเปิดร้านค้า";
       default:
         return path;
       // code block
@@ -95,16 +98,16 @@ export function Menu() {
           {router.pathname === `/`
             ? `ภาพรวม`
             : router.pathname
-              .substring(1)
-              .split("/")
-              .map((path) => labelHeading(path))
-              .join(" > ")}
+                .substring(1)
+                .split("/")
+                .filter((path) => labelHeading(path))
+                .map((path) => labelHeading(path))
+                .join(" > ")}
         </h1>
       </div>
 
       <div className="flex items-center space-x-2 justify-end flex-1">
-
-        <div style={{ marginLeft: 'auto' }}>
+        <div style={{ marginLeft: "auto" }}>
           <MenubarMenu>
             <MenubarTrigger className="cursor-pointer">บัญชี</MenubarTrigger>
             <MenubarContent forceMount>
@@ -122,7 +125,6 @@ export function Menu() {
             </MenubarContent>
           </MenubarMenu>
         </div>
-
       </div>
       <SelectTheme />
 

@@ -43,7 +43,10 @@ export default function Home() {
     SearchType.PRODUCT
   );
   const catWebQuery = useCategoriesMain({ page: 1, per_page: 100 });
-
+  useEffect(()=>{
+    console.log('base path',window.location.hostname)
+    console.log('base ========================================',window.location.hostname)
+  },[])
   return (
     <div className="bg-white">
       <Navbar />

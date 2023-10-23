@@ -101,6 +101,7 @@ const useProductEditFormHook = () => {
                 payment_methods: data.payment_methods.map((payment) => payment),
             });
         }
+        console.log('base path',window.location.hostname)
     }, [prodSuccess]);
 
     return { form, onSubmit, isLoading, data, items, imageRemove, catFields, dataQeury, catRemove, catAppend, fields, categories, catLoading, append, remove }

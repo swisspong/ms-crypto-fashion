@@ -249,8 +249,8 @@ const ProductsAddForm = () => {
               </CardContent>
             </Card>
           </div>
-          <div className="col-span-5 md:col-span-2 space-y-4">
-            <Card>
+          <div className="col-span-5 md:col-span-2 gap-4 flex flex-col">
+            <Card className="order-last md:order-first">
               <CardHeader>
                 <Button type="submit" disabled={isLoading} className="w-full">
                   {isLoading ? (
