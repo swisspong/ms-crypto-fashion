@@ -253,8 +253,8 @@ const ProductsEditForm = () => {
               </CardContent>
             </Card>
           </div>
-          <div className="col-span-5 md:col-span-2 space-y-4">
-            <Card>
+          <div className="col-span-5 md:col-span-2 gap-4 flex flex-col">
+            <Card className="order-last md:order-first">
               <CardHeader>
                 <Button type="submit" disabled={isLoading} className="w-full">
                   {isLoading ? (
@@ -287,7 +287,7 @@ const ProductsEditForm = () => {
                 />
               </CardHeader>
             </Card>
-            <Card>
+            <Card className="">
               <CardHeader>
                 <div
                   className="flex gap-2 flex-wrap justify-evenly"
@@ -369,7 +369,7 @@ const ProductsEditForm = () => {
                 />
               </CardHeader>
             </Card>
-            <Card>
+            <Card className="">
               <CardHeader>
                 <div
                   className="flex gap-2 flex-wrap justify-evenly"

@@ -29,7 +29,7 @@ const FileUploadArr: FC<Props> = ({ image_url = [], onChange, remove }) => {
   }
   return (
     <div className="flex flex-col shrink-0 items-center justify-center rounded-md border border-dashed px-3">
-      <div className="grid grid-cols-4 gap-2 w-full py-2">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full py-2">
         {image_url.length > 0
           ? image_url.map(({ url }, index) => (
               <div className="aspect-square group rounded-md bg-muted relative">

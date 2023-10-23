@@ -46,7 +46,7 @@ const VariantAddForm = () => {
         onKeyDown={(e) => checkKeyDown(e)}
       >
         <div className="grid grid-cols-4 gap-4 border-b py-2 relative">
-          <div className="grid col-span-2 gap-2">
+          <div className="grid col-span-4 md:col-span-2 gap-2 ">
             <div className="space-y-2">
               <span className="text-sm font-medium leading-none">
                 ส่วนเสริมรูปแบบ
@@ -113,7 +113,7 @@ const VariantAddForm = () => {
               )}
             </div>
           </div>
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2 col-span-2 md:col-span-1 ">
             <FormField
               control={form.control}
               name={`price`}
@@ -137,7 +137,7 @@ const VariantAddForm = () => {
             />
           </div>
 
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2 col-span-2 md:col-span-1 ">
             <FormField
               control={form.control}
               name={`stock`}

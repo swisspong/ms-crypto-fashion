@@ -47,7 +47,7 @@ const FileUploadOne: FC<Props> = ({
       <div
         className={`${
           fixSize ? "max-w-[420px]" : ""
-        } grid grid-cols-4 gap-2 w-full py-2`}
+        } grid grid-cols-2 md:grid-cols-4 gap-2 w-full py-2`}
       >
         {image_url ? (
           <div className="aspect-square group rounded-md bg-muted relative">

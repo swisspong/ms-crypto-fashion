@@ -24,14 +24,14 @@ const Variants = () => {
     <div className="grid grid-cols-5 gap-4">
       <div className="col-span-5 grid gap-4">
         <Card>
-          <CardHeader className="space-y-1 flex justify-between">
+          <CardHeader className="space-y-1 flex justify-between p-2 md:p-6">
             <div className="flex justify-between">
               <p className="font-semibold tracking-tight text-2xl">
                 กลุ่มสินค้า
               </p>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0 p-2 md:p-6 md:pt-0 ">
             {productData?.groups.map((group) => (
               <GroupsEditForm
                 group={group}
@@ -144,7 +144,7 @@ const Variants = () => {
           </CardFooter>
         </Card>
         <Card className="mt-4">
-          <CardHeader className="space-y-1 flex justify-between">
+          <CardHeader className="space-y-1 flex justify-between p-2 md:p-6">
             <div className="flex justify-between">
               <p className="font-semibold tracking-tight text-2xl">
                 ส่วนเสริมรูปแบบ
@@ -173,7 +173,7 @@ const Variants = () => {
             </div>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="pt-0 p-2 md:p-6 md:pt-0">
             {productData?.variants.map((variant) => (
               <VariantEditForm variant={variant} />
             ))}

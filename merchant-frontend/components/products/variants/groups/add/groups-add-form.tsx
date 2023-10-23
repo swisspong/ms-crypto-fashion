@@ -26,7 +26,7 @@ const GroupsAddForm= () => {
         onKeyDown={(e) => checkKeyDown(e)}
       >
         <div className="grid grid-cols-2 gap-4 py-2 border-b relative">
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2 col-span-2 md:col-span-1">
             <FormField
               control={form.control}
               name={`name`}
@@ -44,7 +44,7 @@ const GroupsAddForm= () => {
               )}
             />
           </div>
-          <div className="flex flex-col space-y-2 mt-2.5">
+          <div className="flex flex-col space-y-2 mt-2.5 col-span-2 md:col-span-1">
             <span
               className={`text-sm font-medium leading-none ${
                 form.formState.errors.options?.message ? "text-destructive" : ""
