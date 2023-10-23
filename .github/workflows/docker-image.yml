@@ -21,7 +21,7 @@ jobs:
     # - name: Sudo mode
     #   run: sudo -i
     - name: Test Docker command
-      run: docker ps
+      run: sudo docker ps
     - name: Check if Docker containers are running
       id: check-containers
       run: |
