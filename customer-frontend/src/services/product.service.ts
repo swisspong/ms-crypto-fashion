@@ -47,8 +47,7 @@ export const getProducts = async (data: { page: number, per_page: number, catIds
 export const getProductsMerchants = async (data: { page: number, per_page: number, catIds: string[], search?: string, type_search: string | undefined }): Promise<IMerchants> => {
     console.log(`/products/merchants/?page=${data.page}&per_page=${data.per_page}
     &store_front=true${data.catIds.length > 0 ? `&${queryString.stringify({ cat_ids: data.catIds })}` : ``}${data.search && data.search.trim().length > 0 ? `&search=${data.search}` : ``}${data.type_search && data.type_search.trim().length > 0 ? `&type_search=${data.type_search}` : ``}`)
-    return await api.get(`/products/merchants/?page=${data.page}&per_page=${data.per_page}
-    &store_front=true${data.catIds.length > 0 ? `&${queryString.stringify({ cat_ids: data.catIds })}` : ``}${data.search && data.search.trim().length > 0 ? `&search=${data.search}` : ``}${data.type_search && data.type_search.trim().length > 0 ? `&type_search=${data.type_search}` : ``}`).then(
+    return await api.get(`/products/merchants/?page=${data.page}&per_page=${data.per_page}&store_front=true${data.catIds.length > 0 ? `&${queryString.stringify({ cat_ids: data.catIds })}` : ``}${data.search && data.search.trim().length > 0 ? `&search=${data.search}` : ``}${data.type_search && data.type_search.trim().length > 0 ? `&type_search=${data.type_search}` : ``}`).then(
         (response) => response.data
     );
 };
