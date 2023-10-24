@@ -117,7 +117,7 @@ export default function Edit() {
                                 </CardContent>
                             </Card> */}
                         </div>
-                        <div className="col-span-2">
+                        <div className="col-span-5">
                             <Card>
                                 <CardHeader>
                                     <Button type="submit" className="w-full" disabled={isLoading}>
