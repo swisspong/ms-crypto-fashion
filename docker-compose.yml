@@ -30,7 +30,7 @@ services:
     ports:
       - '3002:3002'
     env_file:
-      - ./merchant-frontend/.env
+      - ./merchant-frontend/.env.local
     volumes:
       - ./merchant-frontend:/app
       - /app/node_modules
