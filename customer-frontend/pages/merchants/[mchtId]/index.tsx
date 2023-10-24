@@ -92,7 +92,9 @@ const CategoryPage = ({}) => {
               {/* {products.length === 0 && <NoResults />} */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {!data?.data || (data?.data && data?.data?.length <= 0) ? (
-                  <NoResults />
+                  <div className="col-span-1 sm:col-span-2 md:col-span-3">
+                    <NoResults />
+                  </div>
                 ) : (
                   data?.data.map((product) => (
                     <ProductCard
@@ -131,7 +133,7 @@ export default CategoryPage;
 //       },
 //     };
 //   }
-  
+
 //   // console.log(me);
 //   // if (me && (me as any).role !== "merchant") {
 //   //   return {
@@ -141,9 +143,6 @@ export default CategoryPage;
 //   //     },
 //   //   };
 //   // }
-
-
-
 
 //   // await queryClient.prefetchQuery(
 //   //   ["my-products", { page: 1, per_page: 20 }],
