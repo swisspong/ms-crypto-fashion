@@ -162,35 +162,15 @@ export default function Role() {
                       : "฿" + data.price.toFixed(2)}
                   </p>
                 </div>
-                {/* <div className="flex justify-between pb-1 border-b">
-              {orderItem.variant.length > 0 ? (
-                <div
-                  className={`flex space-x-1 px-0.5 bg-muted rounded-sm cursor-pointer`}
-                >
-                  <p className=" text-xs rounded-sm line-clamp-1 sm:text-sm">
-                    ตัวเลือก:
-                    {orderItem.variant
-                      .map((optn) => {
-                        return optn.option_name;
-                      })
-                      .join(", ")}
-                  </p>
-                </div>
-              ) : (
-                <div></div>
-              )}
-            
-
-              <div className="">
-                <p className="text-xs justify-self-end text-right">
-                  x{orderItem.quantity}
-                </p>
-              </div>
-            </div> */}
               </div>
             </div>
           </div>
         ))}
+        <div className="px-2 mb-1 block md:hidden ">
+          <div className="flex items-center space-x-3">
+            <p>ไม่มีข้อมูล</p>
+          </div>
+        </div>
       </div>
       {/* <Separator className="my-4" /> */}
       <DataTable
