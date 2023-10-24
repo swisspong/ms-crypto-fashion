@@ -146,7 +146,12 @@ const OrderListPage = () => {
                 {" "}
                 <div className="space-y-6">
                   {dataQuery.data?.data.map((orderItem) => (
-                    <div className="px-2 mb-1 block md:hidden" onClick={(e)=>{router.push(`orders/${orderItem.order_id}`)}}>
+                    <div
+                      className="px-2 mb-1 block md:hidden"
+                      onClick={(e) => {
+                        router.push(`orders/${orderItem.order_id}`);
+                      }}
+                    >
                       <div className="flex items-center space-x-3">
                         <img
                           src={orderItem.items[0].image}
@@ -291,6 +296,15 @@ const OrderListPage = () => {
                       </div>
                     </div>
                   ))}
+                  {dataQuery?.data && dataQuery?.data.data.length <= 0 ? (
+                    <div className="px-2 mb-1 block md:hidden ">
+                      <div className="flex items-center justify-center space-x-3 w-full border-y h-10">
+                        <p>ไม่มีข้อมูล</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                   <DataTable
                     title="รายการคำสั่งซื้อทั้งหมด"
                     setPagination={setPagination}
