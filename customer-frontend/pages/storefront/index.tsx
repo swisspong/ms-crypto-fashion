@@ -61,8 +61,8 @@ const CategoryPage = ({}) => {
                 setSelectedCheckboxes={setSelectedCheckboxes}
                 search={search}
                 setSerarch={setSerarch}
-                valueKey="sizeId"
-                name="Categories"
+                // valueKey="sizeId"
+                // name="Categories"
                 data={[
                   ...(categories?.data.map((category) => ({
                     id: category.cat_id,
@@ -117,7 +117,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!me) {
     return {
       redirect: {
-        destination: "http://localhost:3000/signin",
+        // destination: "http://localhost:3000/signin",
+        destination: `${process.env.HOST_CUSTOMER}/signin`,
         permanent: false,
       },
     };
@@ -126,19 +127,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (me && (me as any).role !== "merchant") {
     return {
       redirect: {
-        destination: "http://localhost:3000",
+        // destination: "http://localhost:3000",
+        destination: `${process.env.HOST_CUSTOMER}`,
         permanent: false,
       },
     };
   }
-  await queryClient.prefetchQuery(
-    ["my-products", { page: 1, per_page: 20 }],
-    () => getMyStoreFront({ page: 1, per_page: 20, catIds: [] })
-  );
-  await queryClient.prefetchQuery(
-    ["my-categories", { page: 1, per_page: 100 }],
-    () => getMyCategories({ page: 1, per_page: 100 })
-  );
+  // await queryClient.prefetchQuery(
+  //   ["my-products", { page: 1, per_page: 20 }],
+  //   () => getMyStoreFront({ page: 1, per_page: 20, catIds: [] })
+  // );
+  // await queryClient.prefetchQuery(
+  //   ["my-categories", { page: 1, per_page: 100 }],
+  //   () => getMyCategories({ page: 1, per_page: 100 })
+  // );
   // console.log(me,roles)
   // console.log("------------------------------")
   return {
