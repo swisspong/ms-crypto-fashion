@@ -51,7 +51,7 @@ const CategoryPage = ({}) => {
     <div className="bg-white">
       <Navbar />
       <Container>
-        <Billboard  info={merchantInfo}  />
+        <Billboard info={merchantInfo} />
         <div className="px-4 sm:px-6 lg:px-8 pb-24">
           <div className="lg:grid lg:grid-cols-5 lg:gap-x-8">
             <MobileFilters sizes={[]} colors={[]} />
@@ -70,6 +70,20 @@ const CategoryPage = ({}) => {
                   })) ?? []),
                 ]}
               />
+              {/* <FilterState
+                selectedCheckboxes={selectedCheckboxes}
+                setSelectedCheckboxes={setSelectedCheckboxes}
+                search={search}
+                setSerarch={setSerarch}
+                // valueKey="sizeId"
+                // name="Categories"
+                data={[
+                  ...(categories?.data.map((category) => ({
+                    id: category.cat_id,
+                    name: category.name,
+                  })) ?? []),
+                ]}
+              /> */}
               {/* <Filter valueKey="colorId" name="Colors" data={[]} /> */}
             </div>
             <div className="mt-6 lg:col-span-4 lg:mt-0">
