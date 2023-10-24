@@ -166,11 +166,15 @@ export default function Role() {
             </div>
           </div>
         ))}
-        <div className="px-2 mb-1 block md:hidden ">
-          <div className="flex items-center justify-center space-x-3 w-full border-b h-8">
-            <p>ไม่มีข้อมูล</p>
+        {data?.data && data?.data.length <= 0 ? (
+          <div className="px-2 mb-1 block md:hidden ">
+            <div className="flex items-center justify-center space-x-3 w-full border-y h-10">
+              <p>ไม่มีข้อมูล</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <></>
+        )}
       </div>
       {/* <Separator className="my-4" /> */}
       <DataTable
