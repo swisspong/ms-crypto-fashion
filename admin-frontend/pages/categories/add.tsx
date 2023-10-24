@@ -56,7 +56,7 @@ export default function Add() {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-5 gap-4">
-                        <div className="col-span-3 grid gap-4">
+                        <div className="md:col-span-3 col-span-5 grid gap-4">
                             <Card>
                                 <CardHeader className="space-y-1">
                                     <CardTitle className="text-2xl">กรอกรายละเอียด</CardTitle>
@@ -106,7 +106,7 @@ export default function Add() {
                                 </CardContent>
                             </Card> */}
                         </div>
-                        <div className="col-span-2">
+                        <div className="md:col-span-2 col-span-5">
                             <Card>
                                 <CardHeader>
                                     <Button type="submit" className="w-full" disabled={isLoading}>
