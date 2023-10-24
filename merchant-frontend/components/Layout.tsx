@@ -21,9 +21,9 @@ const Layout = ({ children }: Props) => {
         <div className="h-full fixed inset-0">
 
           <div className="grid lg:grid-cols-5 h-full border-t ">
-            {/* <Sidebar className="hidden lg:block bg-background relative h-full  row-span-1" /> */}
+            <Sidebar className="hidden lg:block bg-background relative h-full  row-span-1" />
             <div className="col-span-3 lg:col-span-4 lg:border-l bg-background overflow-x-hidden">
-              {/* <Menu /> */}
+              <Menu />
               <div className="px-4 py-6 pr-4 break-words lg:px-8">
                 {children}
               </div>
