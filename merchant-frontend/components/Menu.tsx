@@ -41,6 +41,9 @@ export function Menu() {
       case "[orderId]":
         // return router.query.orderId;
         return undefined;
+      case "add":
+        // return router.query.orderId;
+        return undefined;
       case "categories":
         return "หมวดหมู่สินค้าภายในร้านค้า";
       case "[catId]":
