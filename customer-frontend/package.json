@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "dotenv -e .env next dev -p 3000",
+    "dev": "dotenv -e .env -- next dev -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -38,7 +38,7 @@
     "bignumber.js": "^4.0.4",
     "class-variance-authority": "^0.6.1",
     "clsx": "^1.2.1",
-    "dotenv": "^16.3.1",
+    "dotenv-cli": "^7.3.0",
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.7",
     "ethers": "^6.7.1",
