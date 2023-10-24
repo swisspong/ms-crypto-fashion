@@ -167,7 +167,7 @@ export default function Role() {
           </div>
         ))}
         <div className="px-2 mb-1 block md:hidden ">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 w-full">
             <p>ไม่มีข้อมูล</p>
           </div>
         </div>
