@@ -57,7 +57,9 @@ const UserNav = () => {
     <>
       {isError && !me ? (
         <Link href={"/signin"}>
-          <Button size={"sm"} variant={"outline"}>เข้าสู่ระบบ</Button>
+          <Button size={"sm"} variant={"outline"}>
+            เข้าสู่ระบบ
+          </Button>
         </Link>
       ) : (
         <DropdownMenu>
@@ -112,7 +114,9 @@ const UserNav = () => {
                 <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => router.push("http://merchant.example.com/")}
+                onClick={() =>
+                  router.push("http://merchant.cryptofashion.store/")
+                }
               >
                 <Store className="mr-2 h-4 w-4" />
                 <span>ร้านค้า</span>

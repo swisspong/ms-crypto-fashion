@@ -77,8 +77,8 @@ const CategoryPage = ({}) => {
                 setSelectedCheckboxes={setSelectedCheckboxes}
                 search={search}
                 setSerarch={setSerarch}
-                valueKey="sizeId"
-                name="Categories"
+                // valueKey="sizeId"
+                // name="Categories"
                 data={[
                   ...(categories?.data.map((category) => ({
                     id: category.cat_id,
