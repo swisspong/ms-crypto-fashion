@@ -1,0 +1,74 @@
+version: "3"
+services:
+  admin-client:
+    container_name: admin-client
+    restart: always
+    build:
+      context: ./admin-frontend
+      # dockerfile: ./Dockerfile.dev
+      dockerfile: ./Dockerfile
+      # target: deps
+      target: builder
+    command: npm run dev
+    ports:
+      - '3001:3001'
+    env_file:
+      - ./admin-frontend/.env
+    volumes:
+      - ./admin-frontend:/app
+      - /app/node_modules
+  merchant-client:
+    container_name: merchant-client
+    restart: always
+    build:
+      context: ./merchant-frontend
+      # dockerfile: ./Dockerfile.dev
+      dockerfile: ./Dockerfile
+      # target: deps
+      target: builder
+    command: npm run dev
+    ports:
+      - '3002:3002'
+    env_file:
+      - ./merchant-frontend/.env
+    volumes:
+      - ./merchant-frontend:/app
+      - /app/node_modules
+  user-client:
+    container_name: user-client
+    restart: always
+    build:
+      context: ./customer-frontend
+      # dockerfile: ./Dockerfile.dev
+      dockerfile: ./Dockerfile
+      # target: deps
+      target: builder
+    command: npm run dev
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./customer-frontend/.env
+    volumes:
+      - ./customer-frontend:/app
+      - /app/node_modules
+  nginx-proxy:
+    build:
+      dockerfile: Dockerfile
+      context: ./proxy/prod
+    depends_on:
+      - merchant-client
+      - user-client
+      - admin-client
+    ports:
+      - 80:80
+  # uptime-kuma:
+  #   image: louislam/uptime-kuma:1
+  #   container_name: kuma
+  #   volumes:
+  #     - ./uptime-kuma-data:/app/data
+  #   restart: always
+  #   ports:
+  #     - 5001:3001  # <Host Port>:<Container Port>
+# networks:
+#   default:
+#     name: bridge
