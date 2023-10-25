@@ -162,7 +162,7 @@ const FullfillForm: FC<Props> = ({ data }) => {
                     </TableHeader>
                     <TableBody>
                       {data?.items.map((orderItem) => (
-                        <TableRow>
+                        <TableRow key={orderItem.item_id}>
                           <TableCell className="font-medium">
                             <div>
                               <div className="flex items-center space-x-3">
@@ -210,7 +210,7 @@ const FullfillForm: FC<Props> = ({ data }) => {
                 </div>
                 <div className="pt-1 space-y-2">
                   {data?.items.map((orderItem) => (
-                    <div className="px-2 mb-1 block md:hidden ">
+                    <div key={orderItem} className="px-2 mb-1 block md:hidden ">
                       <div className="flex items-center space-x-3">
                         <img
                           src={orderItem.image}

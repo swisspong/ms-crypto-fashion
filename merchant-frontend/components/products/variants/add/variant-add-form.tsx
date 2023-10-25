@@ -55,6 +55,7 @@ const VariantAddForm = () => {
                 <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-2 flex gap-1 flex-wrap grow">
                   {fields.map((fieldItem, index) => (
                     <FormField
+                      key={index}
                       control={form.control}
                       name={`variant_selecteds.${index}.optn_id`}
                       render={({ field }) => (
@@ -92,7 +93,10 @@ const VariantAddForm = () => {
                                   fieldItem.vgrp_id,
                                   productData?.groups
                                 ).map((option) => (
-                                  <SelectItem value={option.optn_id}>
+                                  <SelectItem
+                                    key={option.optn_id}
+                                    value={option.optn_id}
+                                  >
                                     {option.name}
                                   </SelectItem>
                                 ))}

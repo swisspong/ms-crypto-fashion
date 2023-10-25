@@ -42,15 +42,15 @@ const VariantAdvancedForm: FC<Props> = ({ variant, open, toggleHandler }) => {
     onSubmit,
     form,
     productData,
-    initForm,
+    useInitForm,
     editLoading,
-    whenEditSuccess,
+    useWhenEditSuccess,
     showSelectValue,
     showSelectItems,
     showSelectPlaceholder,
   } = useVariantAdvancedHook();
-  initForm(variant, open);
-  whenEditSuccess(() => {
+  useInitForm(variant, open);
+  useWhenEditSuccess(() => {
     toggleHandler(false);
   });
   return (
@@ -76,6 +76,7 @@ const VariantAdvancedForm: FC<Props> = ({ variant, open, toggleHandler }) => {
               >
                 {fields.map((fieldItem, index) => (
                   <FormField
+                    key={index}
                     control={form.control}
                     name={`variant_selecteds.${index}.optn_id`}
                     render={({ field }) => (
@@ -120,7 +121,10 @@ const VariantAdvancedForm: FC<Props> = ({ variant, open, toggleHandler }) => {
                                 fieldItem.vgrp_id,
                                 productData?.groups
                               ).map((option) => (
-                                <SelectItem value={option.optn_id}>
+                                <SelectItem
+                                  key={option.optn_id}
+                                  value={option.optn_id}
+                                >
                                   {option.name}
                                 </SelectItem>
                               ))}

@@ -50,7 +50,7 @@ const useVariantAdvancedHook = () => {
     //       }
     //     }
     //   }, [isSuccess, id]);
-    const initForm = (variant: IVariant, open: boolean) => {
+    const useInitForm = (variant: IVariant, open: boolean) => {
         useEffect(() => {
             if (productQuery || open) {
                 form.reset({
@@ -70,7 +70,7 @@ const useVariantAdvancedHook = () => {
             }
         }, [productQuery.data, productQuery.isSuccess, open])
     }
-    const whenEditSuccess = (cb: () => void) => {
+    const useWhenEditSuccess = (cb: () => void) => {
         useEffect(() => {
             if (editMutate.isSuccess) {
                 toast.success("แก้ไขสำเร็จ!", {
@@ -93,9 +93,9 @@ const useVariantAdvancedHook = () => {
         editLoading: editMutate.isLoading,
         form,
         productData: productQuery.data,
-        initForm,
+        useInitForm,
         toggle,
-        whenEditSuccess,
+        useWhenEditSuccess,
         showSelectValue,
         showSelectPlaceholder: showSelectPlaceholder,
         showSelectItems: showSelectItems

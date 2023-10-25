@@ -93,6 +93,7 @@ const SelectListNew: FC<SelectProps> = ({
         //   />
         // <p>tst</p>
         <FormField
+          key={index2}
           control={control}
           name={`variants.${index}.variant_selecteds.${index2}.optn_id`}
           render={({ field }) => (

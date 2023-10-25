@@ -74,7 +74,7 @@ export default function Subscription() {
             <div className="space-y-1">
               <p className="text-sm font-medium leading-none">ขั้นตอนที่ 2</p>
               <p className="text-sm text-muted-foreground">
-                ขั้นตอนที่ 2: กดปุ่ม "เปิดร้าน"
+                ขั้นตอนที่ 2: กดปุ่ม เปิดร้าน
               </p>
             </div>
           </div>

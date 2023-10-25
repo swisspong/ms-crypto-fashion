@@ -356,7 +356,7 @@ const ProductsEditForm = () => {
                                 .find((cat) => cat.cat_id === item.catweb_id);
                             })
                             .map((item) => (
-                              <SelectItem value={item.catweb_id}>
+                              <SelectItem key={item.catweb_id} value={item.catweb_id}>
                                 {item.name}
                               </SelectItem>
                             ))}
@@ -434,7 +434,7 @@ const ProductsEditForm = () => {
                                 .find((cat) => cat.cat_id === item.cat_id);
                             })
                             .map((item) => (
-                              <SelectItem value={item.cat_id}>
+                              <SelectItem key={item.cat_id} value={item.cat_id}>
                                 {item.name}
                               </SelectItem>
                             ))}

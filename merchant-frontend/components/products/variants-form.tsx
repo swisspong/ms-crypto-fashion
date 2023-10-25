@@ -84,6 +84,7 @@ const SelectList: FC<SelectProps> = ({ control, index, variants }) => {
     <>
       {fields.map((fieldItem, index2) => (
         <Options
+          key={index2}
           group={groups.find((group) => group.vrnt_id === fieldItem.vrnt_id)}
           index={index}
           variants={variants}
@@ -395,12 +396,12 @@ const VariantsForm = () => {
           </Card>
         </form>
       </Form>
-      <AdvancedVariantForm
+      {/* <AdvancedVariantForm
         // data={dataQuery.data?.data ?? defaultData}
         id={idToUpdate}
         openHandler={openSheetHandlerParam}
         open={open}
-      />
+      /> */}
     </>
   );
 };

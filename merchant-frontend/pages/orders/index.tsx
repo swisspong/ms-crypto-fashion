@@ -87,6 +87,7 @@ export default function Orders() {
       </h3>
       {dataQuery.data?.data.map((orderItem) => (
         <div
+          key={orderItem.order_id}
           className="px-2 mb-1 block md:hidden"
           onClick={(e) => {
             router.push(`orders/${orderItem.order_id}`);

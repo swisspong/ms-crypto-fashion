@@ -84,7 +84,7 @@ export default function Role() {
       </h3>
       <div className="space-y-2 pb-2">
         {data?.data.map((data) => (
-          <div className="px-2 mb-1 block md:hidden ">
+          <div key={data.prod_id} className="px-2 mb-1 block md:hidden ">
             <div className="flex items-center space-x-3">
               <img
                 src={data.image_urls[0]}

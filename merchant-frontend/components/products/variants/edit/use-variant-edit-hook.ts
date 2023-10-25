@@ -47,7 +47,7 @@ const useVariantEditHook = () => {
             });
         }
     }, [editMutate.isSuccess])
-    const initForm = (variant: IVariant) => {
+    const useInitForm = (variant: IVariant) => {
         useEffect(() => {
             if (productQuery) {
                 console.log("tets log")
@@ -88,7 +88,7 @@ const useVariantEditHook = () => {
         checkKeyDown,
         onSubmit,
         showSelectPlaceholder: showSelectPlaceholder,
-        initForm,
+        useInitForm,
         productData: productQuery.data,
         showSelectItems,
         showSelectValue,

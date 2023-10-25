@@ -42,7 +42,7 @@ const VariantEditForm: FC<Props> = ({ variant }) => {
     checkKeyDown,
     onSubmit,
     showSelectPlaceholder,
-    initForm,
+    useInitForm,
     productData,
     showSelectItems,
     showSelectValue,
@@ -53,7 +53,7 @@ const VariantEditForm: FC<Props> = ({ variant }) => {
     toggleHandler,
   } = useVariantEditHook();
 
-  initForm(variant);
+  useInitForm(variant);
   return (
     <>
       <Form {...form}>
@@ -71,6 +71,7 @@ const VariantEditForm: FC<Props> = ({ variant }) => {
                   <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-2 flex gap-1 flex-wrap grow">
                     {fields.map((fieldItem, index) => (
                       <FormField
+                        key={index}
                         control={form.control}
                         name={`variant_selecteds.${index}.optn_id`}
                         render={({ field }) => (
@@ -111,7 +112,10 @@ const VariantEditForm: FC<Props> = ({ variant }) => {
                                     fieldItem.vgrp_id,
                                     productData?.groups
                                   ).map((option) => (
-                                    <SelectItem value={option.optn_id}>
+                                    <SelectItem
+                                      key={option.optn_id}
+                                      value={option.optn_id}
+                                    >
                                       {option.name}
                                     </SelectItem>
                                   ))}

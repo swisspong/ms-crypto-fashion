@@ -321,7 +321,7 @@ const Options: FC<IProps> = ({
                   )}`}
                 </SelectLabel>
                 {gr?.options.map((option) => (
-                  <SelectItem value={option.optn_id}>{`${option.name
+                  <SelectItem key={option.optn_id} value={option.optn_id}>{`${option.name
                     .slice(0, 1)
                     .toUpperCase()}${option.name.slice(1)}`}</SelectItem>
                 ))}

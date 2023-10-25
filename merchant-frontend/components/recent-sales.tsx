@@ -19,7 +19,7 @@ export function RecentSales() {
         <NoResults />
       ) : undefined}
       {dataQuery.data?.data.map((order) => (
-        <div className="flex items-center">
+        <div key={order._id} className="flex items-center">
           <Avatar className="h-9 w-9">
             <AvatarImage src="/avatars/01.png" alt="Avatar" />
             <AvatarFallback>

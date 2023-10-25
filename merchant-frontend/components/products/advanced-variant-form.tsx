@@ -243,6 +243,7 @@ const AdvancedVariantForm: FC<Props> = ({ openHandler, open, id }) => {
               /> */}
               {fields.map((fieldItem, index) => (
                 <FormField
+                  key={index}
                   control={form.control}
                   name={`variant_selecteds.${index}.optn_id`}
                   render={({ field }) => (

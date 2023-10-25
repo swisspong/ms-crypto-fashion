@@ -34,6 +34,7 @@ const Variants = () => {
           <CardContent className="pt-0 p-2 md:p-6 md:pt-0 ">
             {productData?.groups.map((group) => (
               <GroupsEditForm
+                key={group.vgrp_id}
                 group={group}
                 delVgrpId={delVgrpId}
                 setDelVgrpIdHandler={setDelVgrpIdHandler}
@@ -175,7 +176,7 @@ const Variants = () => {
 
           <CardContent className="pt-0 p-2 md:p-6 md:pt-0">
             {productData?.variants.map((variant) => (
-              <VariantEditForm variant={variant} />
+              <VariantEditForm key={variant.vrnt_id} variant={variant} />
             ))}
             <VariantAddForm />
             {/* {vrntFields.map((field, index) => (
