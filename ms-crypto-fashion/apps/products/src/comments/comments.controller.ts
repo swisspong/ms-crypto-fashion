@@ -20,6 +20,12 @@ export class CommentsController {
     return this.commentsService.allComment(perPage, page)
   }
 
+  @Public()
+  @Get('rating/:merchantId')
+  getRatingMerchant(@Param('merchantId') mcht_id: string){
+    return this.commentsService.getRatingMerchant(mcht_id)
+  }
+
 
   @Public()
   @Get('product/:productId')

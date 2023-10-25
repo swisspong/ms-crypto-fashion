@@ -39,8 +39,10 @@ const OrderListPage = () => {
   const router = useRouter();
   // TODO: Set column in DataTable
   const [idToUpdate, setIdToUpdate] = useState<string>();
+  const [rating_mcht, setRatingMcht] = useState<number>(0);
   const [mchtId, setIdMcht] = useState<string>();
   const [open, setOpen] = useState(false);
+  const [rating_mcht, setRatingMcht] = useState<number>(0);
   const [openDialog, setOpenDialog] = useState(false);
   const [items, setItems] = useState<Item[] | undefined>(undefined);
   const { mutate: commentsHandler, isLoading, isSuccess } = useCreateCommnt();
@@ -89,11 +91,16 @@ const OrderListPage = () => {
       comments: body,
       mcht_id: mchtId!,
       order_id: idToUpdate!,
+      rating_mcht: rating_mcht,
 
       user_name: me?.username!,
     };
     commentsHandler(payload);
   };
+
+
+
+
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -334,6 +341,9 @@ const OrderListPage = () => {
           data={items!}
           open={open}
           commentHandler={commentHandler}
+          ratingHandle={(rating) => {
+            setRatingMcht(rating)
+          }}
           openHandler={openSheetHandlerParam}
           isLoading={isLoading}
           isSuccess={isLoading}

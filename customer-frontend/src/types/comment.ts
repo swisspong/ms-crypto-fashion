@@ -3,6 +3,8 @@ interface TCommentPayload {
     order_id: string
     mcht_id: string
     user_name: string
+    rating_mcht: number
+
 }
 
 interface TComment {
@@ -25,4 +27,8 @@ interface TCommentResponse {
 interface TReplyPayload {
     comment_id: string
     message: string
+}
+
+interface TRatingMerchantResponse {
+    rating: number
 }

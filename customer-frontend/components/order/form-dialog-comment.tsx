@@ -19,6 +19,9 @@ interface Props {
   openHandler: (open: boolean) => void;
   data: Item[],
   commentHandler: (body: TComment[]) => void;
+
+  ratingHandle: (rating: number) => void;
+
   isLoading: boolean;
   isSuccess: boolean;
 }
@@ -45,6 +48,7 @@ const FormCommentDialog: FC<Props> = ({
   commentHandler,
   isSuccess,
   isLoading,
+  ratingHandle
 }) => {
 
 
@@ -77,8 +81,8 @@ const FormCommentDialog: FC<Props> = ({
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    
-    
+
+
 
     const reviews: TComment[] = await Object.keys(productRatings).map((prod_id) => ({
       text: formData[prod_id] as string,
@@ -118,6 +122,13 @@ const FormCommentDialog: FC<Props> = ({
       <AlertDialogContent>
         <form onSubmit={submitHandler}>
           <AlertDialogHeader>
+            <p className="mb-2">กรุณาให้คะแนนร้านค้า:</p>
+            <Rating
+              onChange={(newRating) => {
+                ratingHandle(newRating)
+              }
+              }
+            />
             {data?.map((item) => (
               <div key={item.prod_id} className="grid gap-4 py-4">
                 <div className="p-4">
