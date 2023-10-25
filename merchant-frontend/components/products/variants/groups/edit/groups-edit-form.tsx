@@ -30,12 +30,12 @@ const GroupsEditForm: FC<Props> = ({
     form,
     onSubmit,
     checkKeyDown,
-    initForm,
+    useInitForm,
     toggleEdit,
     isEdit,
     cancelForm,
   } = useGroupsEditFormHook();
-  initForm(group);
+  useInitForm(group);
 
   return (
     <Form {...form}>

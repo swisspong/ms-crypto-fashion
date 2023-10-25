@@ -210,7 +210,10 @@ const FullfillForm: FC<Props> = ({ data }) => {
                 </div>
                 <div className="pt-1 space-y-2">
                   {data?.items.map((orderItem) => (
-                    <div key={orderItem} className="px-2 mb-1 block md:hidden ">
+                    <div
+                      key={orderItem.item_id}
+                      className="px-2 mb-1 block md:hidden "
+                    >
                       <div className="flex items-center space-x-3">
                         <img
                           src={orderItem.image}

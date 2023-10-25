@@ -30,7 +30,7 @@ const useGroupsEditFormHook = () => {
   const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
     if (e.key === "Enter") e.preventDefault();
   };
-  const initForm = (group: IGroup) => {
+  const useInitForm = (group: IGroup) => {
     useEffect(() => {
       if (productQuery.data) {
 
@@ -71,7 +71,7 @@ const useGroupsEditFormHook = () => {
     form,
     onSubmit,
     checkKeyDown,
-    initForm,
+    useInitForm,
     isEdit,
     toggleEdit,
     cancelForm,
