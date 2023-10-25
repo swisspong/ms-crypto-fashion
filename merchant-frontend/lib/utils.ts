@@ -42,6 +42,7 @@ interface DynamicApiOptions {
 const urlFactory = (value: SERVICE_FORMAT) => {
   // const csrString = 'http://api.example.com'
   // const csrString = 'http://api.cryptofashion.store'
+  console.log("host api",process.env.HOST_API)
   const csrString = `${process.env.HOST_API}`
   const ssrString = 'http://'
   switch (value) {
