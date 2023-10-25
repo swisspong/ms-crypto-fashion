@@ -2,7 +2,6 @@ version: "3"
 services:
   auth:
     container_name: auth-service
-    
     restart: always
     build:
       context: ./ms-crypto-fashion
@@ -11,6 +10,12 @@ services:
     command: npm run start:dev auth
     ports:
       - '8000:8000'
+    environment:
+      - GOOGLE_CALLBACK_URL= http://api.example.com/auth/google/callback
+      - DOMAIN= example.com
+      - HOST_CUSTOMER= http://example.com
+      - HOST_MERCHANT= http://merchant.example.com
+      - HOST_API= http://api.example.com
     env_file:
       - ./ms-crypto-fashion/apps/auth/.env
     depends_on:
@@ -33,6 +38,8 @@ services:
     ports:
       - '8001:8001'
       - '4001:4001'
+    environment:
+      - DOMAIN= example.com
     env_file:
       - ./ms-crypto-fashion/apps/products/.env
     depends_on:
@@ -118,8 +125,13 @@ services:
     command: npm run dev
     ports:
       - '3001:3001'
-    env_file:
-      - ./admin-frontend/.env
+    environment:
+      - NEXT_PUBLIC_OMISE_PK= pkey_test_5vs126s6kgn939wafl4
+      - HOST_CUSTOMER= http://example.com
+      - HOST_MERCHANT= http://merchant.example.com
+      - HOST_API= http://api.example.com
+    # env_file:
+    #   - ./admin-frontend/.env.development
     volumes:
       - ./admin-frontend:/app
       - /app/node_modules
@@ -135,8 +147,13 @@ services:
     command: npm run dev
     ports:
       - '3002:3002'
-    env_file:
-      - ./merchant-frontend/.env
+    environment:
+      - NEXT_PUBLIC_OMISE_PK= pkey_test_5vs126s6kgn939wafl4
+      - HOST_CUSTOMER= http://example.com
+      - HOST_MERCHANT= http://merchant.example.com
+      - HOST_API= http://api.example.com
+    # env_file:
+    #   - ./merchant-frontend/.env.development
     volumes:
       - ./merchant-frontend:/app
       - /app/node_modules
@@ -152,8 +169,13 @@ services:
     command: npm run dev
     ports:
       - '3000:3000'
-    env_file:
-      - ./customer-frontend/.env
+    environment:
+      - NEXT_PUBLIC_OMISE_PK= pkey_test_5vs126s6kgn939wafl4
+      - HOST_CUSTOMER= http://example.com
+      - HOST_MERCHANT= http://merchant.example.com
+      - HOST_API= http://api.example.com
+    # env_file:
+    #   - ./customer-frontend/.env.development
     volumes:
       - ./customer-frontend:/app
       - /app/node_modules

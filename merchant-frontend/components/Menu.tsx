@@ -80,7 +80,8 @@ export function Menu() {
 
   useEffect(() => {
     if (logoutSuccess) {
-      router.push(`http://example.com/signin`);
+      // router.push(`http://example.com/signin`);
+      router.push(`${process.env.HOST_CUSTOMER}/signin`);
     }
   }, [logoutSuccess]);
   return (

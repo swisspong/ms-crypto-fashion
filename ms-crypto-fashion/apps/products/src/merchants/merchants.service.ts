@@ -500,7 +500,8 @@ export class MerchantsService {
                     httpOnly: false,
                     // sameSite: 'none',
                     // domain: 'example.com'
-                    domain: 'cryptofashion.store'
+                    // domain: 'cryptofashion.store'
+                    domain: process.env.DOMAIN
                 })
 
                 await session.commitTransaction();

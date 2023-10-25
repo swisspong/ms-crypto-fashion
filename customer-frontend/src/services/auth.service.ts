@@ -19,6 +19,7 @@ export const signinMetamask = async (body: ISigninMetamaskPayload): Promise<void
     return result;
 };
 export const signup = async (body: ISignupPayload): Promise<void> => {
+    console.log("env ->",process.env.HOST_API,process.env.HOST_MERCHANT)
     const result = await api.post(`/auth/signup`, body).then(
         (response) => response.data
     );

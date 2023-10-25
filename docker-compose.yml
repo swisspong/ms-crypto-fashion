@@ -6,15 +6,20 @@ services:
     build:
       context: ./admin-frontend
       # dockerfile: ./Dockerfile.dev
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.prod
       # target: deps
-      target: builder
-      # target: runner
-    command: npm run dev
+      # target: builder
+      target: runner
+    # command: npm run dev
     ports:
       - '3001:3001'
-    env_file:
-      - ./admin-frontend/.env.local
+    environment:
+      - NEXT_PUBLIC_OMISE_PK= pkey_test_5vs126s6kgn939wafl4
+      - HOST_CUSTOMER= http://cryptofashion.store
+      - HOST_MERCHANT= http://merchant.cryptofashion.store
+      - HOST_API= http://api.cryptofashion.store
+    # env_file:
+    #   - ./admin-frontend/.env.local
     volumes:
       - ./admin-frontend:/app
       - /app/node_modules
@@ -24,15 +29,20 @@ services:
     build:
       context: ./merchant-frontend
       # dockerfile: ./Dockerfile.dev
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.prod
       # target: deps
-      target: builder
-      # target: runner
-    command: npm run dev
+      # target: builder
+      target: runner
+    # command: npm run dev
     ports:
       - '3002:3002'
-    env_file:
-      - ./merchant-frontend/.env.local
+    environment:
+      - NEXT_PUBLIC_OMISE_PK= pkey_test_5vs126s6kgn939wafl4
+      - HOST_CUSTOMER= http://cryptofashion.store
+      - HOST_MERCHANT= http://merchant.cryptofashion.store
+      - HOST_API= http://api.cryptofashion.store
+    # env_file:
+    #   - ./merchant-frontend/.env.local
     volumes:
       - ./merchant-frontend:/app
       - /app/node_modules
@@ -42,15 +52,20 @@ services:
     build:
       context: ./customer-frontend
       # dockerfile: ./Dockerfile.dev
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.prod
       # target: deps
-      target: builder
-      # target: runner
-    command: npm run dev
+      # target: builder
+      target: runner
+    # command: npm run dev
     ports:
       - '3000:3000'
-    env_file:
-      - ./customer-frontend/.env.local
+    environment:
+      - NEXT_PUBLIC_OMISE_PK= pkey_test_5vs126s6kgn939wafl4
+      - HOST_CUSTOMER= http://cryptofashion.store
+      - HOST_MERCHANT= http://merchant.cryptofashion.store
+      - HOST_API= http://api.cryptofashion.store
+    # env_file:
+    #   - ./customer-frontend/.env.local
     volumes:
       - ./customer-frontend:/app
       - /app/node_modules
@@ -65,6 +80,12 @@ services:
     command: npm run start:dev auth
     ports:
       - '8000:8000'
+    environment:
+      - GOOGLE_CALLBACK_URL= http://api.cryptofashion.store/auth/google/callback
+      - DOMAIN= cryptofashion.store
+      - HOST_CUSTOMER= http://cryptofashion.store
+      - HOST_MERCHANT= http://merchant.cryptofashion.store
+      - HOST_API= http://api.cryptofashion.store
     env_file:
       - ./ms-crypto-fashion/apps/auth/.env
     depends_on:
@@ -87,6 +108,8 @@ services:
     ports:
       - '8001:8001'
       - '4001:4001'
+    environment:
+      - DOMAIN= cryptofashion.store
     env_file:
       - ./ms-crypto-fashion/apps/products/.env
     depends_on:

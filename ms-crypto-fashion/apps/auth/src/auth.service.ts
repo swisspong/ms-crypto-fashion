@@ -48,7 +48,9 @@ export class AuthService {
         httpOnly: false,
         // sameSite: 'none',
         // domain: 'example.com'
-        domain: 'cryptofashion.store'
+        // domain: 'cryptofashion.store'
+        // domain: 'cryptofashion.store'
+        domain: process.env.DOMAIN
       })
       return { accessToken }
     } catch (error) {
@@ -79,7 +81,8 @@ export class AuthService {
         httpOnly: false,
         // sameSite: 'none',
         // domain: 'example.com'
-        domain: 'cryptofashion.store'
+        // domain: 'cryptofashion.store'
+        domain: process.env.DOMAIN
       })
       console.log(res)
       return { accessToken }
@@ -144,7 +147,8 @@ export class AuthService {
         httpOnly: false,
         // sameSite: 'none',
         // domain: 'example.com'
-        domain: 'cryptofashion.store'
+        // domain: 'cryptofashion.store'
+        domain: process.env.DOMAIN
       })
       return { accessToken }
 
@@ -223,7 +227,10 @@ export class AuthService {
 
   async signout(res: any) {
     // res.clearCookie("token", { domain: 'example.com' })
-    res.clearCookie("token", { domain: 'cryptofashion.store' })
+    res.clearCookie("token", { 
+      // domain: 'cryptofashion.store'
+      domain: process.env.DOMAIN
+     })
   }
 
 
@@ -241,16 +248,18 @@ export class AuthService {
           httpOnly: false,
           // sameSite: 'none',
           // domain: 'example.com'
-          domain: 'cryptofashion.store'
+          // domain: 'cryptofashion.store'
+          domain: process.env.DOMAIN
         })
         // res.redirect(`http://example.com`);
-        res.redirect(`http://cryptofashion.store`);
+        // res.redirect(`http://cryptofashion.store`);
+        res.redirect(`${process.env.HOST_CUSTOMER}`);
         return
       } else {
         const user = users.find(user => user.google_id === profile.id && user.email === profile.emails[0].value)
         if (!user) {
           res.redirect(
-            `http://cryptofashion.store/signin?error=${encodeURIComponent(
+            `${process.env.HOST_CUSTOMER}/signin?error=${encodeURIComponent(
               "Incorrect_Email"
             )}`
           );
@@ -267,9 +276,11 @@ export class AuthService {
             httpOnly: false,
             // sameSite: 'none',
             // domain: 'example.com'
-            domain: 'cryptofashion.store'
+            // domain: 'cryptofashion.store'
+            domain: process.env.DOMAIN
           })
-          res.redirect(`http://cryptofashion.store`);
+          // res.redirect(`http://cryptofashion.store`);
+          res.redirect(`${process.env.HOST_CUSTOMER}`);
           return
         }
       }
