@@ -47,7 +47,7 @@ const CartDataTable = () => {
           <TableBody>
             {data?.items.length ? (
               data.items.map((item) => (
-                <TableRow className="">
+                <TableRow key={item.item_id} className="">
                   <TableCell className="h-24 w-5">
                     <Checkbox />
                   </TableCell>
@@ -103,11 +103,11 @@ const CartDataTable = () => {
                         <span className="font-medium text-xs">
                           การชำระเงิน:
                         </span>
-                        {item.product.payment_methods.map((payment) =>
+                        {item.product.payment_methods.map((payment,index) =>
                           payment === PaymentMethodFormat.CREDIT ? (
-                            <CreditCard size={15} />
+                            <CreditCard size={15}  key={index}/>
                           ) : (
-                            <Bitcoin size={15} />
+                            <Bitcoin size={15} key={index}/>
                           )
                         )}
                       </div>

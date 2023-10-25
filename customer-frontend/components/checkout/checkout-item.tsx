@@ -102,11 +102,11 @@ const CheckoutItem: React.FC<CheckoutItemProps> = ({
               <span className="font-medium text-xs sm:text-sm">
                 การชำระเงิน:
               </span>
-              {data.product.payment_methods.map((payment) =>
+              {data.product.payment_methods.map((payment, index) =>
                 payment === PaymentMethodFormat.CREDIT ? (
-                  <CreditCard className="w-4" />
+                  <CreditCard className="w-4" key={index} />
                 ) : (
-                  <Bitcoin className="w-4" />
+                  <Bitcoin className="w-4" key={index} />
                 )
               )}
             </div>

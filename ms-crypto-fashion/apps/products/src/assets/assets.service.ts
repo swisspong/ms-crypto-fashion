@@ -10,7 +10,8 @@ export class AssetsService {
   create(file: Express.Multer.File) {
     this.logger.log("form normal asset")
 
-    return { image_url: "http://api.example.com/assets/" + file.filename }
+    // return { image_url: "http://api.cryptofashion.store/assets/" + file.filename }
+    return { image_url: "http://api.cryptofashion.store/assets/" + file.filename }
   }
   createMerchant(file: Express.Multer.File) {
     this.logger.log("form asset merchant")
@@ -18,12 +19,12 @@ export class AssetsService {
     // return { image_url: "http://api.example.com/merchant/" + file.filename }
 
 
-    return { image_url: "http://api.example.com/assets/citizen-card/" + file.filename }
+    return { image_url: "http://api.cryptofashion.store/assets/citizen-card/" + file.filename }
   }
   createBanner(file: Express.Multer.File) {
 
     this.logger.log('filename', file.filename)
-    return { image_url: "http://api.example.com/banner/" + file.filename }
+    return { image_url: "http://api.cryptofashion.store/banner/" + file.filename }
   }
 
   async getImageCitizenCard(name: string, res: Response) {

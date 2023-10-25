@@ -79,6 +79,7 @@ const AddressListDialog: FC<Props> = ({ selected, setAddressSelected }) => {
               <div className="grid gap-4">
                 {addresses.data?.map((address) => (
                   <AddressItem
+                    key={address.addr_id}
                     setUpdateHandler={(data: IAddress) => {
                       setUpdateData(data);
                     }}

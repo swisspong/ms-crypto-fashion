@@ -62,7 +62,7 @@ export default function Approve() {
                     )}
                     {dataQuery.data?.data.map((data) => {
                         return (
-                            <div>
+                            <div key={data._id}>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
                                         <div className="overflow-hidden rounded-md">

@@ -112,11 +112,11 @@ const CartItemNew: React.FC<CartItemProps> = ({
               <span className="font-medium text-xs sm:text-sm">
                 การชำระเงิน:
               </span>
-              {data.product.payment_methods.map((payment) =>
+              {data.product.payment_methods.map((payment,index) =>
                 payment === PaymentMethodFormat.CREDIT ? (
-                  <CreditCard className="w-4" />
+                  <CreditCard key={index} className="w-4" />
                 ) : (
-                  <Bitcoin className="w-4" />
+                  <Bitcoin className="w-4" key={index} />
                 )
               )}
             </div>

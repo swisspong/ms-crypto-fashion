@@ -48,11 +48,11 @@ const CheckoutPage = () => {
       if (addresses.data.length > 0) {
         setAddressSelected(addresses.data[0].addr_id);
       }
-      if(addresses.data.length<=0){
-        setAddressSelected(undefined)
+      if (addresses.data.length <= 0) {
+        setAddressSelected(undefined);
       }
     }
-  }, [addresses.isSuccess,addresses.data?.length]);
+  }, [addresses.isSuccess, addresses.data?.length]);
   return (
     <div className="bg-white">
       <Navbar />
@@ -124,12 +124,12 @@ const CheckoutPage = () => {
                         <Button variant="outline">เพิ่มที่อยู่</Button>
                       </Link> */}
                       <div>
-                      <AddressListDialog
-                        selected={addressSelected}
-                        setAddressSelected={setAddressSelected}
-                      />
+                        <AddressListDialog
+                          selected={addressSelected}
+                          setAddressSelected={setAddressSelected}
+                        />
                       </div>
-                  
+
                       {/* <AddAddressForm /> */}
                     </div>
                   </CardContent>
@@ -159,6 +159,7 @@ const CheckoutPage = () => {
               )}
               {getCheckout.data?.items?.map((item) => (
                 <CheckoutItem
+                  key={item.item_id}
                   data={item}
                   setSelecteds={setSelecteds}
                   selecteds={selecteds}

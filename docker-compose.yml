@@ -1,0 +1,257 @@
+version: "3"
+services:
+  admin-client:
+    container_name: admin-client
+    restart: always
+    build:
+      context: ./admin-frontend
+      # dockerfile: ./Dockerfile.dev
+      dockerfile: ./Dockerfile
+      # target: deps
+      target: builder
+      # target: runner
+    command: npm run dev
+    ports:
+      - '3001:3001'
+    env_file:
+      - ./admin-frontend/.env.local
+    volumes:
+      - ./admin-frontend:/app
+      - /app/node_modules
+  merchant-client:
+    container_name: merchant-client
+    restart: always
+    build:
+      context: ./merchant-frontend
+      # dockerfile: ./Dockerfile.dev
+      dockerfile: ./Dockerfile
+      # target: deps
+      target: builder
+      # target: runner
+    command: npm run dev
+    ports:
+      - '3002:3002'
+    env_file:
+      - ./merchant-frontend/.env.local
+    volumes:
+      - ./merchant-frontend:/app
+      - /app/node_modules
+  user-client:
+    container_name: user-client
+    restart: always
+    build:
+      context: ./customer-frontend
+      # dockerfile: ./Dockerfile.dev
+      dockerfile: ./Dockerfile
+      # target: deps
+      target: builder
+      # target: runner
+    command: npm run dev
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./customer-frontend/.env.local
+    volumes:
+      - ./customer-frontend:/app
+      - /app/node_modules
+  auth:
+    container_name: auth-service
+    
+    restart: always
+    build:
+      context: ./ms-crypto-fashion
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    command: npm run start:dev auth
+    ports:
+      - '8000:8000'
+    env_file:
+      - ./ms-crypto-fashion/apps/auth/.env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - rabbitmq
+    volumes:
+      - ./ms-crypto-fashion:/usr/src/app
+      - /usr/src/app/node_modules
+  products:
+    container_name: products-service
+    
+    restart: always
+    build:
+      context: ./ms-crypto-fashion
+      dockerfile: ./apps/products/Dockerfile
+      target: development
+    command: npm run start:dev products
+    ports:
+      - '8001:8001'
+      - '4001:4001'
+    env_file:
+      - ./ms-crypto-fashion/apps/products/.env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - rabbitmq
+    volumes:
+      - ./ms-crypto-fashion:/usr/src/app
+      - /usr/src/app/node_modules
+  carts:
+    container_name: carts-service
+    
+    restart: always
+    build:
+      context: ./ms-crypto-fashion
+      dockerfile: ./apps/carts/Dockerfile
+      target: development
+    command: npm run start:dev carts
+    ports:
+      - '8002:8002'
+    env_file:
+      - ./ms-crypto-fashion/apps/carts/.env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - rabbitmq
+    volumes:
+      - ./ms-crypto-fashion:/usr/src/app
+      - /usr/src/app/node_modules
+  orders:
+    container_name: orders-service
+    
+    restart: always
+    build:
+      context: ./ms-crypto-fashion
+      dockerfile: ./apps/orders/Dockerfile
+      target: development
+    command: npm run start:dev orders
+    ports:
+      - '8003:8003'
+    env_file:
+      - ./ms-crypto-fashion/apps/orders/.env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - rabbitmq
+    volumes:
+      - ./ms-crypto-fashion:/usr/src/app
+      - /usr/src/app/node_modules
+  payments:
+    container_name: payments-service
+    
+    restart: always
+    build:
+      context: ./ms-crypto-fashion
+      dockerfile: ./apps/payments/Dockerfile
+      target: development
+    command: npm run start:dev payments
+    ports:
+      - '8004:8004'
+    env_file:
+      - ./ms-crypto-fashion/apps/payments/.env
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - rabbitmq
+    volumes:
+      - ./ms-crypto-fashion:/usr/src/app
+      - /usr/src/app/node_modules
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./data/rabbitmq/data/:/var/lib/rabbitmq/
+        - ./data/rabbitmq/log/:/var/log/rabbitmq
+ #https://github.com/UpSync-Dev/docker-compose-mongo-replica-set
+  mongo1:
+    image: mongo:5
+    container_name: mongo1
+    command:
+      [
+        "--replSet",
+        "my-replica-set",
+        "--bind_ip_all",
+        "--port",
+        "30001"
+      ]
+    environment:
+      MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
+    volumes:
+      - ./data/mongo-1:/data/db
+    ports:
+      - 30001:30001
+
+    healthcheck:
+      test: test $$(echo "rs.initiate({_id:'my-replica-set',members:[{_id:0,host:\"mongo1:30001\"},{_id:1,host:\"mongo2:30002\"},{_id:2,host:\"mongo3:30003\"}]}).ok || rs.status().ok" | mongo --port 30001 --quiet) -eq 1
+      interval: 10s
+      start_period: 30s
+
+  mongo2:
+    image: mongo:5
+    container_name: mongo2
+    command:
+      [
+        "--replSet",
+        "my-replica-set",
+        "--bind_ip_all",
+        "--port",
+        "30002"
+      ]
+    environment:
+      MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
+    volumes:
+      - ./data/mongo-2:/data/db
+    ports:
+      - 30002:30002
+
+  mongo3:
+    image: mongo:5
+    container_name: mongo3
+    command:
+      [
+        "--replSet",
+        "my-replica-set",
+        "--bind_ip_all",
+        "--port",
+        "30003"
+      ]
+    environment:
+      MONGO_INITDB_DATABASE: ms_user,ms_product,ms_cart,ms_order,ms_payment
+    volumes:
+      - ./data/mongo-3:/data/db
+    ports:
+      - 30003:30003
+  nginx-proxy:
+    build:
+      dockerfile: Dockerfile
+      context: ./proxy/prod
+    depends_on:
+      - payments
+      - products
+      - auth
+      - carts
+      - orders
+      - merchant-client
+      - user-client
+      - admin-client
+    ports:
+      - 80:80
+  # uptime-kuma:
+  #   image: louislam/uptime-kuma:1
+  #   container_name: kuma
+  #   volumes:
+  #     - ./uptime-kuma-data:/app/data
+  #   restart: always
+  #   ports:
+  #     - 5001:3001  # <Host Port>:<Container Port>
+# networks:
+#   default:
+#     name: bridge

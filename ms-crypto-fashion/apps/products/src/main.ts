@@ -18,7 +18,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(ProductsModule);
   app.useStaticAssets(join(__dirname, '../../../../../../', 'public'));
   console.log("=====================================")
-  console.log("init main",join(__dirname, '../../../../../../', 'public'))
+  console.log("init main", join(__dirname, '../../../../../../', 'public'))
   console.log("=====================================")
   app.useGlobalPipes(
     new ValidationPipe({
@@ -53,19 +53,22 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
   // * set cors
-  const whitelist = ["http://example.com", "http://admin.example.com", "http://merchant.example.com"];
+  const whitelist = ["http://example.com", "http://admin.example.com", "http://merchant.example.com", 'http://admin.cryptofashion.store', 'http://merchant.cryptofashion.store', 'http://cryptofashion.store'];
 
   app.enableCors({
     origin: (origin, callback) => {
       const isWhitelisted = whitelist.includes(origin)
+      console.log("origin =>", origin, isWhitelisted)
       callback(null, isWhitelisted);
     },
+    // allowedHeaders: 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
+    // methods: "GET,PUT,POST,DELETE,UPDATE,OPTIONS",
     credentials: true,
   })
 
   await app.listen(configService.get<number>('PORT'));
   console.log("=====================================")
-  console.log("init main",join(__dirname, '../../../../../../', 'public'))
+  console.log("init main", join(__dirname, '../../../../../../', 'public'))
   console.log("=====================================")
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

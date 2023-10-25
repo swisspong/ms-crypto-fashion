@@ -33,14 +33,16 @@ export class CommentsService {
 
   async create(user_id: string, createCommentDto: CreateCommentDto) {
     try {
-      const { comments, order_id, user_name, mcht_id, rating_merchant } = createCommentDto
+
+      const { comments, order_id, user_name, mcht_id, rating_mcht } = createCommentDto
       // ! Check status order | if status paid == true
 
-      const rating_mcht = this.ratingMerchantsRepository.create({
+      const rating_merchant = this.ratingMerchantsRepository.create({
         rtmcht_id: `rtmcht_${this.uid.stamp(15)}`,
         mcht_id,
-        rating:  rating_merchant
+        rating: rating_mcht
       })
+
       const newComments: comment[] = await comments.map((comment) => {
         const object: comment = {
           comment_id: `comment_${this.uid.stamp(15)}`,
@@ -54,7 +56,7 @@ export class CommentsService {
         return object
       })
 
-    
+
 
       // insert comment many
       const result = await this.commentRepository.createMany(newComments)
@@ -67,11 +69,11 @@ export class CommentsService {
           review: ReviewFormat.REVIEWED
         }
         await lastValueFrom(
-          this.orderClient.emit(UPDATEREVIEW_ORDER_EVENT,data)
+          this.orderClient.emit(UPDATEREVIEW_ORDER_EVENT, data)
         )
       }
 
-      return {message: "success"}
+      return { message: "success" }
 
     } catch (error) {
       console.log(error)
@@ -99,7 +101,7 @@ export class CommentsService {
         }
       ])
       console.log("comment ------------");
-      
+
       console.log(comments)
 
       return comments
@@ -113,7 +115,7 @@ export class CommentsService {
       const skip = (Number(page) - 1) * Number(per_page)
       const limit = per_page
       const comments = await this.commentRepository.aggregate([
-        
+
         {
           $lookup: {
             from: "products",
@@ -189,6 +191,29 @@ export class CommentsService {
       return result
     } catch (error) {
       console.log(error)
+    }
+  }
+
+  async getRatingMerchant(mcht_id: string) {
+    try {
+      const result: { avgRating: number }[] = await this.ratingMerchantsRepository.aggregate([
+        {
+          $match: {
+            mcht_id: { $in: [mcht_id] } // Replace "your_mcht_id_here" with the specific mcht_id you want to filter by
+          }
+        },
+        {
+          $group: {
+            _id: '$mcht_id',
+            avgRating: { $avg: "$rating" }
+          }
+        }
+      ]);
+
+      return { rating: result[0].avgRating }
+    } catch (error) {
+      console.log(error);
+
     }
   }
 }

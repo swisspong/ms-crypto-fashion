@@ -47,7 +47,8 @@ export class AuthService {
         // secure: true, 
         httpOnly: false,
         // sameSite: 'none',
-        domain: 'example.com'
+        // domain: 'example.com'
+        domain: 'cryptofashion.store'
       })
       return { accessToken }
     } catch (error) {
@@ -77,7 +78,8 @@ export class AuthService {
         // secure: true, 
         httpOnly: false,
         // sameSite: 'none',
-        domain: 'example.com'
+        // domain: 'example.com'
+        domain: 'cryptofashion.store'
       })
       console.log(res)
       return { accessToken }
@@ -141,7 +143,8 @@ export class AuthService {
         // secure: true, 
         httpOnly: false,
         // sameSite: 'none',
-        domain: 'example.com'
+        // domain: 'example.com'
+        domain: 'cryptofashion.store'
       })
       return { accessToken }
 
@@ -219,7 +222,8 @@ export class AuthService {
   // }
 
   async signout(res: any) {
-    res.clearCookie("token", { domain: 'example.com' })
+    // res.clearCookie("token", { domain: 'example.com' })
+    res.clearCookie("token", { domain: 'cryptofashion.store' })
   }
 
 
@@ -236,18 +240,25 @@ export class AuthService {
           // secure: true, 
           httpOnly: false,
           // sameSite: 'none',
-          domain: 'example.com'
+          // domain: 'example.com'
+          domain: 'cryptofashion.store'
         })
-        res.redirect(`http://example.com`);
+        // res.redirect(`http://example.com`);
+        res.redirect(`http://cryptofashion.store`);
         return
       } else {
         const user = users.find(user => user.google_id === profile.id && user.email === profile.emails[0].value)
         if (!user) {
           res.redirect(
-            `http://example.com/signin?error=${encodeURIComponent(
+            `http://cryptofashion.store/signin?error=${encodeURIComponent(
               "Incorrect_Email"
             )}`
           );
+          // res.redirect(
+          //   `http://example.com/signin?error=${encodeURIComponent(
+          //     "Incorrect_Email"
+          //   )}`
+          // );
           return;
         } else {
           const accessToken = await this.jwtUtilsService.signToken({ sub: user.user_id, role: user.role, permission: user.permission, merchant: user.mcht_id })
@@ -255,9 +266,10 @@ export class AuthService {
             // secure: true, 
             httpOnly: false,
             // sameSite: 'none',
-            domain: 'example.com'
+            // domain: 'example.com'
+            domain: 'cryptofashion.store'
           })
-          res.redirect(`http://example.com`);
+          res.redirect(`http://cryptofashion.store`);
           return
         }
       }

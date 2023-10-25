@@ -35,7 +35,7 @@ const EditItemDialog: FC<Props> = ({ optn, data }) => {
   const [selecteds, setSelecteds] = useState<
     { vgrpId: string; optnId: string }[]
   >([]);
-  const { mutate ,isSuccess} = useEditItemCart();
+  const { mutate, isSuccess } = useEditItemCart();
   useEffect(() => {
     setSelecteds(
       data.product.variants
@@ -68,12 +68,12 @@ const EditItemDialog: FC<Props> = ({ optn, data }) => {
     }
   }, [selecteds]);
 
-  useEffect(()=>{
-    if(isSuccess){
-        toast.success("Update item success!")
-        setOpen(false)
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Update item success!");
+      setOpen(false);
     }
-  },[isSuccess])
+  }, [isSuccess]);
   return (
     <Dialog
       open={open}
@@ -99,20 +99,19 @@ const EditItemDialog: FC<Props> = ({ optn, data }) => {
         <DialogHeader>
           <DialogTitle>Edit Item</DialogTitle>
           <DialogDescription>
-            Make changes to your item here. Click save when you're done.
+            Make changes to your item here. Click save when you are done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="relative h-24 w-24 rounded-md overflow-hidden sm:h-48 sm:w-48">
             <img
-              
               src={data.product?.image_urls[0]}
               alt=""
               className="object-cover object-center"
             />
           </div>
           {data.product.groups.map((group) => (
-            <div className="flex items-center gap-x-4">
+            <div key={group.vgrp_id} className="flex items-center gap-x-4">
               <h3 className="font-semibold text-black">{group.name}:</h3>
               <Select
                 value={
@@ -165,6 +164,7 @@ const EditItemDialog: FC<Props> = ({ optn, data }) => {
                     <SelectItem value="">Please select</SelectItem>
                     {group.options.map((option) => (
                       <SelectItem
+                        key={option.optn_id}
                         disabled={
                           !data.product.variants
                             .filter((variant) => variant.stock > 0)

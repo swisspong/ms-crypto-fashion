@@ -83,7 +83,7 @@ const CheckoutItem: React.FC<CheckoutItemProps> = ({
             {data.vrnt_id ? (
               <div className="col-span-2 flex space-x-2">
                 {data.variant?.map((vrnt) => (
-                  <Badge>{vrnt.option_name}</Badge>
+                  <Badge key={vrnt.optn_id}>{vrnt.option_name}</Badge>
                 ))}
               </div>
             ) : undefined}

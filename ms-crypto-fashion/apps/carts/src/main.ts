@@ -28,7 +28,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('', app, document);
   const configSercie = app.get<ConfigService>(ConfigService)
-  const whitelist = ["http://example.com"];
+  const whitelist = ["http://example.com",'http://admin.cryptofashion.store', 'http://merchant.cryptofashion.store', 'http://cryptofashion.store'];
 
   const rmqService = app.get<RmqService>(RmqService)
   app.connectMicroservice(rmqService.getOptoins(CARTS_SERVICE))

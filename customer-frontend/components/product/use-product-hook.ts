@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
 
-const userProductHook = () => {
+const useProductHook = () => {
     const router = useRouter();
     const productQuery = useProductById(router.query.prodId as string);
     const [vrntSelected, setVrntSelected] = useState<string | undefined>();
@@ -44,4 +44,4 @@ const userProductHook = () => {
 
 }
 
-export default userProductHook
+export default useProductHook

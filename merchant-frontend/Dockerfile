@@ -6,6 +6,8 @@ COPY package*.json ./
 # RUN npm install -g npm@10.1.0
 RUN npm install -g npm@10.2.0
 #RUN  npm install --production
+# RUN npm install -g dotenv
+RUN npm install -g dotenv-cli
 RUN  npm install
 # COPY . .
 FROM node:18-alpine AS builder

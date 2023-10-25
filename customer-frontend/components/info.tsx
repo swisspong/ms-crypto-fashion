@@ -142,7 +142,7 @@ const Info: React.FC<InfoProps> = ({
       <hr className="my-4" />
       <div className="flex flex-col gap-y-6">
         {data?.groups.map((group) => (
-          <div className="flex items-center gap-x-4">
+          <div key={group.vgrp_id} className="flex items-center gap-x-4">
             <h3 className="font-semibold text-black">{group.name}:</h3>
             <Select
               value={showSelectValue(selecteds, group)}
@@ -158,6 +158,7 @@ const Info: React.FC<InfoProps> = ({
                   <SelectItem value="">กรุณาเลือก</SelectItem>
                   {group.options.map((option) => (
                     <SelectItem
+                      key={option.optn_id}
                       disabled={disabledOption(option, group.vgrp_id)}
                       value={`${option.optn_id}`}
                     >

@@ -125,7 +125,7 @@ export function Menu() {
         </SheetTrigger>
         <SheetContent position={"left"} size="content" className="bg-background">
           <SheetHeader>
-            <SheetTitle>Admin Sms</SheetTitle>
+            <SheetTitle>Admin Crypto Fashion</SheetTitle>
           </SheetHeader>
           <Sidebar className="bg-background" />
         </SheetContent>

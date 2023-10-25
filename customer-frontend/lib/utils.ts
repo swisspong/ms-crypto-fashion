@@ -14,7 +14,8 @@ export const API = axios.create({
   withCredentials: true
 });
 export const ssrApi = axios.create({
-  baseURL: process.env.NODE_ENV === "production" ? "http://api:5000/api/v1" : "http://localhost:8000",
+  // baseURL: process.env.NODE_ENV === "production" ? "http://api:5000/api/v1" : "http://localhost:8000",
+  baseURL: process.env.NODE_ENV === "production" ? "http://api:5000/api/v1" : "http://api.cryptofashion.store",
   //baseURL: "http://localhost:8000/v1",
   withCredentials: true
 });
@@ -49,7 +50,7 @@ interface DynamicApiOptions {
   service: SERVICE_FORMAT
 }
 const urlFactory = (value: SERVICE_FORMAT) => {
-  const csrString = 'http://api.example.com'
+  const csrString = 'http://api.cryptofashion.store'
   const ssrString = 'http://'
   switch (value) {
     case SERVICE_FORMAT.AUTH:

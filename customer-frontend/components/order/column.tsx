@@ -30,7 +30,7 @@ export const columns = ({
   openDialogHandler,
   setDataItems,
 }: columnProps) => {
-  const router = useRouter();
+  // const router = useRouter();
   const columns: ColumnDef<IOrderRow>[] = [
     {
       accessorKey: "image",

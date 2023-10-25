@@ -41,7 +41,7 @@ const DialogAlert: FC<Props> = ({
         <AlertDialogHeader>
           <AlertDialogTitle>คุณแน่ใจหรือไม่?</AlertDialogTitle>
           <AlertDialogDescription>
-            คุณต้องการเปลี่ยนสถานะ "{title_alert}"
+            คุณต้องการเปลี่ยนสถานะ {title_alert}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

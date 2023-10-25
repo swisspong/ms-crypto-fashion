@@ -33,7 +33,7 @@ const MerchantList: FC<Props> = ({
           <NoResults />
         </div>
       ) : (
-        merchants?.data?.data.map((merchant) => <MerchantItem merchant={merchant}/>)
+        merchants?.data?.data.map((merchant) => <MerchantItem key={merchant._id} merchant={merchant}/>)
       )}
       {/* <MerchantItem /> */}
     </div>

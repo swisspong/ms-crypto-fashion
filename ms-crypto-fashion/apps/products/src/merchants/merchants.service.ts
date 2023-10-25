@@ -499,7 +499,8 @@ export class MerchantsService {
                     // secure: true, 
                     httpOnly: false,
                     // sameSite: 'none',
-                    domain: 'example.com'
+                    // domain: 'example.com'
+                    domain: 'cryptofashion.store'
                 })
 
                 await session.commitTransaction();

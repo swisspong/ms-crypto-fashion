@@ -40,7 +40,8 @@ interface DynamicApiOptions {
   service: SERVICE_FORMAT
 }
 const urlFactory = (value: SERVICE_FORMAT) => {
-  const csrString = 'http://api.example.com'
+  // const csrString = 'http://api.example.com'
+  const csrString = 'http://api.cryptofashion.store'
   const ssrString = 'http://'
   switch (value) {
     case SERVICE_FORMAT.AUTH:

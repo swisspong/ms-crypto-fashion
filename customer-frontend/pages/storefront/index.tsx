@@ -10,7 +10,7 @@ import { GetServerSideProps } from "next";
 import { getInfoSsr } from "@/src/services/user.service";
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import {
-  useMerchantProducts,
+  // useMerchantProducts,
   useMyStorefront,
 } from "@/src/hooks/product/merchant/queries";
 import { PaginationState } from "@tanstack/react-table";
@@ -51,7 +51,7 @@ const CategoryPage = ({}) => {
     <div className="bg-white">
       <Navbar />
       <Container>
-        <Billboard  info={merchantInfo}  />
+        <Billboard info={merchantInfo} />
         <div className="px-4 sm:px-6 lg:px-8 pb-24">
           <div className="lg:grid lg:grid-cols-5 lg:gap-x-8">
             <MobileFilters sizes={[]} colors={[]} />
@@ -61,8 +61,8 @@ const CategoryPage = ({}) => {
                 setSelectedCheckboxes={setSelectedCheckboxes}
                 search={search}
                 setSerarch={setSerarch}
-                valueKey="sizeId"
-                name="Categories"
+                // valueKey="sizeId"
+                // name="Categories"
                 data={[
                   ...(categories?.data.map((category) => ({
                     id: category.cat_id,
@@ -70,6 +70,20 @@ const CategoryPage = ({}) => {
                   })) ?? []),
                 ]}
               />
+              {/* <FilterState
+                selectedCheckboxes={selectedCheckboxes}
+                setSelectedCheckboxes={setSelectedCheckboxes}
+                search={search}
+                setSerarch={setSerarch}
+                // valueKey="sizeId"
+                // name="Categories"
+                data={[
+                  ...(categories?.data.map((category) => ({
+                    id: category.cat_id,
+                    name: category.name,
+                  })) ?? []),
+                ]}
+              /> */}
               {/* <Filter valueKey="colorId" name="Colors" data={[]} /> */}
             </div>
             <div className="mt-6 lg:col-span-4 lg:mt-0">
@@ -117,7 +131,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!me) {
     return {
       redirect: {
-        destination: "http://localhost:3000/signin",
+        // destination: "http://localhost:3000/signin",
+        destination: `${process.env.HOST_CUSTOMER}/signin`,
         permanent: false,
       },
     };
@@ -126,19 +141,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (me && (me as any).role !== "merchant") {
     return {
       redirect: {
-        destination: "http://localhost:3000",
+        // destination: "http://localhost:3000",
+        destination: `${process.env.HOST_CUSTOMER}`,
         permanent: false,
       },
     };
   }
-  await queryClient.prefetchQuery(
-    ["my-products", { page: 1, per_page: 20 }],
-    () => getMyStoreFront({ page: 1, per_page: 20, catIds: [] })
-  );
-  await queryClient.prefetchQuery(
-    ["my-categories", { page: 1, per_page: 100 }],
-    () => getMyCategories({ page: 1, per_page: 100 })
-  );
+  // await queryClient.prefetchQuery(
+  //   ["my-products", { page: 1, per_page: 20 }],
+  //   () => getMyStoreFront({ page: 1, per_page: 20, catIds: [] })
+  // );
+  // await queryClient.prefetchQuery(
+  //   ["my-categories", { page: 1, per_page: 100 }],
+  //   () => getMyCategories({ page: 1, per_page: 100 })
+  // );
   // console.log(me,roles)
   // console.log("------------------------------")
   return {

@@ -62,5 +62,6 @@ export class CreateCommentDto {
     @IsNumber()
     @Min(1)
     @Max(5)
-    rating_merchant: number
+    rating_mcht: number
+
 }

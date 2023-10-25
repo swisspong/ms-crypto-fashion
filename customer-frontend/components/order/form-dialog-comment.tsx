@@ -19,7 +19,9 @@ interface Props {
   openHandler: (open: boolean) => void;
   data: Item[],
   commentHandler: (body: TComment[]) => void;
-  ratingHandle: (rating: number) => void
+
+  ratingHandle: (rating: number) => void;
+
   isLoading: boolean;
   isSuccess: boolean;
 }
@@ -120,9 +122,9 @@ const FormCommentDialog: FC<Props> = ({
       <AlertDialogContent>
         <form onSubmit={submitHandler}>
           <AlertDialogHeader>
-            <p className="mb-2">กรุณาให้คะแนนร้านค้า</p>
+            <p className="mb-2">กรุณาให้คะแนนร้านค้า:</p>
             <Rating
-              onChange={(newRating) =>{
+              onChange={(newRating) => {
                 ratingHandle(newRating)
               }
               }

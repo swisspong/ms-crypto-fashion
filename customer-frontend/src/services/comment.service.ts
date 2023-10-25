@@ -17,3 +17,9 @@ export const updateCommentReply = async (body: TReplyPayload): Promise<void> => 
         (response) => response.data
     )
 }
+//
+export const getRatingMerchant = async (mcht_id: string): Promise<TRatingMerchantResponse> => {
+    return await api.get(`/comments/rating/${mcht_id}`).then(
+        (response) => response.data
+    );
+};

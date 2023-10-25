@@ -146,8 +146,8 @@ const CartItem: React.FC<CartItemProps> = ({
                     );
                     return option?.name;
                   })
-                  .map((optn) => (
-                    <EditItemDialog optn={optn} data={data} />
+                  .map((optn, index) => (
+                    <EditItemDialog key={index} optn={optn} data={data} />
                     // <Badge>{optn}</Badge>
                   ))}
               </div>
@@ -236,11 +236,11 @@ const CartItem: React.FC<CartItemProps> = ({
             </div>
             <div className="flex  space-x-2 py-1">
               <span className="font-medium">การชำระเงิน:</span>
-              {data.product.payment_methods.map((payment) =>
+              {data.product.payment_methods.map((payment, index) =>
                 payment === PaymentMethodFormat.CREDIT ? (
-                  <CreditCard />
+                  <CreditCard key={index} />
                 ) : (
-                  <Bitcoin />
+                  <Bitcoin key={index} />
                 )
               )}
             </div>

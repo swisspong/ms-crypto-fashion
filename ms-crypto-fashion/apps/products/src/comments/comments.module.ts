@@ -16,14 +16,7 @@ import { RatingMerchantRepository } from './ratingmerchant.repository';
     MongooseModule.forFeature([{ name: RatingMerchant.name, schema: RatingMerchantSchema }])
   ],
   controllers: [CommentsController],
-  providers: [
-    CommentsService,
-    CommentsRepository,
-    RatingMerchantRepository
-  ],
-  exports: [
-    CommentsRepository,
-    RatingMerchantRepository
-  ]
+  providers: [CommentsService, CommentsRepository, RatingMerchantRepository],
+  exports: [CommentsRepository, RatingMerchantRepository]
 })
 export class CommentsModule { }
