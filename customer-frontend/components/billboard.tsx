@@ -31,19 +31,21 @@ const Billboard: React.FC<BillboardProps> = ({ name, info }) => {
               {/* fdsfdsf */}
             </AlertTitle>
             <div>
-              {[1, 2, 3, 4, 5].map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  disabled={true}
-                  className={`text-1xl focus:outline-none ${value <= Math.round(data?.rating ?? 0)
-                    ? "text-yellow-400"
-                    : "text-gray-300"
-                    }`}
-                >
-                  ★
-                </button>
-              ))}
+              {info?.name ? (
+                [1, 2, 3, 4, 5].map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    disabled={true}
+                    className={`text-1xl focus:outline-none ${value <= Math.round(data?.rating ?? 0)
+                      ? "text-yellow-400"
+                      : "text-gray-300"
+                      }`}
+                  >
+                    ★
+                  </button>
+                ))
+              ) : (<></>)}
             </div>
 
           </div>
