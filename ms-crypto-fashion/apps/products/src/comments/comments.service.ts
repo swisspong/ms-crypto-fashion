@@ -9,6 +9,7 @@ import { FINDONE_ORDER_EVENT, ORDER_SERVICE, UPDATEREVIEW_ORDER_EVENT } from '@a
 import { lastValueFrom } from 'rxjs';
 import { ReviewFormat } from 'apps/orders/src/schemas/order.schema';
 import { UpdateStatusOrder } from '@app/common/interfaces/order-event.interface';
+import { RatingMerchantRepository } from './ratingmerchant.repository';
 interface comment {
   comment_id: string
   user_id: string
@@ -27,13 +28,19 @@ export class CommentsService {
   constructor(
     @Inject(ORDER_SERVICE) private readonly orderClient: ClientProxy,
     private readonly commentRepository: CommentsRepository,
+    private readonly ratingMerchantsRepository: RatingMerchantRepository
   ) { }
 
   async create(user_id: string, createCommentDto: CreateCommentDto) {
     try {
-      const { comments, order_id, user_name, mcht_id } = createCommentDto
+      const { comments, order_id, user_name, mcht_id, rating_merchant } = createCommentDto
       // ! Check status order | if status paid == true
 
+      const rating_mcht = this.ratingMerchantsRepository.create({
+        rtmcht_id: `rtmcht_${this.uid.stamp(15)}`,
+        mcht_id,
+        rating:  rating_merchant
+      })
       const newComments: comment[] = await comments.map((comment) => {
         const object: comment = {
           comment_id: `comment_${this.uid.stamp(15)}`,

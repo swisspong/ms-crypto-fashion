@@ -18,7 +18,7 @@ export class CommentDto {
     @Length(3)
     prod_id: string
 
-    
+
 
     @ApiProperty()
     @IsNumber()
@@ -26,11 +26,11 @@ export class CommentDto {
     @Max(5)
     rating: number
 
-    
+
 }
 
 export class CreateCommentDto {
-    @ApiProperty({ isArray: true, type: CommentDto  })
+    @ApiProperty({ isArray: true, type: CommentDto })
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => CommentDto)
@@ -57,4 +57,10 @@ export class CreateCommentDto {
     @IsNotEmpty()
     @Length(3)
     user_name: string;
+
+    @ApiProperty()
+    @IsNumber()
+    @Min(1)
+    @Max(5)
+    rating_merchant: number
 }
