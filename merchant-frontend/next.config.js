@@ -10,6 +10,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  output: 'standalone',
   env: {
     HOST_CUSTOMER: process.env.HOST_CUSTOMER,
     HOST_MERCHANT: process.env.HOST_MERCHANT,

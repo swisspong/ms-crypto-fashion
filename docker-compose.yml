@@ -20,9 +20,9 @@ services:
       - HOST_API= http://api.cryptofashion.store
     # env_file:
     #   - ./admin-frontend/.env.local
-    volumes:
-      - ./admin-frontend:/app
-      - /app/node_modules
+    # volumes:
+    #   - ./admin-frontend:/app
+    #   - /app/node_modules
   merchant-client:
     container_name: merchant-client
     restart: always
@@ -43,9 +43,9 @@ services:
       - HOST_API= http://api.cryptofashion.store
     # env_file:
     #   - ./merchant-frontend/.env.local
-    volumes:
-      - ./merchant-frontend:/app
-      - /app/node_modules
+    # volumes:
+    #   - ./merchant-frontend:/app
+    #   - /app/node_modules
   user-client:
     container_name: user-client
     restart: always
@@ -66,9 +66,9 @@ services:
       - HOST_API= http://api.cryptofashion.store
     # env_file:
     #   - ./customer-frontend/.env.local
-    volumes:
-      - ./customer-frontend:/app
-      - /app/node_modules
+    # volumes:
+    #   - ./customer-frontend:/app
+    #   - /app/node_modules
   auth:
     container_name: auth-service
     
