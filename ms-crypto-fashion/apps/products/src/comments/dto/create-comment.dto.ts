@@ -57,4 +57,10 @@ export class CreateCommentDto {
     @IsNotEmpty()
     @Length(3)
     user_name: string;
+
+    @ApiProperty()
+    @IsNumber()
+    @Min(1)
+    @Max(5)
+    rating_mcht: number
 }
