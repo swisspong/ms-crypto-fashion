@@ -28,12 +28,17 @@ const nextConfig = {
       "api.example.com",
     ],
   },
-  env: {
-    HOST_CUSTOMER: process.env.HOST_CUSTOMER,
-    HOST_MERCHANT: process.env.HOST_MERCHANT,
-    HOST_API: process.env.HOST_API,
-  },
-  output: 'standalone',
+  // publicRuntimeConfig: {
+  //   // HOST_CUSTOMER: process.env.HOST_CUSTOMER,
+  //   // HOST_MERCHANT: process.env.HOST_MERCHANT,
+  //   HOST_API: process.env.NEXT_PUBLIC_HOST_API,
+  // },
+  // env: {
+  //   HOST_CUSTOMER: process.env.HOST_CUSTOMER,
+  //   HOST_MERCHANT: process.env.HOST_MERCHANT,
+  //   HOST_API: process.env.NEXT_PUBLIC_HOST_API,
+  // },
+  output: "standalone",
   typescript: {
     ignoreBuildErrors: true,
   },

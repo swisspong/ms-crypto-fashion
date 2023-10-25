@@ -11,11 +11,11 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   output: 'standalone',
-  env: {
-    HOST_CUSTOMER: process.env.HOST_CUSTOMER,
-    HOST_MERCHANT: process.env.HOST_MERCHANT,
-    HOST_API: process.env.HOST_API,
-  },
+  // env: {
+  //   HOST_CUSTOMER: process.env.HOST_CUSTOMER,
+  //   HOST_MERCHANT: process.env.HOST_MERCHANT,
+  //   HOST_API: process.env.HOST_API,
+  // },
   // env: {
   //   HOST_CUSTOMER: 'http://example.com'
   // }

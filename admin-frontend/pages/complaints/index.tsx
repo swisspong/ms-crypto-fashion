@@ -116,7 +116,7 @@ export default function Complaint() {
                                 </div>
                                 <div className="mt-3 flex  items-center justify-between space-x-2">
                                     {!(type === "MERCHANT") ? (
-                                        <Link href={`${process.env.HOST_CUSTOMER}/merchants/${mcht}/product/${prod}`}>
+                                        <Link href={`${process.env.NEXT_PUBLIC_HOST_CUSTOMER}/merchants/${mcht}/product/${prod}`}>
                                             <Button onClick={(e) => {
                                                 e.stopPropagation()
                                             }}
@@ -126,7 +126,7 @@ export default function Complaint() {
                                             </Button>
                                         </Link>
                                     ) : (
-                                        <Link href={`${process.env.HOST_CUSTOMER}/merchants/${mcht}`}>
+                                        <Link href={`${process.env.NEXT_PUBLIC_HOST_CUSTOMER}/merchants/${mcht}`}>
                                             <Button onClick={(e) => {
                                                 e.stopPropagation()
                                             }}

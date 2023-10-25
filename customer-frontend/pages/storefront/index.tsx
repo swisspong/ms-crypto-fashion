@@ -132,7 +132,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       redirect: {
         // destination: "http://localhost:3000/signin",
-        destination: `${process.env.HOST_CUSTOMER}/signin`,
+        destination: `${process.env.NEXT_PUBLIC_HOST_CUSTOMER}/signin`,
         permanent: false,
       },
     };
@@ -142,7 +142,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       redirect: {
         // destination: "http://localhost:3000",
-        destination: `${process.env.HOST_CUSTOMER}`,
+        destination: `${process.env.NEXT_PUBLIC_HOST_CUSTOMER}`,
         permanent: false,
       },
     };

@@ -13,13 +13,9 @@ services:
     # command: npm run dev
     ports:
       - '3001:3001'
-    environment:
-      - NEXT_PUBLIC_OMISE_PK= pkey_test_5vs126s6kgn939wafl4
-      - HOST_CUSTOMER= http://cryptofashion.store
-      - HOST_MERCHANT= http://merchant.cryptofashion.store
-      - HOST_API= http://api.cryptofashion.store
-    # env_file:
-    #   - ./admin-frontend/.env.local
+  
+    env_file:
+      - ./admin-frontend/.env.production.local
     # volumes:
     #   - ./admin-frontend:/app
     #   - /app/node_modules
@@ -36,13 +32,9 @@ services:
     # command: npm run dev
     ports:
       - '3002:3002'
-    environment:
-      - NEXT_PUBLIC_OMISE_PK= pkey_test_5vs126s6kgn939wafl4
-      - HOST_CUSTOMER= http://cryptofashion.store
-      - HOST_MERCHANT= http://merchant.cryptofashion.store
-      - HOST_API= http://api.cryptofashion.store
-    # env_file:
-    #   - ./merchant-frontend/.env.local
+
+    env_file:
+      - ./merchant-frontend/.env.production.local
     # volumes:
     #   - ./merchant-frontend:/app
     #   - /app/node_modules
@@ -59,13 +51,8 @@ services:
     # command: npm run dev
     ports:
       - '3000:3000'
-    environment:
-      - NEXT_PUBLIC_OMISE_PK= pkey_test_5vs126s6kgn939wafl4
-      - HOST_CUSTOMER= http://cryptofashion.store
-      - HOST_MERCHANT= http://merchant.cryptofashion.store
-      - HOST_API= http://api.cryptofashion.store
-    # env_file:
-    #   - ./customer-frontend/.env.local
+    env_file:
+      - ./customer-frontend/.env.production.local
     # volumes:
     #   - ./customer-frontend:/app
     #   - /app/node_modules

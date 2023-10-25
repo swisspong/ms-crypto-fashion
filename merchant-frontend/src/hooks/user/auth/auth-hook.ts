@@ -10,11 +10,11 @@ export const withUser = (roles?: string[]) => {
             getInfoSsr(context.req.headers.cookie)
         );
         const me = queryClient.getQueryData(["me"]);
-        console.log('check', process.env.HOST_CUSTOMER)
+        console.log('check', process.env.NEXT_PUBLIC_HOST_CUSTOMER)
         if (!me) {
             return {
                 redirect: {
-                    destination: `${process.env.HOST_CUSTOMER}/signin`,
+                    destination: `${process.env.NEXT_PUBLIC_HOST_CUSTOMER}/signin`,
                     permanent: false,
                 },
             };
@@ -28,7 +28,7 @@ export const withUser = (roles?: string[]) => {
             
             if (!isInclude) return {
                 redirect: {
-                    destination: `${process.env.HOST_CUSTOMER}`,
+                    destination: `${process.env.NEXT_PUBLIC_HOST_CUSTOMER}`,
                     permanent: false,
                 },
             };

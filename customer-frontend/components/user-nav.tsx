@@ -116,7 +116,7 @@ const UserNav = () => {
               <DropdownMenuItem
                 onClick={() =>
                   // router.push("http://merchant.cryptofashion.store/")
-                  router.push(`${process.env.HOST_MERCHANT}/`)
+                  router.push(`${process.env.NEXT_PUBLIC_HOST_MERCHANT}/`)
                 }
               >
                 <Store className="mr-2 h-4 w-4" />

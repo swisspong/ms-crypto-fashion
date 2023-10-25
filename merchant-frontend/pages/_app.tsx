@@ -45,7 +45,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
               if (customError.response?.status === 401) {
                 // router.push("http://cryptofashion.store/signin");
-                router.push(`${process.env.HOST_CUSTOMER}/signin`);
+                router.push(`${process.env.NEXT_PUBLIC_HOST_CUSTOMER}/signin`);
               } else {
                 console.log(customError);
                 const data:
@@ -104,7 +104,7 @@ export default function App({ Component, pageProps }: AppProps) {
               if (customError.response?.status === 401) {
                 // toast("Please sigin");
                 // router.push(`http://cryptofashion.store/signin`);
-                router.push(`${process.env.HOST_CUSTOMER}/signin`);
+                router.push(`${process.env.NEXT_PUBLIC_HOST_CUSTOMER}/signin`);
               }
               //  else if (customError.response?.status === 400) {
               //   toast.error(customError.message)

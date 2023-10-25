@@ -82,7 +82,7 @@ export function Sidebar({ className }: SidebarProps) {
               );
             })}
             <Link
-              href={`${process.env.HOST_CUSTOMER}/storefront`}
+              href={`${process.env.NEXT_PUBLIC_HOST_CUSTOMER}/storefront`}
               passHref
               target="_blank"
             >

@@ -53,7 +53,7 @@ export const columns = ({
                 if (type === "MERCHANT") {
                     if (mcht) {
                         return (
-                            <Link href={`${process.env.HOST_CUSTOMER}/merchants/${mcht}`}>
+                            <Link href={`${process.env.NEXT_PUBLIC_HOST_CUSTOMER}/merchants/${mcht}`}>
                                 <Button onClick={(e) => {
                                     e.stopPropagation()
                                 }}
@@ -79,7 +79,7 @@ export const columns = ({
                 } else {
                     if (prod) {
                         return (
-                            <Link href={`${process.env.HOST_CUSTOMER}/merchants/${mcht}/product/${prod}`}>
+                            <Link href={`${process.env.NEXT_PUBLIC_HOST_CUSTOMER}/merchants/${mcht}/product/${prod}`}>
                                 <Button onClick={(e) => {
                                     e.stopPropagation()
                                 }}
