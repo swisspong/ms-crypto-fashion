@@ -42,7 +42,6 @@ const OrderListPage = () => {
   const [rating_mcht, setRatingMcht] = useState<number>(0);
   const [mchtId, setIdMcht] = useState<string>();
   const [open, setOpen] = useState(false);
-  const [rating_mcht, setRatingMcht] = useState<number>(0);
   const [openDialog, setOpenDialog] = useState(false);
   const [items, setItems] = useState<Item[] | undefined>(undefined);
   const { mutate: commentsHandler, isLoading, isSuccess } = useCreateCommnt();
