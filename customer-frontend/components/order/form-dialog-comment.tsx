@@ -19,7 +19,9 @@ interface Props {
   openHandler: (open: boolean) => void;
   data: Item[],
   commentHandler: (body: TComment[]) => void;
+
   ratingHandle: (rating: number) => void;
+
   isLoading: boolean;
   isSuccess: boolean;
 }

@@ -39,6 +39,7 @@ const OrderListPage = () => {
   const router = useRouter();
   // TODO: Set column in DataTable
   const [idToUpdate, setIdToUpdate] = useState<string>();
+  const [rating_mcht, setRatingMcht] = useState<number>(0);
   const [mchtId, setIdMcht] = useState<string>();
   const [open, setOpen] = useState(false);
   const [rating_mcht, setRatingMcht] = useState<number>(0);
@@ -91,10 +92,15 @@ const OrderListPage = () => {
       mcht_id: mchtId!,
       order_id: idToUpdate!,
       rating_mcht: rating_mcht,
+
       user_name: me?.username!,
     };
     commentsHandler(payload);
   };
+
+
+
+
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,

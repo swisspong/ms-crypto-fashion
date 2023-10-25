@@ -4,6 +4,7 @@ interface TCommentPayload {
     mcht_id: string
     user_name: string
     rating_mcht: number
+
 }
 
 interface TComment {
