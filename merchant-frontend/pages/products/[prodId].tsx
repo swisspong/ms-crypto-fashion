@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import VariantForm from "@/components/products/variant-form";
+// import VariantForm from "@/components/products/variant-form";
 import { useCategories, useCategoriesMain } from "@/src/hooks/category/queries";
 import { useRouter } from "next/router";
 import { useEditProduct } from "@/src/hooks/product/mutations";

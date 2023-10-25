@@ -16,6 +16,7 @@ const MerchantProductList: FC<Props> = ({ products, merchant }) => {
           ) : (
             products.map((product) => (
               <ProductCard
+                key={product.prod_id}
                 className="h-[300px] w-[210px]"
                 pushUrl={`/merchants/${merchant.mcht_id}/product/${product.prod_id}`}
                 data={product}

@@ -27,7 +27,7 @@ export const columns = ({
   openSheetHandler,
   openDialogHandler,
 }: columnProps) => {
-  const router = useRouter();
+  // const router = useRouter();
   const columns: ColumnDef<IMerchant>[] = [
     {
       accessorKey: "image_url",

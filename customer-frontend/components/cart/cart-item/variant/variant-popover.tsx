@@ -77,7 +77,10 @@ const VaraintPopover: FC<Props> = ({ data }) => {
         <div className="grid gap-4">
           <div className="grid gap-2">
             {data.product.groups.map((group) => (
-              <div className="grid grid-cols-3 items-center gap-4">
+              <div
+                key={group.vgrp_id}
+                className="grid grid-cols-3 items-center gap-4"
+              >
                 <Label htmlFor="width">{group.name}</Label>
                 <Select
                   value={showSelectValue(group)}
@@ -95,6 +98,7 @@ const VaraintPopover: FC<Props> = ({ data }) => {
                       <SelectItem value="">กรุณาเลือก</SelectItem>
                       {group.options.map((option) => (
                         <SelectItem
+                          key={option.optn_id}
                           disabled={disabledOption(option, group.vgrp_id)}
                           value={`${option.optn_id}`}
                         >

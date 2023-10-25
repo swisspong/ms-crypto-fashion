@@ -166,7 +166,7 @@ const VariantForm = () => {
                             ?.map((option) => (
                               <Badge>{option.name}</Badge>
                             ))} */}
-                            <InputEnter control={form.control} index={index} />
+                            {/* <InputEnter control={form.control} index={index} /> */}
 
                             {/* <FormField
                             key={item.id}

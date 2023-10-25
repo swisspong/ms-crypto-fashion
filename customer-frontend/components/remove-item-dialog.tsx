@@ -55,7 +55,7 @@ const RemoveItemDialog: FC<Props> = ({ optn, data }) => {
         <DialogHeader>
           <DialogTitle>Product info has changed</DialogTitle>
           <DialogDescription>
-            Make changes to your item here. Click save when you're done.
+            Make changes to your item here. Click save when you are done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -69,7 +69,7 @@ const RemoveItemDialog: FC<Props> = ({ optn, data }) => {
           </div> */}
         </div>
         {data?.map((item) => (
-          <CartItemRemove data={item} />
+          <CartItemRemove key={item.item_id} data={item} />
         ))}
         <DialogFooter>
           <Button

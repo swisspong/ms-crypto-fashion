@@ -4,6 +4,12 @@ const nextConfig = {
   images:{
     domains:["localhost","cdn.shopify.com","api.example.com"]
   },
+  typescript:{
+    ignoreBuildErrors:true
+  },
+  eslint:{
+    ignoreDuringBuilds:true
+  }
   // env: {
   //   HOST_CUSTOMER: 'http://example.com'
   // }

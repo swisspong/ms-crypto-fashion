@@ -71,7 +71,7 @@ const CartItemRemove: React.FC<CartItemProps> = ({ data }) => {
                     return option?.name;
                   })
                   .map((optn) => (
-                    <Badge>{optn}</Badge>
+                    <Badge key={optn}>{optn}</Badge>
                   ))}
               </div>
             ) : undefined}

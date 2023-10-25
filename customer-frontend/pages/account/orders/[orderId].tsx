@@ -213,7 +213,7 @@ export default function Order() {
                         </TableHeader>
                         <TableBody>
                           {dataQuery.data?.items.map((orderItem) => (
-                            <TableRow>
+                            <TableRow key={orderItem.item_id}>
                               <TableCell className="font-medium">
                                 <div>
                                   <div className="flex items-center space-x-3">
@@ -265,7 +265,7 @@ export default function Order() {
                     </div>
                     <div className="pt-1">
                       {dataQuery.data?.items.map((orderItem) => (
-                        <div className="px-2 mb-1 block md:hidden ">
+                        <div key={orderItem.item_id} className="px-2 mb-1 block md:hidden ">
                           <div className="flex items-center space-x-3">
                             <img
                               src={orderItem.image}

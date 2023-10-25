@@ -110,7 +110,7 @@ export default function Admin() {
                     )}
                     {
                         dataQuery.data?.data.map((data) => (
-                            <div className="flex items-center justify-between space-x-4 pb-3 border-b">
+                            <div key={data.id} className="flex items-center justify-between space-x-4 pb-3 border-b">
                                 <div className="flex items-center space-x-4">
                                     <div>
                                         <p className="text-sm font-medium leading-none">{data.username}</p>

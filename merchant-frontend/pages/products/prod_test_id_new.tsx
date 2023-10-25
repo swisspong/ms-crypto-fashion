@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import VariantForm from "@/components/products/variant-form";
+// import VariantForm from "@/components/products/variant-form";
 import VariantAllForm from "@/components/products/variant-all-form";
 const formSchema = z.object({
   name: z
@@ -121,22 +121,22 @@ export default function EditProduct() {
     pageSize: 10,
   });
 
-  const dataQuery: { data: { data: IOrderRow[]; total_page: number } } = {
-    data: {
-      data: [
-        {
-          id: "cat_1",
-          image:
-            "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80",
-          amount: 20,
-          created_at: "2023-06-15T08:39:59.434Z",
-          email: "swiss@gmail.com",
-          status: "NOT PAID",
-        },
-      ],
-      total_page: 1,
-    },
-  };
+  // const dataQuery: { data: { data: IOrderRow[]; total_page: number } } = {
+  //   data: {
+  //     data: [
+  //       {
+  //         id: "cat_1",
+  //         image:
+  //           "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80",
+  //         amount: 20,
+  //         created_at: "2023-06-15T08:39:59.434Z",
+  //         email: "swiss@gmail.com",
+  //         status: "NOT PAID",
+  //       },
+  //     ],
+  //     total_page: 1,
+  //   },
+  // };
   const defaultData = useMemo(() => [], []);
   const pagination = useMemo(
     () => ({

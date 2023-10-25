@@ -120,7 +120,10 @@ const VaraintPopover: FC<Props> = ({ data }) => {
           </div> */}
           <div className="grid gap-2">
             {data.product.groups.map((group) => (
-              <div className="grid grid-cols-3 items-center gap-4">
+              <div
+                key={group.vgrp_id}
+                className="grid grid-cols-3 items-center gap-4"
+              >
                 <Label htmlFor="width">{group.name}</Label>
                 <Select
                   value={
@@ -173,6 +176,7 @@ const VaraintPopover: FC<Props> = ({ data }) => {
                       <SelectItem value="">กรุณาเลือก</SelectItem>
                       {group.options.map((option) => (
                         <SelectItem
+                          key={option.optn_id}
                           disabled={
                             !data.product.variants
                               .filter((variant) => variant.stock > 0)
@@ -247,7 +251,11 @@ const VaraintPopover: FC<Props> = ({ data }) => {
             ))}
 
             <div className="grid grid-cols-4 items-center gap-2">
-              <Button className=" col-span-2" variant={"ghost"} onClick={()=>setOpen(false)}>
+              <Button
+                className=" col-span-2"
+                variant={"ghost"}
+                onClick={() => setOpen(false)}
+              >
                 ยกเลิก
               </Button>
 

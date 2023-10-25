@@ -10,7 +10,7 @@ import { GetServerSideProps } from "next";
 import { getInfoSsr } from "@/src/services/user.service";
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import {
-  useMerchantProducts,
+  // useMerchantProducts,
   useMyStorefront,
 } from "@/src/hooks/product/merchant/queries";
 import { PaginationState } from "@tanstack/react-table";
