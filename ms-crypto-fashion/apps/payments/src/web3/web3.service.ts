@@ -66,7 +66,7 @@ export class Web3Service implements OnApplicationBootstrap {
     // contract.listeners("PaymentDone")
     const contract = new ethers.Contract(this.CONTRACT_ADDRESS, this.CONTRACT_ABI, this.provider)
     contract.on('PaymentDone', async (tx, amount, orderId, userId, mchtId, timestamp) => {
-      this.logger.log(tx, amount, orderId, userId, mchtId, timestamp)
+      this.logger.log("PaymentDone",tx, amount, orderId, userId, mchtId, timestamp)
       // await this.transactionPurchaseRepository.create(
       //   {
       //     tx_id: `tx_${this.uid.stamp(15)}`,
