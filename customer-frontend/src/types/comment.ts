@@ -27,3 +27,7 @@ interface TReplyPayload {
     comment_id: string
     message: string
 }
+
+interface TRatingMerchantResponse {
+    rating: number
+}

@@ -1,3 +1,4 @@
+import { useRatingMerchantById } from "@/src/hooks/comment/queries";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 interface BillboardProps {
@@ -6,16 +7,15 @@ interface BillboardProps {
 }
 
 const Billboard: React.FC<BillboardProps> = ({ name, info }) => {
-  console;
+  const { data } = useRatingMerchantById(info?.mcht_id)
   return (
     <div className="p-4 sm:p-6 lg:p-8 rounded-xl overflow-hidden ">
       <div
         style={{
-          backgroundImage: `url(${
-            info?.banner_url
-              ? info.banner_url
-              : "https://static.vecteezy.com/system/resources/previews/002/563/549/original/white-3d-pedestal-background-with-realistic-palm-leaves-for-cosmetic-product-presentation-or-fashion-magazine-free-vector.jpg"
-          })`,
+          backgroundImage: `url(${info?.banner_url
+            ? info.banner_url
+            : "https://static.vecteezy.com/system/resources/previews/002/563/549/original/white-3d-pedestal-background-with-realistic-palm-leaves-for-cosmetic-product-presentation-or-fashion-magazine-free-vector.jpg"
+            })`,
         }}
         className="rounded-xl relative aspect-square md:aspect-[2.4/1] overflow-hidden bg-cover"
       >
@@ -27,11 +27,28 @@ const Billboard: React.FC<BillboardProps> = ({ name, info }) => {
           {/* <Terminal className="h-4 w-4" /> */}
           <div>
             <AlertTitle className="text-lg">
-              {info?.name?"ร้านค้า "+info.name:""}
+              {info?.name ? "ร้านค้า " + info.name : ""}
               {/* fdsfdsf */}
             </AlertTitle>
+            <div>
+              {[1, 2, 3, 4, 5].map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  disabled={true}
+                  className={`text-1xl focus:outline-none ${value <= Math.round(data?.rating ?? 0)
+                    ? "text-yellow-400"
+                    : "text-gray-300"
+                    }`}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+
           </div>
         </Alert>
+
         <div className="h-full w-full flex flex-col justify-center items-center text-center gap-y-8">
           {name ? (
             <div className="font-bold text-3xl sm:text-5xl lg:text-6xl sm:max-w-xl max-w-xs underline">
