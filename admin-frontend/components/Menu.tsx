@@ -123,7 +123,7 @@ export function Menu() {
             <MenuIcon className="h-6 w-6" />
           </Button>
         </SheetTrigger>
-        <SheetContent position={"left"} size="content" className="bg-background">
+        <SheetContent side={"left"} className="bg-background">
           <SheetHeader>
             <SheetTitle>Admin Crypto Fashion</SheetTitle>
           </SheetHeader>
