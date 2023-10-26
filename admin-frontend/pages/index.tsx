@@ -288,10 +288,6 @@ export default function Home() {
             </div>
           </Card>
         )}
-
-
-
-
       </div>
     </Layout >
     

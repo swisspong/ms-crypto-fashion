@@ -10,11 +10,11 @@ interface Props {
 }
 
 const Layout = ({ children }: Props) => {
-  const { theme, setTheme } = useTheme();
-  const { themeToast, setThemeToastHandler } = useContext(MyThemeContext);
-  const [theming, setTheming] = useState<string | undefined>(undefined);
+  // const { theme, setTheme } = useTheme();
+  // const { themeToast, setThemeToastHandler } = useContext(MyThemeContext);
+  // const [theming, setTheming] = useState<string | undefined>(undefined);
 
-  useEffect(() => setTheming(theme), [theme]);
+  // useEffect(() => setTheming(theme), [theme]);
   return (
     <div className="layout-admin min-h-screen h-full">
       <div className="border-t">

@@ -53,8 +53,7 @@ export default function App({ Component, pageProps }: AppProps) {
                       message: string;
                     })
                   : undefined;
-                
-                
+
                 if (data?.message) {
                   if (data.statusCode === "403") {
                     toast.error("ผู้ใช้ไม่มีสิทธิ์ในการเข้าถึง");
@@ -106,11 +105,14 @@ export default function App({ Component, pageProps }: AppProps) {
   });
   return (
     <ThemeProvider enableSystem={true} attribute="class">
+      {/* <> */}
       {loading ? (
         <div className="h-screen w-screen rounded-lg p-8 flex justify-center items-center">
           <div className="flex space-x-2 items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <h1 className="text-xl font-bold tracking-tight">กรุณารอสักครู่...</h1>
+            <h1 className="text-xl font-bold tracking-tight">
+              กรุณารอสักครู่...
+            </h1>
           </div>
         </div>
       ) : (
@@ -133,6 +135,7 @@ export default function App({ Component, pageProps }: AppProps) {
           </MyThemeProvider>
         </QueryClientProvider>
       )}
+      {/* </> */}
     </ThemeProvider>
   );
 }
