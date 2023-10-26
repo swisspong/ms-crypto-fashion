@@ -5,10 +5,15 @@ import { GetServerSideProps } from "next";
 
 export const withoutUser = () => {
     const getServerSideProps: GetServerSideProps = async (context) => {
+
         const queryClient = new QueryClient();
-        await queryClient.prefetchQuery(["me"], () =>
-            getInfoSsr(context.req.headers.cookie)
-        );
+        try {
+            await queryClient.prefetchQuery(["me"], () =>
+                getInfoSsr(context.req.headers.cookie)
+            );
+        } catch (error) {
+            console.log(error)
+        }
         const me = queryClient.getQueryData(["me"]);
         if (me) {
             return {
@@ -23,6 +28,7 @@ export const withoutUser = () => {
                 dehydratedState: dehydrate(queryClient),
             },
         };
+
     };
     return getServerSideProps
 }
@@ -30,10 +36,13 @@ export const withoutUser = () => {
 export const withUser = () => {
     const getServerSideProps: GetServerSideProps = async (context) => {
         const queryClient = new QueryClient();
-
-        await queryClient.prefetchQuery(["me"], () =>
-            getInfoSsr(context.req.headers.cookie)
-        );
+        try {
+            await queryClient.prefetchQuery(["me"], () =>
+                getInfoSsr(context.req.headers.cookie)
+            );
+        } catch (error) {
+            console.log(error)
+        }
         const me: IAdmin | undefined = queryClient.getQueryData(["me"]);
         if (!me) {
             return {

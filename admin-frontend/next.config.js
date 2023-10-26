@@ -8,12 +8,12 @@ const nextConfig = {
   // env: {
   //   HOST_CUSTOMER: process.env.HOST_CUSTOMER,
   // }
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // typescript: {
+  //   ignoreBuildErrors: true,
+  // },
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
 };
 
 module.exports = nextConfig;

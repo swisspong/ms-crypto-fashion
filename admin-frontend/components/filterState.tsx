@@ -1,5 +1,5 @@
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { Input } from "./ui/input";
 
 interface FilterProps {

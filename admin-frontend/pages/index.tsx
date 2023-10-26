@@ -1,12 +1,18 @@
+"use client"
+import React,{ useEffect, useState } from 'react';
 import { Inter } from 'next/font/google'
 import { Separator } from "@/components/ui/separator";
-import Layout from '@/components/Layout'
+import dynamic from 'next/dynamic';
+// import Layout from '@/components/Layout'
+const Layout = dynamic(() => import('@/components/Layout'), {
+  ssr: false,
+});
 import { withUser } from '@/src/hooks/auth/isAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Overview } from '@/components/overview';
 import { RecentSales } from '@/components/recent-sales';
 import { useGetDashboardMerchant } from '@/src/hooks/merchant/queries';
-import { useEffect, useState } from 'react';
+
 import { useGetOrderRecentSale, useGetOrderTradeByMonth } from '@/src/hooks/order/queries';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';

@@ -1,7 +1,8 @@
+"use client"
 import { Menu } from "@/components/Menu";
 import { Sidebar } from "@/components/Sidebar";
 
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import { useTheme } from "next-themes";
 import { MyThemeContext } from "@/lib/theme/MythemeContext";
 

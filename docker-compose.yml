@@ -8,14 +8,14 @@ services:
       # dockerfile: ./Dockerfile.dev
       dockerfile: ./Dockerfile.prod
       # target: deps
-      target: builder
-      # target: runner
-    command: npm run dev
+      # target: builder
+      target: runner
+    # command: npm run dev
     ports:
       - '3001:3001'
   
     env_file:
-      # - ./admin-frontend/.env.production.local
+      - ./admin-frontend/.env.production.local
       - ./admin-frontend/.env.development.local
     # volumes:
     #   - ./admin-frontend:/app
@@ -28,14 +28,14 @@ services:
       # dockerfile: ./Dockerfile.dev
       dockerfile: ./Dockerfile.prod
       # target: deps
-      target: builder
-      # target: runner
-    command: npm run dev
+      # target: builder
+      target: runner
+    # command: npm run dev
     ports:
       - '3002:3002'
 
     env_file:
-      # - ./merchant-frontend/.env.production.local
+      - ./merchant-frontend/.env.production.local
       - ./merchant-frontend/.env.development.local
     # volumes:
     #   - ./merchant-frontend:/app
